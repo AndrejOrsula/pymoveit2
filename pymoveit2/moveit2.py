@@ -1,8 +1,6 @@
-from .common import (
-    init_dummy_joint_trajectory_from_state,
-    init_follow_joint_trajectory_goal,
-    init_joint_state,
-)
+import threading
+from typing import List, Optional, Tuple, Union
+
 from action_msgs.msg import GoalStatus
 from control_msgs.action import FollowJointTrajectory
 from geometry_msgs.msg import Pose
@@ -10,29 +8,28 @@ from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
     Constraints,
     JointConstraint,
-    Constraints,
-    JointConstraint,
-    PositionConstraint,
     OrientationConstraint,
+    PositionConstraint,
 )
-from moveit_msgs.srv import (
-    GetPositionIK,
-    GetPositionFK,
-)
+from moveit_msgs.srv import GetPositionFK, GetPositionIK
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
 from rclpy.qos import (
-    QoSProfile,
     QoSDurabilityPolicy,
-    QoSReliabilityPolicy,
     QoSHistoryPolicy,
+    QoSProfile,
+    QoSReliabilityPolicy,
 )
 from sensor_msgs.msg import JointState
 from shape_msgs.msg import SolidPrimitive
 from trajectory_msgs.msg import JointTrajectory
-from typing import List, Optional, Tuple, Union
-import threading
+
+from .common import (
+    init_dummy_joint_trajectory_from_state,
+    init_follow_joint_trajectory_goal,
+    init_joint_state,
+)
 
 
 class MoveIt2:

@@ -1,7 +1,8 @@
+from typing import List, Optional
+
 from control_msgs.action import FollowJointTrajectory
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-from typing import List, Optional
 
 
 def init_joint_state(

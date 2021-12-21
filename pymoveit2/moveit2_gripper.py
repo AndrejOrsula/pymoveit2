@@ -1,26 +1,25 @@
-from .common import (
-    init_dummy_joint_trajectory_from_state,
-    init_follow_joint_trajectory_goal,
-)
+from typing import List, Optional
+
 from action_msgs.msg import GoalStatus
 from control_msgs.action import FollowJointTrajectory
 from moveit_msgs.action import MoveGroup
-from moveit_msgs.msg import (
-    Constraints,
-    JointConstraint,
-)
+from moveit_msgs.msg import Constraints, JointConstraint
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
 from rclpy.qos import (
-    QoSProfile,
     QoSDurabilityPolicy,
-    QoSReliabilityPolicy,
     QoSHistoryPolicy,
+    QoSProfile,
+    QoSReliabilityPolicy,
 )
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory
-from typing import List, Optional
+
+from .common import (
+    init_dummy_joint_trajectory_from_state,
+    init_follow_joint_trajectory_goal,
+)
 
 
 class MoveIt2Gripper:

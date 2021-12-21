@@ -1,16 +1,17 @@
 from copy import deepcopy
+from typing import Optional, Tuple
+
+import numpy as np
 from geometry_msgs.msg import TwistStamped
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
 from rclpy.qos import (
-    QoSProfile,
     QoSDurabilityPolicy,
-    QoSReliabilityPolicy,
     QoSHistoryPolicy,
+    QoSProfile,
+    QoSReliabilityPolicy,
 )
 from std_srvs.srv import Trigger
-from typing import Tuple, Optional
-import numpy as np
 
 
 class MoveIt2Servo:
