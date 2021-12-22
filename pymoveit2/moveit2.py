@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Union
 
 from action_msgs.msg import GoalStatus
 from control_msgs.action import FollowJointTrajectory
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Point, Pose, Quaternion
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
     Constraints,
@@ -165,8 +165,8 @@ class MoveIt2:
 
     def move_to_pose(
         self,
-        position: Tuple[float, float, float],
-        quat_xyzw: Tuple[float, float, float, float],
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
         target_link: Optional[str] = None,
         frame_id: Optional[str] = None,
         tolerance_position: float = 0.001,
@@ -266,8 +266,10 @@ class MoveIt2:
 
     def plan(
         self,
-        position: Optional[Tuple[float, float, float]] = None,
-        quat_xyzw: Optional[Tuple[float, float, float, float]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
         joint_positions: Optional[List[float]] = None,
         joint_names: Optional[List[str]] = None,
         frame_id: Optional[str] = None,
@@ -383,8 +385,8 @@ class MoveIt2:
 
     def set_pose_goal(
         self,
-        position: Tuple[float, float, float],
-        quat_xyzw: Tuple[float, float, float, float],
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
         tolerance_position: float = 0.001,
@@ -413,7 +415,7 @@ class MoveIt2:
 
     def set_position_goal(
         self,
-        position: Tuple[float, float, float],
+        position: Union[Point, Tuple[float, float, float]],
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
         tolerance: float = 0.001,
@@ -438,9 +440,18 @@ class MoveIt2:
 
         # Define target position
         constraint.constraint_region.primitive_poses.append(Pose())
-        constraint.constraint_region.primitive_poses[0].position.x = float(position[0])
-        constraint.constraint_region.primitive_poses[0].position.y = float(position[1])
-        constraint.constraint_region.primitive_poses[0].position.z = float(position[2])
+        if isinstance(position, Point):
+            constraint.constraint_region.primitive_poses[0].position = position
+        else:
+            constraint.constraint_region.primitive_poses[0].position.x = float(
+                position[0]
+            )
+            constraint.constraint_region.primitive_poses[0].position.y = float(
+                position[1]
+            )
+            constraint.constraint_region.primitive_poses[0].position.z = float(
+                position[2]
+            )
 
         # Define goal region as a sphere with radius equal to the tolerance
         constraint.constraint_region.primitives.append(SolidPrimitive())
@@ -457,7 +468,7 @@ class MoveIt2:
 
     def set_orientation_goal(
         self,
-        quat_xyzw: Tuple[float, float, float, float],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
         tolerance: float = 0.001,
@@ -481,10 +492,13 @@ class MoveIt2:
         )
 
         # Define target orientation
-        constraint.orientation.x = float(quat_xyzw[0])
-        constraint.orientation.y = float(quat_xyzw[1])
-        constraint.orientation.z = float(quat_xyzw[2])
-        constraint.orientation.w = float(quat_xyzw[3])
+        if isinstance(quat_xyzw, Quaternion):
+            constraint.orientation = quat_xyzw
+        else:
+            constraint.orientation.x = float(quat_xyzw[0])
+            constraint.orientation.y = float(quat_xyzw[1])
+            constraint.orientation.z = float(quat_xyzw[2])
+            constraint.orientation.w = float(quat_xyzw[3])
 
         # Define tolerances
         constraint.absolute_x_axis_tolerance = tolerance
