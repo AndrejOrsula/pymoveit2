@@ -41,7 +41,7 @@ class MoveIt2:
         end_effector_name: str,
         group_name: str = "arm",
         execute_via_moveit: bool = False,
-        ignore_new_calls_while_executing: bool = True,
+        ignore_new_calls_while_executing: bool = False,
         callback_group: Optional[CallbackGroup] = None,
     ):
 
@@ -154,14 +154,17 @@ class MoveIt2:
 
         # Flag that determines whether a new goal can be send while the previous one is being executed
         self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = False
 
         # Store additional variables for later use
         self.__joints_names = joint_names
         self.__base_link_name = base_link_name
         self.__end_effector_name = end_effector_name
         self.__group_name = group_name
+
+        # Internal states that monitor the current motion requests and execution
+        self.__is_motion_requested = False
+        self.__is_executing = False
+        self.__wait_until_executed_rate = self._node.create_rate(1000.0)
 
     def move_to_pose(
         self,
@@ -179,14 +182,14 @@ class MoveIt2:
         passed in to internally use `set_pose_goal()` to define a goal during the call.
         """
 
-        if self.__ignore_new_calls_while_executing:
-            if self.__is_executing:
+        if self.__execute_via_moveit:
+            if self.__ignore_new_calls_while_executing and self.__is_executing:
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
                 )
                 return
+            self.__is_motion_requested = True
 
-        if self.__execute_via_moveit:
             # Set goal
             self.set_pose_goal(
                 position=position,
@@ -231,14 +234,14 @@ class MoveIt2:
         passed in to internally use `set_joint_goal()` to define a goal during the call.
         """
 
-        if self.__ignore_new_calls_while_executing:
-            if self.__is_executing:
+        if self.__execute_via_moveit:
+            if self.__ignore_new_calls_while_executing and self.__is_executing:
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
                 )
                 return
+            self.__is_motion_requested = True
 
-        if self.__execute_via_moveit:
             # Set goal
             self.set_joint_goal(
                 joint_positions=joint_positions,
@@ -288,13 +291,6 @@ class MoveIt2:
         duration, `None` is returned. To plan from the different position than the current
         one, optional argument `start_` can be defined.
         """
-
-        if self.__ignore_new_calls_while_executing:
-            if self.__is_executing:
-                self._node.get_logger().warn(
-                    "Controller is already following a trajectory. Skipping motion."
-                )
-                return None
 
         if position is not None:
             self.set_position_goal(
@@ -349,6 +345,13 @@ class MoveIt2:
         Execute joint_trajectory by communicating directly with the controller.
         """
 
+        if self.__ignore_new_calls_while_executing and self.__is_executing:
+            self._node.get_logger().warn(
+                "Controller is already following a trajectory. Skipping motion."
+            )
+            return
+        self.__is_motion_requested = True
+
         follow_joint_trajectory_goal = init_follow_joint_trajectory_goal(
             joint_trajectory=joint_trajectory
         )
@@ -362,6 +365,20 @@ class MoveIt2:
         self.__send_goal_async_follow_joint_trajectory(
             goal=follow_joint_trajectory_goal
         )
+
+    def wait_until_executed(self):
+        """
+        Wait until the previously requested motion is finalised through either a success or failure.
+        """
+
+        if not self.__is_motion_requested:
+            self._node.get_logger().warn(
+                "Cannot wait until motion is executed because no motion has been requested."
+            )
+            return
+
+        while self.__is_motion_requested or self.__is_executing:
+            self.__wait_until_executed_rate.sleep()
 
     def reset_controller(self, joint_state: Union[JointState, List[float]]):
         """
@@ -757,12 +774,13 @@ class MoveIt2:
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
-                f"Action '{self.__move_action_client._action_name}' was rejected"
+                f"Action '{self.__move_action_client._action_name}' was rejected."
             )
+            self.__is_motion_requested = False
             return
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = True
+        self.__is_executing = True
+        self.__is_motion_requested = False
 
         self.__get_result_future_move_action = goal_handle.get_result_async()
         self.__get_result_future_move_action.add_done_callback(
@@ -776,17 +794,9 @@ class MoveIt2:
                 f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}"
             )
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = False
+        self.__is_executing = False
 
     def __send_goal_async_follow_joint_trajectory(self, goal: FollowJointTrajectory):
-
-        if self.__ignore_new_calls_while_executing:
-            if self.__is_executing:
-                self._node.get_logger().warn(
-                    "Controller is already following a trajectory. Skipping motion."
-                )
-                return
 
         self.__follow_joint_trajectory_action_client.wait_for_server()
 
@@ -804,12 +814,13 @@ class MoveIt2:
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
-                f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was rejected"
+                f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was rejected."
             )
+            self.__is_motion_requested = False
             return
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = True
+        self.__is_executing = True
+        self.__is_motion_requested = False
 
         self.__get_result_future_follow_joint_trajectory = (
             goal_handle.get_result_async()
@@ -825,8 +836,7 @@ class MoveIt2:
                 f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}"
             )
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = False
+        self.__is_executing = False
 
     @classmethod
     def __init_move_action_goal(

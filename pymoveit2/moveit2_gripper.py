@@ -32,7 +32,7 @@ class MoveIt2Gripper:
         closed_gripper_joint_positions: List[float],
         gripper_group_name: str = "gripper",
         plan_once: bool = True,
-        ignore_new_calls_while_executing: bool = True,
+        ignore_new_calls_while_executing: bool = False,
         callback_group: Optional[CallbackGroup] = None,
     ):
 
@@ -146,8 +146,6 @@ class MoveIt2Gripper:
 
         # Flag that determines whether a new goal can be send while the previous one is being executed
         self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = False
 
         # If desired, the trajectory will be planned only once and all subsequent execution will communicate directly with the controller
         self.__plan_once = plan_once
@@ -156,6 +154,11 @@ class MoveIt2Gripper:
         self.__is_open = True
         self.__open_follow_joint_trajectory_req = None
         self.__close_follow_joint_trajectory_req = None
+
+        # Internal states that monitor the current motion requests and execution
+        self.__is_motion_requested = False
+        self.__is_executing = False
+        self.__wait_until_executed_rate = self._node.create_rate(1000.0)
 
     def __call__(self):
 
@@ -173,6 +176,13 @@ class MoveIt2Gripper:
         # Don't do anything if open already
         if self.is_open:
             return
+
+        if self.__ignore_new_calls_while_executing and self.__is_executing:
+            self._node.get_logger().warn(
+                "Controller is already following a trajectory. Skipping motion."
+            )
+            return
+        self.__is_motion_requested = True
 
         # Plan only once and execute the same trajectory on each subsequent call
         if self.__plan_once:
@@ -201,6 +211,13 @@ class MoveIt2Gripper:
         # Don't do anything if closed already
         if self.is_closed:
             return
+
+        if self.__ignore_new_calls_while_executing and self.__is_executing:
+            self._node.get_logger().warn(
+                "Controller is already following a trajectory. Skipping motion."
+            )
+            return
+        self.__is_motion_requested = True
 
         # Plan only once and execute the same trajectory on each subsequent call
         if self.__plan_once:
@@ -233,6 +250,20 @@ class MoveIt2Gripper:
     def is_closed(self) -> bool:
 
         return not self.is_open
+
+    def wait_until_executed(self):
+        """
+        Wait until the previously requested motion is finalised through either a success or failure.
+        """
+
+        if not self.__is_motion_requested:
+            self._node.get_logger().warn(
+                "Cannot wait until motion is executed because no motion has been requested."
+            )
+            return
+
+        while self.__is_motion_requested or self.__is_executing:
+            self.__wait_until_executed_rate.sleep()
 
     def reset_open(self):
         """
@@ -288,10 +319,6 @@ class MoveIt2Gripper:
 
     def __send_goal_async_move_action(self):
 
-        if self.__ignore_new_calls_while_executing:
-            if self.__is_executing:
-                return
-
         stamp = self._node.get_clock().now().to_msg()
         self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
 
@@ -313,10 +340,11 @@ class MoveIt2Gripper:
             self._node.get_logger().warn(
                 f"Action '{self.__move_action_client._action_name}' was rejected"
             )
+            self.__is_motion_requested = False
             return
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = True
+        self.__is_executing = True
+        self.__is_motion_requested = False
 
         self.__get_result_future_move_action = goal_handle.get_result_async()
         self.__get_result_future_move_action.add_done_callback(
@@ -332,14 +360,9 @@ class MoveIt2Gripper:
                 f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}"
             )
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = False
+        self.__is_executing = False
 
     def __send_goal_async_follow_joint_trajectory(self, goal: FollowJointTrajectory):
-
-        if self.__ignore_new_calls_while_executing:
-            if self.__is_executing:
-                return
 
         self.__follow_joint_trajectory_action_client.wait_for_server()
 
@@ -359,10 +382,11 @@ class MoveIt2Gripper:
             self._node.get_logger().warn(
                 f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was rejected"
             )
+            self.__is_motion_requested = False
             return
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = True
+        self.__is_executing = True
+        self.__is_motion_requested = False
 
         self.__get_result_future_follow_joint_trajectory = (
             goal_handle.get_result_async()
@@ -380,8 +404,7 @@ class MoveIt2Gripper:
                 f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}"
             )
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = False
+        self.__is_executing = False
 
     def __prepare_move_action_goal_close(self):
 
