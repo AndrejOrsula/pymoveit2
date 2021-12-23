@@ -8,10 +8,11 @@ from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
     Constraints,
     JointConstraint,
+    MoveItErrorCodes,
     OrientationConstraint,
     PositionConstraint,
 )
-from moveit_msgs.srv import GetPositionFK, GetPositionIK
+from moveit_msgs.srv import GetMotionPlan, GetPositionFK, GetPositionIK
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -33,6 +34,11 @@ from .common import (
 
 
 class MoveIt2:
+    """
+    Python interface for MoveIt 2 that enables planning and execution of trajectories.
+    For execution, this interface requires that robot utilises JointTrajectoryController.
+    """
+
     def __init__(
         self,
         node: Node,
@@ -44,12 +50,26 @@ class MoveIt2:
         ignore_new_calls_while_executing: bool = False,
         callback_group: Optional[CallbackGroup] = None,
     ):
+        """
+        Construct an instance of `MoveIt2` interface.
+          - `node` - ROS 2 node that this interface is attached to
+          - `joint_names` - List of joint names of the robot (can be extracted from URDF)
+          - `base_link_name` - Name of the robot base link
+          - `end_effector_name` - Name of the robot end effector
+          - `group_name` - Name of the planning group for robot arm
+          - `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
+                                   FollowJointTrajectory action (controller) is employed othewise
+                                   together with a separate planning service client
+          - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
+                                                 while previous is still being executed
+          - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
+        """
 
         self._node = node
         self._callback_group = callback_group
 
         # Create subscriber for current joint states
-        self.__joint_state_sub = self._node.create_subscription(
+        self._node.create_subscription(
             msg_type=JointState,
             topic="joint_states",
             callback=self.__joint_state_callback,
@@ -62,43 +82,58 @@ class MoveIt2:
             callback_group=self._callback_group,
         )
 
-        # Create action client for move action
-        self.__move_action_client = ActionClient(
-            node=self._node,
-            action_type=MoveGroup,
-            action_name="move_action",
-            goal_service_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.RELIABLE,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-            ),
-            result_service_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.RELIABLE,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=5,
-            ),
-            cancel_service_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.RELIABLE,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=5,
-            ),
-            feedback_sub_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-            ),
-            status_sub_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-            ),
-            callback_group=self._callback_group,
-        )
+        if execute_via_moveit:
+            # Create action client for move action
+            self.__move_action_client = ActionClient(
+                node=self._node,
+                action_type=MoveGroup,
+                action_name="move_action",
+                goal_service_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.RELIABLE,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=1,
+                ),
+                result_service_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.RELIABLE,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=5,
+                ),
+                cancel_service_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.RELIABLE,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=5,
+                ),
+                feedback_sub_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=1,
+                ),
+                status_sub_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=1,
+                ),
+                callback_group=self._callback_group,
+            )
+        else:
+            # Otherwise create a separate service client for planning
+            self.__plan_kinematic_path_service = self._node.create_client(
+                srv_type=GetMotionPlan,
+                srv_name="plan_kinematic_path",
+                qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.RELIABLE,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=1,
+                ),
+                callback_group=callback_group,
+            )
+            self.__kinematic_path_request = GetMotionPlan.Request()
 
         # Create action client for trajectory execution
         self.__follow_joint_trajectory_action_client = ActionClient(
@@ -333,7 +368,12 @@ class MoveIt2:
                 )
 
         # Plan trajectory by sending a goal (blocking)
-        joint_trajectory = self.__send_goal_move_action_plan_only()
+        if self.__execute_via_moveit:
+            # Use action client
+            joint_trajectory = self.__send_goal_move_action_plan_only()
+        else:
+            # Use service
+            joint_trajectory = self.__plan_kinematic_path()
 
         # Clear all previous goal constrains
         self.clear_goal_constraints()
@@ -358,8 +398,9 @@ class MoveIt2:
 
         if follow_joint_trajectory_goal is None:
             self._node.get_logger().warn(
-                "Cannot execute motion because trajectory is invalid."
+                "Cannot execute motion because the provided/planned trajectory is invalid."
             )
+            self.__is_motion_requested = False
             return
 
         self.__send_goal_async_follow_joint_trajectory(
@@ -373,7 +414,7 @@ class MoveIt2:
 
         if not self.__is_motion_requested:
             self._node.get_logger().warn(
-                "Cannot wait until motion is executed because no motion has been requested."
+                "Cannot wait until motion is executed (no motion is in progress)."
             )
             return
 
@@ -440,8 +481,8 @@ class MoveIt2:
     ):
         """
         Set Cartesian position goal of `target_link` with respect to `frame_id`.
-          - `target_link` defaults to end effector
           - `frame_id` defaults to the base link
+          - `target_link` defaults to end effector
         """
 
         # Create new position constraint
@@ -493,8 +534,8 @@ class MoveIt2:
     ):
         """
         Set Cartesian orientation goal of `target_link` with respect to `frame_id`.
-          - `target_link` defaults to end effector
           - `frame_id` defaults to the base link
+          - `target_link` defaults to end effector
         """
 
         # Create new position constraint
@@ -665,64 +706,6 @@ class MoveIt2:
         self.__compute_ik_client.wait_for_service()
         return self.__compute_ik_client.call(self.__compute_ik_req)
 
-    @property
-    def joint_state(self) -> JointState:
-
-        self.__joint_state_mutex.acquire()
-        joint_state = self.__joint_state
-        self.__joint_state_mutex.release()
-        return joint_state
-
-    @property
-    def max_velocity(self) -> float:
-
-        return self.__move_action_goal.request.max_velocity_scaling_factor
-
-    @max_velocity.setter
-    def max_velocity(self, value: float):
-
-        self.__move_action_goal.request.max_velocity_scaling_factor = value
-
-    @property
-    def max_acceleration(self) -> float:
-
-        return self.__move_action_goal.request.max_acceleration_scaling_factor
-
-    @max_acceleration.setter
-    def max_acceleration(self, value: float):
-
-        self.__move_action_goal.request.max_acceleration_scaling_factor = value
-
-    @property
-    def max_cartesian_speed(self) -> float:
-
-        return self.__move_action_goal.request.max_cartesian_speed
-
-    @max_cartesian_speed.setter
-    def max_cartesian_speed(self, value: float):
-
-        self.__move_action_goal.request.max_cartesian_speed = value
-
-    @property
-    def num_planning_attempts(self) -> int:
-
-        return self.__move_action_goal.request.num_planning_attempts
-
-    @num_planning_attempts.setter
-    def num_planning_attempts(self, value: int):
-
-        self.__move_action_goal.request.num_planning_attempts = value
-
-    @property
-    def allowed_planning_time(self) -> float:
-
-        return self.__move_action_goal.request.allowed_planning_time
-
-    @allowed_planning_time.setter
-    def allowed_planning_time(self, value: float):
-
-        self.__move_action_goal.request.allowed_planning_time = value
-
     def __joint_state_callback(self, msg):
 
         self.__joint_state_mutex.acquire()
@@ -751,6 +734,43 @@ class MoveIt2:
         if move_action_result.status == GoalStatus.STATUS_SUCCEEDED:
             return move_action_result.result.planned_trajectory.joint_trajectory
         else:
+            return None
+
+    def __plan_kinematic_path(self) -> Optional[JointTrajectory]:
+
+        # Re-use request from move action goal
+        self.__kinematic_path_request.motion_plan_request = (
+            self.__move_action_goal.request
+        )
+
+        stamp = self._node.get_clock().now().to_msg()
+        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = (
+            stamp
+        )
+        for (
+            contraints
+        ) in self.__kinematic_path_request.motion_plan_request.goal_constraints:
+            for position_constraint in contraints.position_constraints:
+                position_constraint.header.stamp = stamp
+            for orientation_constraint in contraints.orientation_constraints:
+                orientation_constraint.header.stamp = stamp
+
+        if not self.__plan_kinematic_path_service.wait_for_service(timeout_sec=1.0):
+            self._node.get_logger().warn(
+                f"Service '{self.__plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
+            )
+            return None
+
+        res = self.__plan_kinematic_path_service.call(
+            self.__kinematic_path_request
+        ).motion_plan_response
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.trajectory.joint_trajectory
+        else:
+            self._node.get_logger().warn(
+                f"Planning failed! Error code: {res.error_code.val}."
+            )
             return None
 
     def __send_goal_async_move_action(self):
@@ -791,7 +811,7 @@ class MoveIt2:
 
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().error(
-                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}"
+                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
 
         self.__is_executing = False
@@ -833,7 +853,7 @@ class MoveIt2:
 
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().error(
-                f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}"
+                f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
 
         self.__is_executing = False
@@ -864,7 +884,6 @@ class MoveIt2:
         move_action_goal.request.allowed_planning_time = 0.5
         move_action_goal.request.max_velocity_scaling_factor = 0.0
         move_action_goal.request.max_acceleration_scaling_factor = 0.0
-        # TODO: Consider adding end effector
         move_action_goal.request.cartesian_speed_end_effector_link = end_effector
         move_action_goal.request.max_cartesian_speed = 0.0
 
@@ -923,3 +942,61 @@ class MoveIt2:
         # self.__compute_ik_req.ik_request.pose_stamped_vector = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.sec = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.nanosec = "Ignored"
+
+    @property
+    def joint_state(self) -> JointState:
+
+        self.__joint_state_mutex.acquire()
+        joint_state = self.__joint_state
+        self.__joint_state_mutex.release()
+        return joint_state
+
+    @property
+    def max_velocity(self) -> float:
+
+        return self.__move_action_goal.request.max_velocity_scaling_factor
+
+    @max_velocity.setter
+    def max_velocity(self, value: float):
+
+        self.__move_action_goal.request.max_velocity_scaling_factor = value
+
+    @property
+    def max_acceleration(self) -> float:
+
+        return self.__move_action_goal.request.max_acceleration_scaling_factor
+
+    @max_acceleration.setter
+    def max_acceleration(self, value: float):
+
+        self.__move_action_goal.request.max_acceleration_scaling_factor = value
+
+    @property
+    def max_cartesian_speed(self) -> float:
+
+        return self.__move_action_goal.request.max_cartesian_speed
+
+    @max_cartesian_speed.setter
+    def max_cartesian_speed(self, value: float):
+
+        self.__move_action_goal.request.max_cartesian_speed = value
+
+    @property
+    def num_planning_attempts(self) -> int:
+
+        return self.__move_action_goal.request.num_planning_attempts
+
+    @num_planning_attempts.setter
+    def num_planning_attempts(self, value: int):
+
+        self.__move_action_goal.request.num_planning_attempts = value
+
+    @property
+    def allowed_planning_time(self) -> float:
+
+        return self.__move_action_goal.request.allowed_planning_time
+
+    @allowed_planning_time.setter
+    def allowed_planning_time(self, value: float):
+
+        self.__move_action_goal.request.allowed_planning_time = value
