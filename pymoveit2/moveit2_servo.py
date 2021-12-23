@@ -1,7 +1,6 @@
 from copy import deepcopy
 from typing import Optional, Tuple
 
-import numpy as np
 from geometry_msgs.msg import TwistStamped
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -11,19 +10,35 @@ from rclpy.qos import (
     QoSProfile,
     QoSReliabilityPolicy,
 )
+from rclpy.task import Future
 from std_srvs.srv import Trigger
 
 
 class MoveIt2Servo:
+    """
+    Python interface for MoveIt 2 Servo that enables real-time control in Cartesian Space.
+    This implementation is just a thin wrapper around TwistStamped message publisher.
+    """
+
     def __init__(
         self,
         node: Node,
         frame_id: str,
-        linear_speed: float = 0.5,
-        angular_speed: float = 10.0 * np.pi / 180.0,
+        linear_speed: float = 1.0,
+        angular_speed: float = 1.0,
         enable_at_init: bool = True,
         callback_group: Optional[CallbackGroup] = None,
     ):
+        """
+        Construct an instance of `MoveIt2Servo` interface.
+          - `node` - ROS 2 node that this interface is attached to
+          - `frame_id` - Reference frame in which to publish command messages
+          - `linear_speed` - Factor that can be used to scale all input linear twist commands
+          - `angular_speed` - Factor that can be used to scale all input angular twist commands
+          - `enable_at_init` - Flag that enables initialisation of MoveIt 2 Servo during initialisation
+                               Otherwise, `MoveIt2Servo.enable()` must be called explicitly
+          - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
+        """
 
         self._node = node
 
@@ -72,6 +87,9 @@ class MoveIt2Servo:
         linear: Tuple[float, float, float] = (0.0, 0.0, 0.0),
         angular: Tuple[float, float, float] = (0.0, 0.0, 0.0),
     ):
+        """
+        Callable that is identical to `MoveIt2Servo.servo()`.
+        """
 
         self.servo(linear=linear, angular=angular)
 
@@ -80,6 +98,10 @@ class MoveIt2Servo:
         linear: Tuple[float, float, float] = (0.0, 0.0, 0.0),
         angular: Tuple[float, float, float] = (0.0, 0.0, 0.0),
     ):
+        """
+        Apply linear and angular twist using MoveIt 2 Servo.
+        Input is scaled by `linear_speed` and `angular_speed`, respectively.
+        """
 
         twist_msg = deepcopy(self.__twist_msg)
         twist_msg.header.stamp = self._node.get_clock().now().to_msg()
@@ -92,22 +114,50 @@ class MoveIt2Servo:
         self.__twist_pub.publish(twist_msg)
 
     def enable(self):
+        """
+        Enable MoveIt 2 Servo server via async service call.
+        """
 
         while not self.__start_service.wait_for_service(timeout_sec=1.0):
             self._node.get_logger().warn(
                 f"Service '{self.__start_service.srv_name}' is not yet available..."
             )
-        self.__start_service.call_async(self.__trigger_req)
-        self.__is_enabled = True
+        start_service_future = self.__start_service.call_async(self.__trigger_req)
+        start_service_future.add_done_callback(self.__enable_done_callback)
 
     def disable(self):
+        """
+        Disable MoveIt 2 Servo server via async service call.
+        """
 
         while not self.__stop_service.wait_for_service(timeout_sec=1.0):
             self._node.get_logger().warn(
                 f"Service '{self.__stop_service.srv_name}' is not yet available..."
             )
-        self.__stop_service.call_async(self.__trigger_req)
-        self.__is_enabled = False
+        stop_service_future = self.__stop_service.call_async(self.__trigger_req)
+        stop_service_future.add_done_callback(self.__disable_done_callback)
+
+    def __enable_done_callback(self, future: Future):
+
+        result: Trigger.Response = future.result()
+
+        if not result.success:
+            self._node.get_logger().error(
+                f"MoveIt Servo could not be enabled. ({result.message})"
+            )
+
+        self.__is_enabled = result.success
+
+    def __disable_done_callback(self, future: Future):
+
+        result: Trigger.Response = future.result()
+
+        if not result.success:
+            self._node.get_logger().error(
+                f"MoveIt Servo could not be disabled. ({result.message})"
+            )
+
+        self.__is_enabled = not result.success
 
     @property
     def is_enabled(self) -> bool:
