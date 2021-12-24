@@ -77,7 +77,7 @@ The following directory structure is utilised for this package.
 ├── examples/              # [dir] Examples demonstrating the use of `pymoveit2`
 ├── pymoveit2/             # [dir] ROS 2 launch scripts
     ├── robots/            # [dir] Presets for robots (data that can be extracted from URDF/SRDF)
-    ├── gripper_command.py # Python interface for 2 Gripper that is controlled by GripperCommand
+    ├── gripper_command.py # Python interface for Gripper that is controlled by GripperCommand
     ├── moveit2_gripper.py # Python interface for MoveIt 2 Gripper that is controlled by JointTrajectoryController
     ├── moveit2_servo.py   # Python interface for MoveIt 2 Servo that enables real-time control in Cartesian Space
     └── moveit2.py         # Python interface for MoveIt 2 that enables planning and execution of trajectories

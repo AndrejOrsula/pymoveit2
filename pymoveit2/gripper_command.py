@@ -15,7 +15,7 @@ from rclpy.qos import (
 
 class GripperCommand:
     """
-    Python interface for 2 Gripper that is controlled by GripperCommand.
+    Python interface for Gripper that is controlled by GripperCommand.
     """
 
     def __init__(
