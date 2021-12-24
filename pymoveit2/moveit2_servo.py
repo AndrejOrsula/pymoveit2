@@ -82,6 +82,17 @@ class MoveIt2Servo:
         if enable_at_init:
             self.enable()
 
+    def __del__(self):
+        """
+        Try to stop MoveIt 2 Servo during destruction.
+        """
+
+        try:
+            if self.is_enabled:
+                self.__stop_service.call_async(self.__trigger_req)
+        except:
+            pass
+
     def __call__(
         self,
         linear: Tuple[float, float, float] = (0.0, 0.0, 0.0),
