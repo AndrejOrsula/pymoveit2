@@ -49,6 +49,7 @@ class MoveIt2:
         execute_via_moveit: bool = False,
         ignore_new_calls_while_executing: bool = False,
         callback_group: Optional[CallbackGroup] = None,
+        follow_joint_trajectory_action_name: str = "joint_trajectory_controller/follow_joint_trajectory",
     ):
         """
         Construct an instance of `MoveIt2` interface.
@@ -63,6 +64,7 @@ class MoveIt2:
           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
                                                  while previous is still being executed
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
+          - `follow_joint_trajectory_action_name` - Name of the action server for the controller
         """
 
         self._node = node
@@ -139,7 +141,7 @@ class MoveIt2:
         self.__follow_joint_trajectory_action_client = ActionClient(
             node=self._node,
             action_type=FollowJointTrajectory,
-            action_name="joint_trajectory_controller/follow_joint_trajectory",
+            action_name=follow_joint_trajectory_action_name,
             goal_service_qos_profile=QoSProfile(
                 durability=QoSDurabilityPolicy.VOLATILE,
                 reliability=QoSReliabilityPolicy.RELIABLE,
@@ -706,7 +708,7 @@ class MoveIt2:
         self.__compute_ik_client.wait_for_service()
         return self.__compute_ik_client.call(self.__compute_ik_req)
 
-    def __joint_state_callback(self, msg):
+    def __joint_state_callback(self, msg: JointState):
 
         self.__joint_state_mutex.acquire()
         self.__joint_state = msg
@@ -942,6 +944,11 @@ class MoveIt2:
         # self.__compute_ik_req.ik_request.pose_stamped_vector = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.sec = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.nanosec = "Ignored"
+
+    @property
+    def joint_names(self) -> List[str]:
+
+        return self.__joints_names
 
     @property
     def joint_state(self) -> JointState:
