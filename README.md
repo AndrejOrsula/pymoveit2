@@ -41,3 +41,46 @@ source ${PYMOVEIT2_WS_DIR}/install/local_setup.bash
 ```
 
 This enables importing of `pymoveit2` module from external workspaces.
+
+## Examples
+
+To demostrate `pymoveit2` usage, [examples](./examples) directory contains scripts that demonstrate the basic functionality.
+
+Prior to running the examples, configure an environment for control of a robot with MoveIt 2, e.g. one of the following launch scripts from [panda_ign_moveit2](https://github.com/AndrejOrsula/panda_ign_moveit2).
+
+```bash
+# RViz (fake) ROS 2 control
+ros2 launch panda_moveit_config ex_fake_control.launch.py
+# Ignition Gazebo (simulated) ROS 2 control
+ros2 launch panda_moveit_config ex_ign_control.launch.py
+```
+
+After that, the individual scripts can be run.
+
+```bash
+# Move to joint configuration
+ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]"
+# Move to Cartesian pose
+ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]"
+# Repeatadly toggle the gripper (or use "open"/"close" actions)
+ros2 run pymoveit2 ex_gripper.py --ros-args -p action:="toggle"
+# Example of using MoveIt 2 Servo to move the end-effector in a circular motion
+ros2 run pymoveit2 ex_servo.py
+```
+
+## Directory Structure
+
+The following directory structure is utilised for this package.
+
+```bash
+.
+├── examples/              # [dir] Examples demonstrating the use of `pymoveit2`
+├── pymoveit2/             # [dir] ROS 2 launch scripts
+    ├── robots/            # [dir] Presets for robots (data that can be extracted from URDF/SRDF)
+    ├── gripper_command.py # Python interface for 2 Gripper that is controlled by GripperCommand
+    ├── moveit2_gripper.py # Python interface for MoveIt 2 Gripper that is controlled by JointTrajectoryController
+    ├── moveit2_servo.py   # Python interface for MoveIt 2 Servo that enables real-time control in Cartesian Space
+    └── moveit2.py         # Python interface for MoveIt 2 that enables planning and execution of trajectories
+├── CMakeLists.txt         # Colcon-enabled CMake recipe
+└── package.xml            # ROS 2 package metadata
+```
