@@ -29,7 +29,6 @@ def main(args=None):
         node=node,
         frame_id=panda.base_link_name(),
         callback_group=callback_group,
-        linear_speed=0.1,
     )
 
     def servo_circular_motion():
