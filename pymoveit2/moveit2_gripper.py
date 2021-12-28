@@ -115,7 +115,7 @@ class MoveIt2Gripper(MoveIt2):
         This is useful for simulated robots that allow instantaneous reset of joints.
         """
 
-        self.reset_controller(joint_state=self.__open_reset_dummy_trajectory_goal)
+        self.reset_controller(joint_state=self.__open_gripper_joint_positions)
 
     def reset_closed(self):
         """
@@ -123,7 +123,7 @@ class MoveIt2Gripper(MoveIt2):
         This is useful for simulated robots that allow instantaneous reset of joints.
         """
 
-        self.reset_controller(joint_state=self.__closed_reset_dummy_trajectory_goal)
+        self.reset_controller(joint_state=self.__closed_gripper_joint_positions)
 
     def __del_redundant_attributes(self):
 
