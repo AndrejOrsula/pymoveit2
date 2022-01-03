@@ -8,10 +8,11 @@ Example of using MoveIt 2 Servo to perform a circular motion.
 from math import cos, sin
 
 import rclpy
-from pymoveit2 import MoveIt2Servo
-from pymoveit2.robots import panda
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
+
+from pymoveit2 import MoveIt2Servo
+from pymoveit2.robots import panda
 
 
 def main(args=None):
