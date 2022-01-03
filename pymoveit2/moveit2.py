@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Union
 
 from action_msgs.msg import GoalStatus
 from control_msgs.action import FollowJointTrajectory
-from geometry_msgs.msg import Point, Pose, Quaternion
+from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
     Constraints,
@@ -625,10 +625,10 @@ class MoveIt2:
 
     def compute_fk(
         self,
-        fk_link_names: Optional[List[str]] = None,
         joint_state: Optional[Union[JointState, List[float]]] = None,
+        fk_link_names: Optional[List[str]] = None,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
-    ) -> Optional[GetPositionFK.Response]:
+    ) -> Optional[PoseStamped]:
         """
         Compute forward kinematics for all `fk_link_names` in a given `joint_state`.
           - `fk_link_names` defaults to end-effector
@@ -665,17 +665,26 @@ class MoveIt2:
             )
             return None
 
-        return self.__compute_fk_client.call(self.__compute_fk_req)
+        res = self.__compute_fk_client.call(self.__compute_fk_req)
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.pose_stamped
+        else:
+            self._node.get_logger().warn(
+                f"FK computation failed! Error code: {res.error_code.val}."
+            )
+            return None
 
     def compute_ik(
         self,
-        pose: Pose,
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         constraints: Optional[Constraints] = None,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
-    ) -> Optional[GetPositionIK.Response]:
+    ) -> Optional[JointState]:
         """
-        Compute inverse kinematics for the given `pose`. To indicate beginning of the earch space,
+        Compute inverse kinematics for the given pose. To indicate beginning of the search space,
         `start_joint_state` can be specified. Furthermore, `constraints` can be imposed on the
         computed IK.
           - `start_joint_state` defaults to current joint state.
@@ -685,7 +694,33 @@ class MoveIt2:
         if not hasattr(self, "__compute_ik_client"):
             self.__init_compute_ik()
 
-        self.__compute_ik_req.ik_request.pose_stamped.pose = pose
+        if isinstance(position, Point):
+            self.__compute_ik_req.ik_request.pose_stamped.pose.position = position
+        else:
+            self.__compute_ik_req.ik_request.pose_stamped.pose.position.x = float(
+                position[0]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.position.y = float(
+                position[1]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.position.z = float(
+                position[2]
+            )
+        if isinstance(quat_xyzw, Quaternion):
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation = quat_xyzw
+        else:
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.x = float(
+                quat_xyzw[0]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.y = float(
+                quat_xyzw[1]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.z = float(
+                quat_xyzw[2]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.w = float(
+                quat_xyzw[3]
+            )
 
         if start_joint_state is None:
             self.__compute_ik_req.ik_request.robot_state.joint_state = self.joint_state
@@ -716,7 +751,15 @@ class MoveIt2:
             )
             return None
 
-        return self.__compute_ik_client.call(self.__compute_ik_req)
+        res = self.__compute_ik_client.call(self.__compute_ik_req)
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.solution.joint_state
+        else:
+            self._node.get_logger().warn(
+                f"IK computation failed! Error code: {res.error_code.val}."
+            )
+            return None
 
     def __joint_state_callback(self, msg: JointState):
 
