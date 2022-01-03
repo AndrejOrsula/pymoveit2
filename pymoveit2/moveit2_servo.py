@@ -124,7 +124,7 @@ class MoveIt2Servo:
         twist_msg.twist.angular.z *= angular[2]
         self.__twist_pub.publish(twist_msg)
 
-    def enable(self, wait_for_server_timeout_sec: float = 1.0):
+    def enable(self, wait_for_server_timeout_sec: Optional[float] = 1.0):
         """
         Enable MoveIt 2 Servo server via async service call.
         """
@@ -138,7 +138,7 @@ class MoveIt2Servo:
         start_service_future = self.__start_service.call_async(self.__trigger_req)
         start_service_future.add_done_callback(self.__enable_done_callback)
 
-    def disable(self, wait_for_server_timeout_sec: float = 1.0):
+    def disable(self, wait_for_server_timeout_sec: Optional[float] = 1.0):
         """
         Disable MoveIt 2 Servo server via async service call.
         """

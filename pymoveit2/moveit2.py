@@ -627,7 +627,7 @@ class MoveIt2:
         self,
         fk_link_names: Optional[List[str]] = None,
         joint_state: Optional[Union[JointState, List[float]]] = None,
-        wait_for_server_timeout_sec: float = 1.0,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
     ) -> Optional[GetPositionFK.Response]:
         """
         Compute forward kinematics for all `fk_link_names` in a given `joint_state`.
@@ -672,7 +672,7 @@ class MoveIt2:
         pose: Pose,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         constraints: Optional[Constraints] = None,
-        wait_for_server_timeout_sec: float = 1.0,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
     ) -> Optional[GetPositionIK.Response]:
         """
         Compute inverse kinematics for the given `pose`. To indicate beginning of the earch space,
@@ -725,7 +725,7 @@ class MoveIt2:
         self.__joint_state_mutex.release()
 
     def __send_goal_move_action_plan_only(
-        self, wait_for_server_timeout_sec: float = 1.0
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
 
         # Set action goal to only do planning without execution
@@ -757,7 +757,7 @@ class MoveIt2:
             return None
 
     def __plan_kinematic_path(
-        self, wait_for_server_timeout_sec: float = 1.0
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
 
         # Re-use request from move action goal
@@ -797,7 +797,9 @@ class MoveIt2:
             )
             return None
 
-    def __send_goal_async_move_action(self, wait_for_server_timeout_sec: float = 1.0):
+    def __send_goal_async_move_action(
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0
+    ):
 
         stamp = self._node.get_clock().now().to_msg()
         self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
@@ -848,7 +850,9 @@ class MoveIt2:
         self.__is_executing = False
 
     def __send_goal_async_follow_joint_trajectory(
-        self, goal: FollowJointTrajectory, wait_for_server_timeout_sec: float = 1.0
+        self,
+        goal: FollowJointTrajectory,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
     ):
 
         if not self.__follow_joint_trajectory_action_client.wait_for_server(

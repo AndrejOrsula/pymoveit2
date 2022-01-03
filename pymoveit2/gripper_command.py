@@ -165,7 +165,9 @@ class GripperCommand:
         self.__is_open = not self.__is_open
 
     def __send_goal_async_gripper_command(
-        self, goal: GripperCommand.Goal, wait_for_server_timeout_sec: float = 1.0
+        self,
+        goal: GripperCommand.Goal,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
     ):
 
         if not self.__gripper_command_action_client.wait_for_server(
