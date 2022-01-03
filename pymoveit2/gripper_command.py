@@ -164,9 +164,15 @@ class GripperCommand:
 
         self.__is_open = not self.__is_open
 
-    def __send_goal_async_gripper_command(self, goal: GripperCommand.Goal):
+    def __send_goal_async_gripper_command(
+        self,
+        goal: GripperCommand.Goal,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
+    ):
 
-        if not self.__gripper_command_action_client.wait_for_server(timeout_sec=1.0):
+        if not self.__gripper_command_action_client.wait_for_server(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
             self._node.get_logger().warn(
                 f"Action server {self.__gripper_command_action_client._action_name} is not yet ready. Better luck next time!"
             )

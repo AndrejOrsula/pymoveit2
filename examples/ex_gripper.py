@@ -9,10 +9,11 @@ Example of interacting with the gripper.
 from threading import Thread
 
 import rclpy
-from pymoveit2 import MoveIt2Gripper
-from pymoveit2.robots import panda
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
+
+from pymoveit2 import MoveIt2Gripper
+from pymoveit2.robots import panda
 
 
 def main(args=None):

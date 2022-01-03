@@ -627,7 +627,8 @@ class MoveIt2:
         self,
         fk_link_names: Optional[List[str]] = None,
         joint_state: Optional[Union[JointState, List[float]]] = None,
-    ) -> GetPositionFK.Response:
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
+    ) -> Optional[GetPositionFK.Response]:
         """
         Compute forward kinematics for all `fk_link_names` in a given `joint_state`.
           - `fk_link_names` defaults to end-effector
@@ -656,7 +657,14 @@ class MoveIt2:
         stamp = self._node.get_clock().now().to_msg()
         self.__compute_fk_req.header.stamp = stamp
 
-        self.__compute_fk_client.wait_for_service()
+        if not self.__compute_fk_client.wait_for_service(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
+            self._node.get_logger().warn(
+                f"Service '{self.__compute_fk_client.srv_name}' is not yet available. Better luck next time!"
+            )
+            return None
+
         return self.__compute_fk_client.call(self.__compute_fk_req)
 
     def compute_ik(
@@ -664,7 +672,8 @@ class MoveIt2:
         pose: Pose,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         constraints: Optional[Constraints] = None,
-    ) -> GetPositionIK.Response:
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
+    ) -> Optional[GetPositionIK.Response]:
         """
         Compute inverse kinematics for the given `pose`. To indicate beginning of the earch space,
         `start_joint_state` can be specified. Furthermore, `constraints` can be imposed on the
@@ -699,7 +708,14 @@ class MoveIt2:
         stamp = self._node.get_clock().now().to_msg()
         self.__compute_ik_req.ik_request.pose_stamped.header.stamp = stamp
 
-        self.__compute_ik_client.wait_for_service()
+        if not self.__compute_ik_client.wait_for_service(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
+            self._node.get_logger().warn(
+                f"Service '{self.__compute_ik_client.srv_name}' is not yet available. Better luck next time!"
+            )
+            return None
+
         return self.__compute_ik_client.call(self.__compute_ik_req)
 
     def __joint_state_callback(self, msg: JointState):
@@ -708,7 +724,9 @@ class MoveIt2:
         self.__joint_state = msg
         self.__joint_state_mutex.release()
 
-    def __send_goal_move_action_plan_only(self) -> Optional[JointTrajectory]:
+    def __send_goal_move_action_plan_only(
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0
+    ) -> Optional[JointTrajectory]:
 
         # Set action goal to only do planning without execution
         original_plan_only = self.__move_action_goal.planning_options.plan_only
@@ -717,7 +735,13 @@ class MoveIt2:
         stamp = self._node.get_clock().now().to_msg()
         self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
 
-        self.__move_action_client.wait_for_server()
+        if not self.__move_action_client.wait_for_server(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
+            self._node.get_logger().warn(
+                f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
+            )
+            return None
 
         move_action_result = self.__move_action_client.send_goal(
             goal=self.__move_action_goal,
@@ -732,7 +756,9 @@ class MoveIt2:
         else:
             return None
 
-    def __plan_kinematic_path(self) -> Optional[JointTrajectory]:
+    def __plan_kinematic_path(
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0
+    ) -> Optional[JointTrajectory]:
 
         # Re-use request from move action goal
         self.__kinematic_path_request.motion_plan_request = (
@@ -751,7 +777,9 @@ class MoveIt2:
             for orientation_constraint in contraints.orientation_constraints:
                 orientation_constraint.header.stamp = stamp
 
-        if not self.__plan_kinematic_path_service.wait_for_service(timeout_sec=1.0):
+        if not self.__plan_kinematic_path_service.wait_for_service(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
             self._node.get_logger().warn(
                 f"Service '{self.__plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
             )
@@ -769,12 +797,21 @@ class MoveIt2:
             )
             return None
 
-    def __send_goal_async_move_action(self):
+    def __send_goal_async_move_action(
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0
+    ):
 
         stamp = self._node.get_clock().now().to_msg()
         self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
 
-        self.__move_action_client.wait_for_server()
+        if not self.__move_action_client.wait_for_server(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
+            self._node.get_logger().warn(
+                f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
+            )
+            self.__is_motion_requested = False
+            return
 
         self.__send_goal_future_move_action = self.__move_action_client.send_goal_async(
             goal=self.__move_action_goal,
@@ -812,9 +849,20 @@ class MoveIt2:
 
         self.__is_executing = False
 
-    def __send_goal_async_follow_joint_trajectory(self, goal: FollowJointTrajectory):
+    def __send_goal_async_follow_joint_trajectory(
+        self,
+        goal: FollowJointTrajectory,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
+    ):
 
-        self.__follow_joint_trajectory_action_client.wait_for_server()
+        if not self.__follow_joint_trajectory_action_client.wait_for_server(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
+            self._node.get_logger().warn(
+                f"Action server '{self.__follow_joint_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
+            )
+            self.__is_motion_requested = False
+            return None
 
         action_result = self.__follow_joint_trajectory_action_client.send_goal_async(
             goal=goal,

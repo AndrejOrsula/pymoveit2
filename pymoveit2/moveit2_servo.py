@@ -108,11 +108,22 @@ class MoveIt2Servo:
         self,
         linear: Tuple[float, float, float] = (0.0, 0.0, 0.0),
         angular: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        enable_if_disabled: bool = True,
     ):
         """
         Apply linear and angular twist using MoveIt 2 Servo.
         Input is scaled by `linear_speed` and `angular_speed`, respectively.
         """
+
+        if not self.is_enabled:
+            self._node.get_logger().warn(
+                "Command failed because MoveIt Servo is not yet enabled."
+            )
+            if enable_if_disabled:
+                self._node.get_logger().warn(
+                    f"Calling '{self.__start_service.srv_name}' service to enable MoveIt Servo..."
+                )
+                self.enable()
 
         twist_msg = deepcopy(self.__twist_msg)
         twist_msg.header.stamp = self._node.get_clock().now().to_msg()
@@ -124,24 +135,28 @@ class MoveIt2Servo:
         twist_msg.twist.angular.z *= angular[2]
         self.__twist_pub.publish(twist_msg)
 
-    def enable(self):
+    def enable(self, wait_for_server_timeout_sec: Optional[float] = 1.0):
         """
         Enable MoveIt 2 Servo server via async service call.
         """
 
-        while not self.__start_service.wait_for_service(timeout_sec=1.0):
+        while not self.__start_service.wait_for_service(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
             self._node.get_logger().warn(
                 f"Service '{self.__start_service.srv_name}' is not yet available..."
             )
         start_service_future = self.__start_service.call_async(self.__trigger_req)
         start_service_future.add_done_callback(self.__enable_done_callback)
 
-    def disable(self):
+    def disable(self, wait_for_server_timeout_sec: Optional[float] = 1.0):
         """
         Disable MoveIt 2 Servo server via async service call.
         """
 
-        while not self.__stop_service.wait_for_service(timeout_sec=1.0):
+        while not self.__stop_service.wait_for_service(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
             self._node.get_logger().warn(
                 f"Service '{self.__stop_service.srv_name}' is not yet available..."
             )
