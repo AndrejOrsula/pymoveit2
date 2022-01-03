@@ -108,11 +108,22 @@ class MoveIt2Servo:
         self,
         linear: Tuple[float, float, float] = (0.0, 0.0, 0.0),
         angular: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        enable_if_disabled: bool = True,
     ):
         """
         Apply linear and angular twist using MoveIt 2 Servo.
         Input is scaled by `linear_speed` and `angular_speed`, respectively.
         """
+
+        if not self.is_enabled:
+            self._node.get_logger().warn(
+                "Command failed because MoveIt Servo is not yet enabled."
+            )
+            if enable_if_disabled:
+                self._node.get_logger().warn(
+                    f"Calling '{self.__start_service.srv_name}' service to enable MoveIt Servo..."
+                )
+                self.enable()
 
         twist_msg = deepcopy(self.__twist_msg)
         twist_msg.header.stamp = self._node.get_clock().now().to_msg()
