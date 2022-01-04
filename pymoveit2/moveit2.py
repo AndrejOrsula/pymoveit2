@@ -173,6 +173,7 @@ class MoveIt2:
         self.__joint_state = init_joint_state(
             joint_names=joint_names,
         )
+        self.__new_joint_state_available = False
         self.__move_action_goal = self.__init_move_action_goal(
             frame_id=base_link_name,
             group_name=group_name,
@@ -196,6 +197,9 @@ class MoveIt2:
         self.__is_motion_requested = False
         self.__is_executing = False
         self.__wait_until_executed_rate = self._node.create_rate(1000.0)
+
+        # Event that enables waiting until async future is done
+        self.__future_done_event = threading.Event()
 
     def move_to_pose(
         self,
@@ -417,7 +421,9 @@ class MoveIt2:
         while self.__is_motion_requested or self.__is_executing:
             self.__wait_until_executed_rate.sleep()
 
-    def reset_controller(self, joint_state: Union[JointState, List[float]]):
+    def reset_controller(
+        self, joint_state: Union[JointState, List[float]], sync: bool = True
+    ):
         """
         Reset controller to a given `joint_state` by sending a dummy joint trajectory.
         This is useful for simulated robots that allow instantaneous reset of joints.
@@ -434,7 +440,8 @@ class MoveIt2:
         )
 
         self.__send_goal_async_follow_joint_trajectory(
-            goal=follow_joint_trajectory_goal
+            goal=follow_joint_trajectory_goal,
+            wait_until_response=sync,
         )
 
     def set_pose_goal(
@@ -761,10 +768,20 @@ class MoveIt2:
             )
             return None
 
+    def reset_new_joint_state_checker(self):
+        """
+        Reset checker of the new joint state.
+        """
+
+        self.__joint_state_mutex.acquire()
+        self.__new_joint_state_available = False
+        self.__joint_state_mutex.release()
+
     def __joint_state_callback(self, msg: JointState):
 
         self.__joint_state_mutex.acquire()
         self.__joint_state = msg
+        self.__new_joint_state_available = True
         self.__joint_state_mutex.release()
 
     def __send_goal_move_action_plan_only(
@@ -896,6 +913,7 @@ class MoveIt2:
         self,
         goal: FollowJointTrajectory,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
+        wait_until_response: bool = False,
     ):
 
         if not self.__follow_joint_trajectory_action_client.wait_for_server(
@@ -916,6 +934,17 @@ class MoveIt2:
             self.__response_callback_follow_joint_trajectory
         )
 
+        if wait_until_response:
+            self.__future_done_event.clear()
+            action_result.add_done_callback(
+                self.__response_callback_with_event_set_follow_joint_trajectory
+            )
+            self.__future_done_event.wait(timeout=wait_for_server_timeout_sec)
+        else:
+            action_result.add_done_callback(
+                self.__response_callback_follow_joint_trajectory
+            )
+
     def __response_callback_follow_joint_trajectory(self, response):
 
         goal_handle = response.result()
@@ -935,6 +964,11 @@ class MoveIt2:
         self.__get_result_future_follow_joint_trajectory.add_done_callback(
             self.__result_callback_follow_joint_trajectory
         )
+
+    def __response_callback_with_event_set_follow_joint_trajectory(self, response):
+
+        self.__response_callback_follow_joint_trajectory(response)
+        self.__future_done_event.set()
 
     def __result_callback_follow_joint_trajectory(self, res):
 
@@ -1044,6 +1078,11 @@ class MoveIt2:
         return joint_state
 
     @property
+    def new_joint_state_available(self):
+
+        return self.__new_joint_state_available
+
+    @property
     def max_velocity(self) -> float:
 
         return self.__move_action_goal.request.max_velocity_scaling_factor
@@ -1147,6 +1186,8 @@ def init_dummy_joint_trajectory_from_state(joint_state: JointState) -> JointTraj
     point.velocities = joint_state.velocity
     point.accelerations = [0.0] * len(joint_trajectory.joint_names)
     point.effort = joint_state.effort
+    point.time_from_start.sec = 0
+    point.time_from_start.nanosec = 0
     joint_trajectory.points.append(point)
 
     return joint_trajectory
