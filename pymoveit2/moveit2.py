@@ -777,6 +777,15 @@ class MoveIt2:
         self.__new_joint_state_available = False
         self.__joint_state_mutex.release()
 
+    def force_reset_executing_state(self):
+        """
+        Force reset of internal states that block execution while `ignore_new_calls_while_executing` is being
+        used. This function is applicable only in a very few edge-cases, so it should almost never be used.
+        """
+
+        self.__is_motion_requested = False
+        self.__is_executing = False
+
     def __joint_state_callback(self, msg: JointState):
 
         self.__joint_state_mutex.acquire()
