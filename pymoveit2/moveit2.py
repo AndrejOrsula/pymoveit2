@@ -186,7 +186,7 @@ class MoveIt2:
         self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
 
         # Store additional variables for later use
-        self.__joints_names = joint_names
+        self.__joint_names = joint_names
         self.__base_link_name = base_link_name
         self.__end_effector_name = end_effector_name
         self.__group_name = group_name
@@ -360,7 +360,7 @@ class MoveIt2:
             else:
                 self.__move_action_goal.request.start_state.joint_state = (
                     init_joint_state(
-                        joint_names=self.__joints_names,
+                        joint_names=self.__joint_names,
                         joint_positions=start_joint_state,
                     )
                 )
@@ -427,7 +427,7 @@ class MoveIt2:
 
         if not isinstance(joint_state, JointState):
             joint_state = init_joint_state(
-                joint_names=self.__joints_names,
+                joint_names=self.__joint_names,
                 joint_positions=joint_state,
             )
         joint_trajectory = init_dummy_joint_trajectory_from_state(joint_state)
@@ -585,7 +585,7 @@ class MoveIt2:
 
         # Use default joint names if not specified
         if joint_names == None:
-            joint_names = self.__joints_names
+            joint_names = self.__joint_names
 
         for i in range(len(joint_positions)):
             # Create a new constraint for each joint
@@ -653,7 +653,7 @@ class MoveIt2:
                 self.__compute_fk_req.robot_state.joint_state = joint_state
             else:
                 self.__compute_fk_req.robot_state.joint_state = init_joint_state(
-                    joint_names=self.__joints_names,
+                    joint_names=self.__joint_names,
                     joint_positions=joint_state,
                 )
 
@@ -735,7 +735,7 @@ class MoveIt2:
             else:
                 self.__compute_ik_req.ik_request.robot_state.joint_state = (
                     init_joint_state(
-                        joint_names=self.__joints_names,
+                        joint_names=self.__joint_names,
                         joint_positions=start_joint_state,
                     )
                 )
@@ -1072,7 +1072,7 @@ class MoveIt2:
     @property
     def joint_names(self) -> List[str]:
 
-        return self.__joints_names
+        return self.__joint_names
 
     @property
     def joint_state(self) -> Optional[JointState]:
