@@ -235,7 +235,10 @@ class MoveIt2:
                 weight_orientation=weight_orientation,
             )
             # Define starting state as the current state
-            self.__move_action_goal.request.start_state.joint_state = self.joint_state
+            if self.joint_state is not None:
+                self.__move_action_goal.request.start_state.joint_state = (
+                    self.joint_state
+                )
             # Send to goal to the server (async) - both planning and execution
             self._send_goal_async_move_action()
             # Clear all previous goal constrains
@@ -283,7 +286,10 @@ class MoveIt2:
                 weight=weight,
             )
             # Define starting state as the current state
-            self.__move_action_goal.request.start_state.joint_state = self.joint_state
+            if self.joint_state is not None:
+                self.__move_action_goal.request.start_state.joint_state = (
+                    self.joint_state
+                )
             # Send to goal to the server (async) - both planning and execution
             self._send_goal_async_move_action()
             # Clear all previous goal constrains
@@ -350,9 +356,7 @@ class MoveIt2:
             )
 
         # Define starting state for the plan (default to the current state)
-        if start_joint_state is None:
-            self.__move_action_goal.request.start_state.joint_state = self.joint_state
-        else:
+        if start_joint_state is not None:
             if isinstance(start_joint_state, JointState):
                 self.__move_action_goal.request.start_state.joint_state = (
                     start_joint_state
@@ -364,6 +368,8 @@ class MoveIt2:
                         joint_positions=start_joint_state,
                     )
                 )
+        elif self.joint_state is not None:
+            self.__move_action_goal.request.start_state.joint_state = self.joint_state
 
         # Plan trajectory by sending a goal (blocking)
         if self.__execute_via_moveit:
@@ -646,9 +652,7 @@ class MoveIt2:
         else:
             self.__compute_fk_req.fk_link_names = fk_link_names
 
-        if joint_state is None:
-            self.__compute_fk_req.robot_state.joint_state = self.joint_state
-        else:
+        if joint_state is not None:
             if isinstance(joint_state, JointState):
                 self.__compute_fk_req.robot_state.joint_state = joint_state
             else:
@@ -656,6 +660,8 @@ class MoveIt2:
                     joint_names=self.__joint_names,
                     joint_positions=joint_state,
                 )
+        elif self.joint_state is not None:
+            self.__compute_fk_req.robot_state.joint_state = self.joint_state
 
         stamp = self._node.get_clock().now().to_msg()
         self.__compute_fk_req.header.stamp = stamp
@@ -725,9 +731,7 @@ class MoveIt2:
                 quat_xyzw[3]
             )
 
-        if start_joint_state is None:
-            self.__compute_ik_req.ik_request.robot_state.joint_state = self.joint_state
-        else:
+        if start_joint_state is not None:
             if isinstance(start_joint_state, JointState):
                 self.__compute_ik_req.ik_request.robot_state.joint_state = (
                     start_joint_state
@@ -739,6 +743,8 @@ class MoveIt2:
                         joint_positions=start_joint_state,
                     )
                 )
+        elif self.joint_state is not None:
+            self.__compute_ik_req.ik_request.robot_state.joint_state = self.joint_state
 
         if constraints is not None:
             self.__compute_ik_req.ik_request.constraints = constraints
