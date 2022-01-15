@@ -102,6 +102,9 @@ class MoveIt2Gripper(MoveIt2):
             * abs(open_gripper_joint_positions[i] - closed_gripper_joint_positions[i])
             for i in range(len(gripper_joint_names))
         ]
+        # Indices of gripper joint within the joint state message topic.
+        # It is assumed that the order of these does not change during execution.
+        self.__gripper_joint_indices: Optional[List[int]] = None
 
     def __call__(self):
         """
@@ -201,16 +204,28 @@ class MoveIt2Gripper(MoveIt2):
         Gripper is considered to be open if all of the joints are at their open position.
         """
 
-        for i in range(len(self.joint_names)):
+        joint_state = self.joint_state
 
+        # Assume the gripper is open if there are no joint state readings yet
+        if joint_state is None:
+            return True
+
+        # For the sake of performance, find the indices of joints only once.
+        # This is especially useful for robots with many joints.
+        if self.__gripper_joint_indices is None:
+            self.__gripper_joint_indices: List[int] = []
+            for joint_name in self.joint_names:
+                self.__gripper_joint_indices.append(joint_state.name.index(joint_name))
+
+        for local_joint_index, joint_state_index in enumerate(
+            self.__gripper_joint_indices
+        ):
             if (
                 abs(
-                    self.joint_state.position[
-                        self.joint_state.name.index(self.joint_names[i])
-                    ]
-                    - self.__open_gripper_joint_positions[i]
+                    joint_state.position[joint_state_index]
+                    - self.__open_gripper_joint_positions[local_joint_index]
                 )
-                > self.__open_tolerance[i]
+                > self.__open_tolerance[local_joint_index]
             ):
                 return False
 
