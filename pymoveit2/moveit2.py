@@ -170,9 +170,7 @@ class MoveIt2:
         )
 
         self.__joint_state_mutex = threading.Lock()
-        self.__joint_state = init_joint_state(
-            joint_names=joint_names,
-        )
+        self.__joint_state = None
         self.__new_joint_state_available = False
         self.__move_action_goal = self.__init_move_action_goal(
             frame_id=base_link_name,
@@ -1077,7 +1075,7 @@ class MoveIt2:
         return self.__joints_names
 
     @property
-    def joint_state(self) -> JointState:
+    def joint_state(self) -> Optional[JointState]:
 
         self.__joint_state_mutex.acquire()
         joint_state = self.__joint_state
