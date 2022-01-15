@@ -118,7 +118,7 @@ class MoveIt2:
             )
         else:
             # Otherwise create a separate service client for planning
-            self.__plan_kinematic_path_service = self._node.create_client(
+            self._plan_kinematic_path_service = self._node.create_client(
                 srv_type=GetMotionPlan,
                 srv_name="plan_kinematic_path",
                 qos_profile=QoSProfile(
@@ -239,7 +239,7 @@ class MoveIt2:
             # Define starting state as the current state
             self.__move_action_goal.request.start_state.joint_state = self.joint_state
             # Send to goal to the server (async) - both planning and execution
-            self.__send_goal_async_move_action()
+            self._send_goal_async_move_action()
             # Clear all previous goal constrains
             self.clear_goal_constraints()
 
@@ -287,7 +287,7 @@ class MoveIt2:
             # Define starting state as the current state
             self.__move_action_goal.request.start_state.joint_state = self.joint_state
             # Send to goal to the server (async) - both planning and execution
-            self.__send_goal_async_move_action()
+            self._send_goal_async_move_action()
             # Clear all previous goal constrains
             self.clear_goal_constraints()
 
@@ -370,10 +370,10 @@ class MoveIt2:
         # Plan trajectory by sending a goal (blocking)
         if self.__execute_via_moveit:
             # Use action client
-            joint_trajectory = self.__send_goal_move_action_plan_only()
+            joint_trajectory = self._send_goal_move_action_plan_only()
         else:
             # Use service
-            joint_trajectory = self.__plan_kinematic_path()
+            joint_trajectory = self._plan_kinematic_path()
 
         # Clear all previous goal constrains
         self.clear_goal_constraints()
@@ -403,9 +403,7 @@ class MoveIt2:
             self.__is_motion_requested = False
             return
 
-        self.__send_goal_async_follow_joint_trajectory(
-            goal=follow_joint_trajectory_goal
-        )
+        self._send_goal_async_follow_joint_trajectory(goal=follow_joint_trajectory_goal)
 
     def wait_until_executed(self):
         """
@@ -439,7 +437,7 @@ class MoveIt2:
             joint_trajectory=joint_trajectory
         )
 
-        self.__send_goal_async_follow_joint_trajectory(
+        self._send_goal_async_follow_joint_trajectory(
             goal=follow_joint_trajectory_goal,
             wait_until_response=sync,
         )
@@ -793,7 +791,7 @@ class MoveIt2:
         self.__new_joint_state_available = True
         self.__joint_state_mutex.release()
 
-    def __send_goal_move_action_plan_only(
+    def _send_goal_move_action_plan_only(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
 
@@ -825,7 +823,7 @@ class MoveIt2:
         else:
             return None
 
-    def __plan_kinematic_path(
+    def _plan_kinematic_path(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
 
@@ -846,15 +844,15 @@ class MoveIt2:
             for orientation_constraint in contraints.orientation_constraints:
                 orientation_constraint.header.stamp = stamp
 
-        if not self.__plan_kinematic_path_service.wait_for_service(
+        if not self._plan_kinematic_path_service.wait_for_service(
             timeout_sec=wait_for_server_timeout_sec
         ):
             self._node.get_logger().warn(
-                f"Service '{self.__plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
+                f"Service '{self._plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
 
-        res = self.__plan_kinematic_path_service.call(
+        res = self._plan_kinematic_path_service.call(
             self.__kinematic_path_request
         ).motion_plan_response
 
@@ -866,7 +864,7 @@ class MoveIt2:
             )
             return None
 
-    def __send_goal_async_move_action(
+    def _send_goal_async_move_action(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ):
 
@@ -918,7 +916,7 @@ class MoveIt2:
 
         self.__is_executing = False
 
-    def __send_goal_async_follow_joint_trajectory(
+    def _send_goal_async_follow_joint_trajectory(
         self,
         goal: FollowJointTrajectory,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
@@ -1185,7 +1183,9 @@ def init_follow_joint_trajectory_goal(
     return follow_joint_trajectory_goal
 
 
-def init_dummy_joint_trajectory_from_state(joint_state: JointState) -> JointTrajectory:
+def init_dummy_joint_trajectory_from_state(
+    joint_state: JointState, duration_sec: int = 0, duration_nanosec: int = 0
+) -> JointTrajectory:
 
     joint_trajectory = JointTrajectory()
     joint_trajectory.joint_names = joint_state.name
@@ -1195,8 +1195,8 @@ def init_dummy_joint_trajectory_from_state(joint_state: JointState) -> JointTraj
     point.velocities = joint_state.velocity
     point.accelerations = [0.0] * len(joint_trajectory.joint_names)
     point.effort = joint_state.effort
-    point.time_from_start.sec = 0
-    point.time_from_start.nanosec = 0
+    point.time_from_start.sec = duration_sec
+    point.time_from_start.nanosec = duration_nanosec
     joint_trajectory.points.append(point)
 
     return joint_trajectory

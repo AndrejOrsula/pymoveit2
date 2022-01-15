@@ -1,9 +1,10 @@
+import math
 from typing import List, Optional
 
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
 
-from .moveit2 import MoveIt2
+from .moveit2 import *
 
 
 class MoveIt2Gripper(MoveIt2):
@@ -21,6 +22,8 @@ class MoveIt2Gripper(MoveIt2):
         gripper_group_name: str = "gripper",
         execute_via_moveit: bool = False,
         ignore_new_calls_while_executing: bool = False,
+        skip_planning: bool = False,
+        skip_planning_fixed_motion_duration: float = 0.5,
         callback_group: Optional[CallbackGroup] = None,
         follow_joint_trajectory_action_name: str = "gripper_trajectory_controller/follow_joint_trajectory",
     ):
@@ -36,6 +39,11 @@ class MoveIt2Gripper(MoveIt2):
                                    together with a separate planning service client
           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
                                                  while previous is still being executed
+          - `skip_planning` - If enabled, planning is skipped and a single joint trajectory point is published
+                              for closing or opening. This enables much faster operation, but the collision
+                              checking is disabled and the motion smoothness will depend on the controller.
+          - `skip_planning_fixed_motion_duration` - Desired duration for the closing and opening motions when
+                                                    `skip_planning` mode is enabled.
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
           - `follow_joint_trajectory_action_name` - Name of the action server for the controller
         """
@@ -60,6 +68,33 @@ class MoveIt2Gripper(MoveIt2):
         )
         self.__open_gripper_joint_positions = open_gripper_joint_positions
         self.__closed_gripper_joint_positions = closed_gripper_joint_positions
+
+        self.__skip_planning = skip_planning
+        if skip_planning:
+            duration_sec = math.floor(skip_planning_fixed_motion_duration)
+            duration_nanosec = int(
+                10e8 * (skip_planning_fixed_motion_duration - duration_sec)
+            )
+            self.__open_dummy_trajectory_goal = init_follow_joint_trajectory_goal(
+                init_dummy_joint_trajectory_from_state(
+                    init_joint_state(
+                        joint_names=gripper_joint_names,
+                        joint_positions=open_gripper_joint_positions,
+                    ),
+                    duration_sec=duration_sec,
+                    duration_nanosec=duration_nanosec,
+                )
+            )
+            self.__close_dummy_trajectory_goal = init_follow_joint_trajectory_goal(
+                init_dummy_joint_trajectory_from_state(
+                    init_joint_state(
+                        joint_names=gripper_joint_names,
+                        joint_positions=closed_gripper_joint_positions,
+                    ),
+                    duration_sec=duration_sec,
+                    duration_nanosec=duration_nanosec,
+                )
+            )
 
         # Tolerance used for checking whether the gripper is open or closed
         self.__open_tolerance = [
@@ -94,7 +129,12 @@ class MoveIt2Gripper(MoveIt2):
         if skip_if_noop and self.is_open:
             return
 
-        self.move_to_configuration(joint_positions=self.__open_gripper_joint_positions)
+        if self.__skip_planning:
+            self.__open_without_planning()
+        else:
+            self.move_to_configuration(
+                joint_positions=self.__open_gripper_joint_positions
+            )
 
     def close(self, skip_if_noop: bool = True):
         """
@@ -105,9 +145,12 @@ class MoveIt2Gripper(MoveIt2):
         if skip_if_noop and self.is_closed:
             return
 
-        self.move_to_configuration(
-            joint_positions=self.__closed_gripper_joint_positions
-        )
+        if self.__skip_planning:
+            self.__close_without_planning()
+        else:
+            self.move_to_configuration(
+                joint_positions=self.__closed_gripper_joint_positions
+            )
 
     def reset_open(self, sync: bool = True):
         """
@@ -127,6 +170,20 @@ class MoveIt2Gripper(MoveIt2):
 
         self.reset_controller(
             joint_state=self.__closed_gripper_joint_positions, sync=sync
+        )
+
+    def __open_without_planning(self):
+
+        self._send_goal_async_follow_joint_trajectory(
+            goal=self.__open_dummy_trajectory_goal,
+            wait_until_response=False,
+        )
+
+    def __close_without_planning(self):
+
+        self._send_goal_async_follow_joint_trajectory(
+            goal=self.__close_dummy_trajectory_goal,
+            wait_until_response=False,
         )
 
     def __del_redundant_attributes(self):
