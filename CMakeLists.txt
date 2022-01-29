@@ -11,6 +11,7 @@ ament_python_install_package(pymoveit2)
 # Install examples
 set(EXAMPLES_DIR examples)
 install(PROGRAMS
+    ${EXAMPLES_DIR}/ex_gripper_command.py
     ${EXAMPLES_DIR}/ex_gripper.py
     ${EXAMPLES_DIR}/ex_joint_goal.py
     ${EXAMPLES_DIR}/ex_pose_goal.py
