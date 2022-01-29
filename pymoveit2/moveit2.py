@@ -790,6 +790,11 @@ class MoveIt2:
 
     def __joint_state_callback(self, msg: JointState):
 
+        # Update only if all relevant joints are included in the message
+        for joint_name in self.joint_names:
+            if not joint_name in msg.name:
+                return
+
         self.__joint_state_mutex.acquire()
         self.__joint_state = msg
         self.__new_joint_state_available = True
