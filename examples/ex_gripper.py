@@ -48,6 +48,9 @@ def main(args=None):
     executor_thread = Thread(target=executor.spin, daemon=True, args=())
     executor_thread.start()
 
+    # Sleep a while in order to get the first joint state
+    node.create_rate(10.0).sleep()
+
     # Get parameter
     action = node.get_parameter("action").get_parameter_value().string_value
 
