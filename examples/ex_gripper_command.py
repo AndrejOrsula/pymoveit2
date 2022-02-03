@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Example of interacting with the gripper.
-`ros2 run pymoveit2 ex_gripper.py --ros-args -p action:="toggle"`
-`ros2 run pymoveit2 ex_gripper.py --ros-args -p action:="open"`
-`ros2 run pymoveit2 ex_gripper.py --ros-args -p action:="close"`
+`ros2 run pymoveit2 ex_gripper_command.py --ros-args -p action:="toggle"`
+`ros2 run pymoveit2 ex_gripper_command.py --ros-args -p action:="open"`
+`ros2 run pymoveit2 ex_gripper_command.py --ros-args -p action:="close"`
 """
 
 from threading import Thread
@@ -12,7 +12,7 @@ import rclpy
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 
-from pymoveit2 import MoveIt2Gripper
+from pymoveit2 import GripperCommand
 from pymoveit2.robots import panda
 
 
@@ -21,7 +21,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     # Create node for this example
-    node = Node("ex_gripper")
+    node = Node("ex_gripper_command")
 
     # Declare parameter for joint positions
     node.declare_parameter(
@@ -33,13 +33,15 @@ def main(args=None):
     callback_group = ReentrantCallbackGroup()
 
     # Create MoveIt 2 gripper interface
-    moveit2_gripper = MoveIt2Gripper(
+    moveit2_gripper = GripperCommand(
         node=node,
         gripper_joint_names=panda.gripper_joint_names(),
         open_gripper_joint_positions=panda.OPEN_GRIPPER_JOINT_POSITIONS,
         closed_gripper_joint_positions=panda.CLOSED_GRIPPER_JOINT_POSITIONS,
-        gripper_group_name=panda.MOVE_GROUP_GRIPPER,
+        max_effort=10.0,
+        ignore_new_calls_while_executing=True,
         callback_group=callback_group,
+        gripper_command_action_name="/robot_j2s7s300_gripper/gripper_command",
     )
 
     # Spin the node in background thread(s)

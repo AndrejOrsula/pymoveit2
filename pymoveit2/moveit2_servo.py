@@ -123,7 +123,10 @@ class MoveIt2Servo:
                 self._node.get_logger().warn(
                     f"Calling '{self.__start_service.srv_name}' service to enable MoveIt Servo..."
                 )
-                self.enable()
+                if not self.enable():
+                    return
+            else:
+                return
 
         twist_msg = deepcopy(self.__twist_msg)
         twist_msg.header.stamp = self._node.get_clock().now().to_msg()
@@ -135,7 +138,9 @@ class MoveIt2Servo:
         twist_msg.twist.angular.z *= angular[2]
         self.__twist_pub.publish(twist_msg)
 
-    def enable(self, wait_for_server_timeout_sec: Optional[float] = 1.0):
+    def enable(
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0, sync: bool = False
+    ) -> bool:
         """
         Enable MoveIt 2 Servo server via async service call.
         """
@@ -146,10 +151,24 @@ class MoveIt2Servo:
             self._node.get_logger().warn(
                 f"Service '{self.__start_service.srv_name}' is not yet available..."
             )
-        start_service_future = self.__start_service.call_async(self.__trigger_req)
-        start_service_future.add_done_callback(self.__enable_done_callback)
+            return False
 
-    def disable(self, wait_for_server_timeout_sec: Optional[float] = 1.0):
+        if sync:
+            result = self.__start_service.call(self.__trigger_req)
+            if not result.success:
+                self._node.get_logger().error(
+                    f"MoveIt Servo could not be enabled. ({result.message})"
+                )
+            self.__is_enabled = result.success
+            return result.success
+        else:
+            start_service_future = self.__start_service.call_async(self.__trigger_req)
+            start_service_future.add_done_callback(self.__enable_done_callback)
+            return True
+
+    def disable(
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0, sync: bool = False
+    ) -> bool:
         """
         Disable MoveIt 2 Servo server via async service call.
         """
@@ -160,8 +179,20 @@ class MoveIt2Servo:
             self._node.get_logger().warn(
                 f"Service '{self.__stop_service.srv_name}' is not yet available..."
             )
-        stop_service_future = self.__stop_service.call_async(self.__trigger_req)
-        stop_service_future.add_done_callback(self.__disable_done_callback)
+            return False
+
+        if sync:
+            result = self.__stop_service.call(self.__trigger_req)
+            if not result.success:
+                self._node.get_logger().error(
+                    f"MoveIt Servo could not be disabled. ({result.message})"
+                )
+            self.__is_enabled = not result.success
+            return result.success
+        else:
+            stop_service_future = self.__stop_service.call_async(self.__trigger_req)
+            stop_service_future.add_done_callback(self.__disable_done_callback)
+            return True
 
     def __enable_done_callback(self, future: Future):
 

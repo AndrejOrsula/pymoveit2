@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Union
 
 from action_msgs.msg import GoalStatus
 from control_msgs.action import FollowJointTrajectory
-from geometry_msgs.msg import Point, Pose, Quaternion
+from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
     Constraints,
@@ -118,7 +118,7 @@ class MoveIt2:
             )
         else:
             # Otherwise create a separate service client for planning
-            self.__plan_kinematic_path_service = self._node.create_client(
+            self._plan_kinematic_path_service = self._node.create_client(
                 srv_type=GetMotionPlan,
                 srv_name="plan_kinematic_path",
                 qos_profile=QoSProfile(
@@ -170,9 +170,8 @@ class MoveIt2:
         )
 
         self.__joint_state_mutex = threading.Lock()
-        self.__joint_state = init_joint_state(
-            joint_names=joint_names,
-        )
+        self.__joint_state = None
+        self.__new_joint_state_available = False
         self.__move_action_goal = self.__init_move_action_goal(
             frame_id=base_link_name,
             group_name=group_name,
@@ -187,7 +186,7 @@ class MoveIt2:
         self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
 
         # Store additional variables for later use
-        self.__joints_names = joint_names
+        self.__joint_names = joint_names
         self.__base_link_name = base_link_name
         self.__end_effector_name = end_effector_name
         self.__group_name = group_name
@@ -196,6 +195,9 @@ class MoveIt2:
         self.__is_motion_requested = False
         self.__is_executing = False
         self.__wait_until_executed_rate = self._node.create_rate(1000.0)
+
+        # Event that enables waiting until async future is done
+        self.__future_done_event = threading.Event()
 
     def move_to_pose(
         self,
@@ -233,9 +235,12 @@ class MoveIt2:
                 weight_orientation=weight_orientation,
             )
             # Define starting state as the current state
-            self.__move_action_goal.request.start_state.joint_state = self.joint_state
+            if self.joint_state is not None:
+                self.__move_action_goal.request.start_state.joint_state = (
+                    self.joint_state
+                )
             # Send to goal to the server (async) - both planning and execution
-            self.__send_goal_async_move_action()
+            self._send_goal_async_move_action()
             # Clear all previous goal constrains
             self.clear_goal_constraints()
 
@@ -281,9 +286,12 @@ class MoveIt2:
                 weight=weight,
             )
             # Define starting state as the current state
-            self.__move_action_goal.request.start_state.joint_state = self.joint_state
+            if self.joint_state is not None:
+                self.__move_action_goal.request.start_state.joint_state = (
+                    self.joint_state
+                )
             # Send to goal to the server (async) - both planning and execution
-            self.__send_goal_async_move_action()
+            self._send_goal_async_move_action()
             # Clear all previous goal constrains
             self.clear_goal_constraints()
 
@@ -348,9 +356,7 @@ class MoveIt2:
             )
 
         # Define starting state for the plan (default to the current state)
-        if start_joint_state is None:
-            self.__move_action_goal.request.start_state.joint_state = self.joint_state
-        else:
+        if start_joint_state is not None:
             if isinstance(start_joint_state, JointState):
                 self.__move_action_goal.request.start_state.joint_state = (
                     start_joint_state
@@ -358,18 +364,20 @@ class MoveIt2:
             else:
                 self.__move_action_goal.request.start_state.joint_state = (
                     init_joint_state(
-                        joint_names=self.__joints_names,
+                        joint_names=self.__joint_names,
                         joint_positions=start_joint_state,
                     )
                 )
+        elif self.joint_state is not None:
+            self.__move_action_goal.request.start_state.joint_state = self.joint_state
 
         # Plan trajectory by sending a goal (blocking)
         if self.__execute_via_moveit:
             # Use action client
-            joint_trajectory = self.__send_goal_move_action_plan_only()
+            joint_trajectory = self._send_goal_move_action_plan_only()
         else:
             # Use service
-            joint_trajectory = self.__plan_kinematic_path()
+            joint_trajectory = self._plan_kinematic_path()
 
         # Clear all previous goal constrains
         self.clear_goal_constraints()
@@ -399,9 +407,7 @@ class MoveIt2:
             self.__is_motion_requested = False
             return
 
-        self.__send_goal_async_follow_joint_trajectory(
-            goal=follow_joint_trajectory_goal
-        )
+        self._send_goal_async_follow_joint_trajectory(goal=follow_joint_trajectory_goal)
 
     def wait_until_executed(self):
         """
@@ -417,7 +423,9 @@ class MoveIt2:
         while self.__is_motion_requested or self.__is_executing:
             self.__wait_until_executed_rate.sleep()
 
-    def reset_controller(self, joint_state: Union[JointState, List[float]]):
+    def reset_controller(
+        self, joint_state: Union[JointState, List[float]], sync: bool = True
+    ):
         """
         Reset controller to a given `joint_state` by sending a dummy joint trajectory.
         This is useful for simulated robots that allow instantaneous reset of joints.
@@ -425,7 +433,7 @@ class MoveIt2:
 
         if not isinstance(joint_state, JointState):
             joint_state = init_joint_state(
-                joint_names=self.__joints_names,
+                joint_names=self.__joint_names,
                 joint_positions=joint_state,
             )
         joint_trajectory = init_dummy_joint_trajectory_from_state(joint_state)
@@ -433,8 +441,9 @@ class MoveIt2:
             joint_trajectory=joint_trajectory
         )
 
-        self.__send_goal_async_follow_joint_trajectory(
-            goal=follow_joint_trajectory_goal
+        self._send_goal_async_follow_joint_trajectory(
+            goal=follow_joint_trajectory_goal,
+            wait_until_response=sync,
         )
 
     def set_pose_goal(
@@ -582,7 +591,7 @@ class MoveIt2:
 
         # Use default joint names if not specified
         if joint_names == None:
-            joint_names = self.__joints_names
+            joint_names = self.__joint_names
 
         for i in range(len(joint_positions)):
             # Create a new constraint for each joint
@@ -625,10 +634,10 @@ class MoveIt2:
 
     def compute_fk(
         self,
-        fk_link_names: Optional[List[str]] = None,
         joint_state: Optional[Union[JointState, List[float]]] = None,
+        fk_link_names: Optional[List[str]] = None,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
-    ) -> Optional[GetPositionFK.Response]:
+    ) -> Optional[PoseStamped]:
         """
         Compute forward kinematics for all `fk_link_names` in a given `joint_state`.
           - `fk_link_names` defaults to end-effector
@@ -643,16 +652,16 @@ class MoveIt2:
         else:
             self.__compute_fk_req.fk_link_names = fk_link_names
 
-        if joint_state is None:
-            self.__compute_fk_req.robot_state.joint_state = self.joint_state
-        else:
+        if joint_state is not None:
             if isinstance(joint_state, JointState):
                 self.__compute_fk_req.robot_state.joint_state = joint_state
             else:
                 self.__compute_fk_req.robot_state.joint_state = init_joint_state(
-                    joint_names=self.__joints_names,
+                    joint_names=self.__joint_names,
                     joint_positions=joint_state,
                 )
+        elif self.joint_state is not None:
+            self.__compute_fk_req.robot_state.joint_state = self.joint_state
 
         stamp = self._node.get_clock().now().to_msg()
         self.__compute_fk_req.header.stamp = stamp
@@ -665,17 +674,26 @@ class MoveIt2:
             )
             return None
 
-        return self.__compute_fk_client.call(self.__compute_fk_req)
+        res = self.__compute_fk_client.call(self.__compute_fk_req)
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.pose_stamped
+        else:
+            self._node.get_logger().warn(
+                f"FK computation failed! Error code: {res.error_code.val}."
+            )
+            return None
 
     def compute_ik(
         self,
-        pose: Pose,
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         constraints: Optional[Constraints] = None,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
-    ) -> Optional[GetPositionIK.Response]:
+    ) -> Optional[JointState]:
         """
-        Compute inverse kinematics for the given `pose`. To indicate beginning of the earch space,
+        Compute inverse kinematics for the given pose. To indicate beginning of the search space,
         `start_joint_state` can be specified. Furthermore, `constraints` can be imposed on the
         computed IK.
           - `start_joint_state` defaults to current joint state.
@@ -685,11 +703,35 @@ class MoveIt2:
         if not hasattr(self, "__compute_ik_client"):
             self.__init_compute_ik()
 
-        self.__compute_ik_req.ik_request.pose_stamped.pose = pose
-
-        if start_joint_state is None:
-            self.__compute_ik_req.ik_request.robot_state.joint_state = self.joint_state
+        if isinstance(position, Point):
+            self.__compute_ik_req.ik_request.pose_stamped.pose.position = position
         else:
+            self.__compute_ik_req.ik_request.pose_stamped.pose.position.x = float(
+                position[0]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.position.y = float(
+                position[1]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.position.z = float(
+                position[2]
+            )
+        if isinstance(quat_xyzw, Quaternion):
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation = quat_xyzw
+        else:
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.x = float(
+                quat_xyzw[0]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.y = float(
+                quat_xyzw[1]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.z = float(
+                quat_xyzw[2]
+            )
+            self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.w = float(
+                quat_xyzw[3]
+            )
+
+        if start_joint_state is not None:
             if isinstance(start_joint_state, JointState):
                 self.__compute_ik_req.ik_request.robot_state.joint_state = (
                     start_joint_state
@@ -697,10 +739,12 @@ class MoveIt2:
             else:
                 self.__compute_ik_req.ik_request.robot_state.joint_state = (
                     init_joint_state(
-                        joint_names=self.__joints_names,
+                        joint_names=self.__joint_names,
                         joint_positions=start_joint_state,
                     )
                 )
+        elif self.joint_state is not None:
+            self.__compute_ik_req.ik_request.robot_state.joint_state = self.joint_state
 
         if constraints is not None:
             self.__compute_ik_req.ik_request.constraints = constraints
@@ -716,15 +760,47 @@ class MoveIt2:
             )
             return None
 
-        return self.__compute_ik_client.call(self.__compute_ik_req)
+        res = self.__compute_ik_client.call(self.__compute_ik_req)
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.solution.joint_state
+        else:
+            self._node.get_logger().warn(
+                f"IK computation failed! Error code: {res.error_code.val}."
+            )
+            return None
+
+    def reset_new_joint_state_checker(self):
+        """
+        Reset checker of the new joint state.
+        """
+
+        self.__joint_state_mutex.acquire()
+        self.__new_joint_state_available = False
+        self.__joint_state_mutex.release()
+
+    def force_reset_executing_state(self):
+        """
+        Force reset of internal states that block execution while `ignore_new_calls_while_executing` is being
+        used. This function is applicable only in a very few edge-cases, so it should almost never be used.
+        """
+
+        self.__is_motion_requested = False
+        self.__is_executing = False
 
     def __joint_state_callback(self, msg: JointState):
 
+        # Update only if all relevant joints are included in the message
+        for joint_name in self.joint_names:
+            if not joint_name in msg.name:
+                return
+
         self.__joint_state_mutex.acquire()
         self.__joint_state = msg
+        self.__new_joint_state_available = True
         self.__joint_state_mutex.release()
 
-    def __send_goal_move_action_plan_only(
+    def _send_goal_move_action_plan_only(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
 
@@ -756,7 +832,7 @@ class MoveIt2:
         else:
             return None
 
-    def __plan_kinematic_path(
+    def _plan_kinematic_path(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
 
@@ -777,15 +853,15 @@ class MoveIt2:
             for orientation_constraint in contraints.orientation_constraints:
                 orientation_constraint.header.stamp = stamp
 
-        if not self.__plan_kinematic_path_service.wait_for_service(
+        if not self._plan_kinematic_path_service.wait_for_service(
             timeout_sec=wait_for_server_timeout_sec
         ):
             self._node.get_logger().warn(
-                f"Service '{self.__plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
+                f"Service '{self._plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
 
-        res = self.__plan_kinematic_path_service.call(
+        res = self._plan_kinematic_path_service.call(
             self.__kinematic_path_request
         ).motion_plan_response
 
@@ -797,7 +873,7 @@ class MoveIt2:
             )
             return None
 
-    def __send_goal_async_move_action(
+    def _send_goal_async_move_action(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ):
 
@@ -849,10 +925,11 @@ class MoveIt2:
 
         self.__is_executing = False
 
-    def __send_goal_async_follow_joint_trajectory(
+    def _send_goal_async_follow_joint_trajectory(
         self,
         goal: FollowJointTrajectory,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
+        wait_until_response: bool = False,
     ):
 
         if not self.__follow_joint_trajectory_action_client.wait_for_server(
@@ -873,6 +950,17 @@ class MoveIt2:
             self.__response_callback_follow_joint_trajectory
         )
 
+        if wait_until_response:
+            self.__future_done_event.clear()
+            action_result.add_done_callback(
+                self.__response_callback_with_event_set_follow_joint_trajectory
+            )
+            self.__future_done_event.wait(timeout=wait_for_server_timeout_sec)
+        else:
+            action_result.add_done_callback(
+                self.__response_callback_follow_joint_trajectory
+            )
+
     def __response_callback_follow_joint_trajectory(self, response):
 
         goal_handle = response.result()
@@ -892,6 +980,11 @@ class MoveIt2:
         self.__get_result_future_follow_joint_trajectory.add_done_callback(
             self.__result_callback_follow_joint_trajectory
         )
+
+    def __response_callback_with_event_set_follow_joint_trajectory(self, response):
+
+        self.__response_callback_follow_joint_trajectory(response)
+        self.__future_done_event.set()
 
     def __result_callback_follow_joint_trajectory(self, res):
 
@@ -990,15 +1083,20 @@ class MoveIt2:
     @property
     def joint_names(self) -> List[str]:
 
-        return self.__joints_names
+        return self.__joint_names
 
     @property
-    def joint_state(self) -> JointState:
+    def joint_state(self) -> Optional[JointState]:
 
         self.__joint_state_mutex.acquire()
         joint_state = self.__joint_state
         self.__joint_state_mutex.release()
         return joint_state
+
+    @property
+    def new_joint_state_available(self):
+
+        return self.__new_joint_state_available
 
     @property
     def max_velocity(self) -> float:
@@ -1094,7 +1192,9 @@ def init_follow_joint_trajectory_goal(
     return follow_joint_trajectory_goal
 
 
-def init_dummy_joint_trajectory_from_state(joint_state: JointState) -> JointTrajectory:
+def init_dummy_joint_trajectory_from_state(
+    joint_state: JointState, duration_sec: int = 0, duration_nanosec: int = 0
+) -> JointTrajectory:
 
     joint_trajectory = JointTrajectory()
     joint_trajectory.joint_names = joint_state.name
@@ -1104,6 +1204,8 @@ def init_dummy_joint_trajectory_from_state(joint_state: JointState) -> JointTraj
     point.velocities = joint_state.velocity
     point.accelerations = [0.0] * len(joint_trajectory.joint_names)
     point.effort = joint_state.effort
+    point.time_from_start.sec = duration_sec
+    point.time_from_start.nanosec = duration_nanosec
     joint_trajectory.points.append(point)
 
     return joint_trajectory

@@ -1,7 +1,8 @@
+import threading
 from typing import List, Optional, Union
 
 from action_msgs.msg import GoalStatus
-from control_msgs.action import GripperCommand
+from control_msgs.action import GripperCommand as GripperCommandAction
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -11,6 +12,7 @@ from rclpy.qos import (
     QoSProfile,
     QoSReliabilityPolicy,
 )
+from sensor_msgs.msg import JointState
 
 
 class GripperCommand:
@@ -21,17 +23,18 @@ class GripperCommand:
     def __init__(
         self,
         node: Node,
+        gripper_joint_names: List[str],
         open_gripper_joint_positions: Union[float, List[float]],
         closed_gripper_joint_positions: Union[float, List[float]],
         max_effort: float = 0.0,
         ignore_new_calls_while_executing: bool = True,
         callback_group: Optional[CallbackGroup] = None,
         gripper_command_action_name: str = "gripper_action_controller/gripper_command",
-        **kwargs,
     ):
         """
-        Construct an instance of `MoveIt2Gripper` interface.
+        Construct an instance of `GripperCommand` interface.
           - `node` - ROS 2 node that this interface is attached to
+          - `gripper_joint_names` - List of gripper joint names (can be extracted from URDF)
           - `open_gripper_joint_positions` - Configuration of gripper joints when open
           - `closed_gripper_joint_positions` - Configuration of gripper joints when fully closed
           - `max_effort` - Max effort applied when closing
@@ -42,11 +45,26 @@ class GripperCommand:
         """
 
         self._node = node
+        self._callback_group = callback_group
+
+        # Create subscriber for current joint states
+        self._node.create_subscription(
+            msg_type=JointState,
+            topic="joint_states",
+            callback=self.__joint_state_callback,
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=self._callback_group,
+        )
 
         # Create action client for move action
         self.__gripper_command_action_client = ActionClient(
             node=self._node,
-            action_type=GripperCommand,
+            action_type=GripperCommandAction,
             action_name=gripper_command_action_name,
             goal_service_qos_profile=QoSProfile(
                 durability=QoSDurabilityPolicy.VOLATILE,
@@ -78,9 +96,11 @@ class GripperCommand:
                 history=QoSHistoryPolicy.KEEP_LAST,
                 depth=1,
             ),
-            callback_group=callback_group,
+            callback_group=self._callback_group,
         )
 
+        # Initialise command goals for opening/closing
+        self.__open_gripper_joint_positions = open_gripper_joint_positions
         self.__open_gripper_command_goal = self.__init_gripper_command_goal(
             position=open_gripper_joint_positions, max_effort=max_effort
         )
@@ -88,16 +108,34 @@ class GripperCommand:
             position=closed_gripper_joint_positions, max_effort=max_effort
         )
 
+        # Initialise internals for determining whether the gripper is open or closed
+        self.__joint_state_mutex = threading.Lock()
+        self.__joint_state = None
+        self.__new_joint_state_available = False
+        # Tolerance used for checking whether the gripper is open or closed
+        self.__open_tolerance = [
+            0.1
+            * abs(open_gripper_joint_positions[i] - closed_gripper_joint_positions[i])
+            for i in range(len(open_gripper_joint_positions))
+        ]
+        # Indices of gripper joint within the joint state message topic.
+        # It is assumed that the order of these does not change during execution.
+        self.__gripper_joint_indices: Optional[List[int]] = None
+
         # Flag that determines whether a new goal can be send while the previous one is being executed
         self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
-        self.__is_executing = False
 
-        # Initialize additional variables
-        self.__is_open = True
+        # Store additional variables for later use
+        self.__joint_names = gripper_joint_names
+
+        # Internal states that monitor the current motion requests and execution
+        self.__is_motion_requested = False
+        self.__is_executing = False
+        self.__wait_until_executed_rate = self._node.create_rate(1000.0)
 
     def __call__(self):
         """
-        Callable that is identical to `MoveIt2Gripper.toggle()`.
+        Callable that is identical to `GripperCommand.toggle()`.
         """
 
         self.toggle()
@@ -108,9 +146,9 @@ class GripperCommand:
         """
 
         if self.is_open:
-            self.close()
+            self.close(skip_if_noop=False)
         else:
-            self.open()
+            self.open(skip_if_noop=False)
 
     def open(self, skip_if_noop: bool = True):
         """
@@ -123,6 +161,7 @@ class GripperCommand:
 
         if self.__ignore_new_calls_while_executing and self.__is_executing:
             return
+        self.__is_motion_requested = True
 
         self.__send_goal_async_gripper_command(self.__open_gripper_command_goal)
 
@@ -137,6 +176,7 @@ class GripperCommand:
 
         if self.__ignore_new_calls_while_executing and self.__is_executing:
             return
+        self.__is_motion_requested = True
 
         self.__send_goal_async_gripper_command(self.__close_gripper_command_goal)
 
@@ -146,9 +186,8 @@ class GripperCommand:
         This is useful for simulated robots that allow instantaneous reset of joints.
         """
 
+        self.force_reset_executing_state()
         self.__send_goal_async_gripper_command(self.__open_gripper_command_goal)
-
-        self.__is_open = True
 
     def reset_closed(self):
         """
@@ -156,17 +195,47 @@ class GripperCommand:
         This is useful for simulated robots that allow instantaneous reset of joints.
         """
 
+        self.force_reset_executing_state()
         self.__send_goal_async_gripper_command(self.__close_gripper_command_goal)
 
-        self.__is_open = False
+    def force_reset_executing_state(self):
+        """
+        Force reset of internal states that block execution while `ignore_new_calls_while_executing` is being
+        used. This function is applicable only in a very few edge-cases, so it should almost never be used.
+        """
 
-    def __toggle_internal_gripper_state(self):
+        self.__is_motion_requested = False
+        self.__is_executing = False
 
-        self.__is_open = not self.__is_open
+    def wait_until_executed(self):
+        """
+        Wait until the previously requested motion is finalised through either a success or failure.
+        """
+
+        if not self.__is_motion_requested:
+            self._node.get_logger().warn(
+                "Cannot wait until motion is executed (no motion is in progress)."
+            )
+            return
+
+        while self.__is_motion_requested or self.__is_executing:
+            self.__wait_until_executed_rate.sleep()
+
+    def __joint_state_callback(self, msg: JointState):
+
+        # Update only if all relevant joints are included in the message
+        for joint_name in self.joint_names:
+            if not joint_name in msg.name:
+                return
+
+        self.__joint_state_mutex.acquire()
+        self.__joint_state = msg
+        self.__new_joint_state_available = True
+        self.__joint_state_mutex.release()
 
     def __send_goal_async_gripper_command(
         self,
-        goal: GripperCommand.Goal,
+        goal: GripperCommandAction.Goal,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
     ):
 
@@ -190,12 +259,13 @@ class GripperCommand:
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
-                f"Action '{self.__gripper_command_action_client._action_name}' was rejected"
+                f"Action '{self.__gripper_command_action_client._action_name}' was rejected."
             )
+            self.__is_motion_requested = False
             return
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = True
+        self.__is_executing = True
+        self.__is_motion_requested = False
 
         self.__get_result_future_gripper_command = goal_handle.get_result_async()
         self.__get_result_future_gripper_command.add_done_callback(
@@ -204,36 +274,82 @@ class GripperCommand:
 
     def __result_callback_gripper_command(self, res):
 
-        if res.result().status == GoalStatus.STATUS_SUCCEEDED:
-            self.__toggle_internal_gripper_state()
-        else:
+        if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().error(
                 f"Action '{self.__gripper_command_action_client._action_name}' was unsuccessful: {res.result().status}"
             )
 
-        if self.__ignore_new_calls_while_executing:
-            self.__is_executing = False
+        self.__is_executing = False
 
     @classmethod
     def __init_gripper_command_goal(
         cls, position: Union[float, List[float]], max_effort: float
-    ) -> GripperCommand.Goal:
+    ) -> GripperCommandAction.Goal:
 
         if hasattr(position, "__getitem__"):
             position = position[0]
 
-        gripper_cmd_goal = GripperCommand.Goal()
+        gripper_cmd_goal = GripperCommandAction.Goal()
         gripper_cmd_goal.command.position = position
         gripper_cmd_goal.command.max_effort = max_effort
 
         return gripper_cmd_goal
 
     @property
-    def is_open(self) -> bool:
+    def joint_names(self) -> List[str]:
 
-        return self.__is_open
+        return self.__joint_names
+
+    @property
+    def joint_state(self) -> Optional[JointState]:
+
+        self.__joint_state_mutex.acquire()
+        joint_state = self.__joint_state
+        self.__joint_state_mutex.release()
+        return joint_state
+
+    @property
+    def new_joint_state_available(self):
+
+        return self.__new_joint_state_available
+
+    @property
+    def is_open(self) -> bool:
+        """
+        Gripper is considered to be open if all of the joints are at their open position.
+        """
+
+        joint_state = self.joint_state
+
+        # Assume the gripper is open if there are no joint state readings yet
+        if joint_state is None:
+            return True
+
+        # For the sake of performance, find the indices of joints only once.
+        # This is especially useful for robots with many joints.
+        if self.__gripper_joint_indices is None:
+            self.__gripper_joint_indices: List[int] = []
+            for joint_name in self.joint_names:
+                self.__gripper_joint_indices.append(joint_state.name.index(joint_name))
+
+        for local_joint_index, joint_state_index in enumerate(
+            self.__gripper_joint_indices
+        ):
+            if (
+                abs(
+                    joint_state.position[joint_state_index]
+                    - self.__open_gripper_joint_positions[local_joint_index]
+                )
+                > self.__open_tolerance[local_joint_index]
+            ):
+                return False
+
+        return True
 
     @property
     def is_closed(self) -> bool:
+        """
+        Gripper is considered to be closed if any of the joints is outside of their open position.
+        """
 
         return not self.is_open
