@@ -12,7 +12,7 @@ from moveit_msgs.msg import (
     OrientationConstraint,
     PositionConstraint,
 )
-from moveit_msgs.srv import GetMotionPlan, GetPositionFK, GetPositionIK
+from moveit_msgs.srv import GetMotionPlan, GetPositionFK, GetPositionIK, GetCartesianPath
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -131,6 +131,20 @@ class MoveIt2:
             )
             self.__kinematic_path_request = GetMotionPlan.Request()
 
+        # create a separate service client for cartesian planning
+        self._plan_cartesian_path_service = self._node.create_client(
+            srv_type=GetCartesianPath,
+            srv_name="compute_cartesian_path",
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=callback_group,
+        )
+        self.__cartesian_path_request = GetCartesianPath.Request()
+
         # Create action client for trajectory execution
         self.__follow_joint_trajectory_action_client = ActionClient(
             node=self._node,
@@ -208,6 +222,7 @@ class MoveIt2:
         tolerance_position: float = 0.001,
         tolerance_orientation: float = 0.001,
         weight_position: float = 1.0,
+        cartesian = False,
         weight_orientation: float = 1.0,
     ):
         """
@@ -255,6 +270,7 @@ class MoveIt2:
                     tolerance_orientation=tolerance_orientation,
                     weight_position=weight_position,
                     weight_orientation=weight_orientation,
+                    cartesian=cartesian,
                 )
             )
 
@@ -263,6 +279,7 @@ class MoveIt2:
         joint_positions: List[float],
         joint_names: Optional[List[str]] = None,
         tolerance: float = 0.001,
+        cartesian = False,
         weight: float = 1.0,
     ):
         """
@@ -303,6 +320,7 @@ class MoveIt2:
                     joint_names=joint_names,
                     tolerance_joint_position=tolerance,
                     weight_joint_position=weight,
+                    cartesian = cartesian,
                 )
             )
 
@@ -322,6 +340,7 @@ class MoveIt2:
         weight_orientation: float = 1.0,
         weight_joint_position: float = 1.0,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
+        cartesian = False,
     ) -> Optional[JointTrajectory]:
         """
         Plan motion based on previously set goals. Optional arguments can be passed in to
@@ -372,12 +391,15 @@ class MoveIt2:
             self.__move_action_goal.request.start_state.joint_state = self.joint_state
 
         # Plan trajectory by sending a goal (blocking)
-        if self.__execute_via_moveit:
-            # Use action client
-            joint_trajectory = self._send_goal_move_action_plan_only()
+        if cartesian:
+            joint_trajectory = self._plan_cartesian_path()
         else:
-            # Use service
-            joint_trajectory = self._plan_kinematic_path()
+            if self.__execute_via_moveit:
+                # Use action client
+                joint_trajectory = self._send_goal_move_action_plan_only()
+            else:
+                # Use service
+                joint_trajectory = self._plan_kinematic_path()
 
         # Clear all previous goal constrains
         self.clear_goal_constraints()
@@ -867,6 +889,52 @@ class MoveIt2:
 
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
             return res.trajectory.joint_trajectory
+        else:
+            self._node.get_logger().warn(
+                f"Planning failed! Error code: {res.error_code.val}."
+            )
+            return None
+    def _plan_cartesian_path(
+        self, wait_for_server_timeout_sec: Optional[float] = 1.0
+    ) -> Optional[JointTrajectory]:
+
+        # Re-use request from move action goal
+        self.__cartesian_path_request.start_state = self.__move_action_goal.request.start_state
+        self.__cartesian_path_request.group_name = self.__move_action_goal.request.group_name
+        self.__cartesian_path_request.link_name = self.__end_effector_name
+        self.__cartesian_path_request.max_step = 0.0025
+
+        stamp = self._node.get_clock().now().to_msg()
+        self.__cartesian_path_request.header.stamp = stamp
+
+        self.__cartesian_path_request.path_constraints = self.__move_action_goal.request.path_constraints
+        for position_constraint in self.__cartesian_path_request.path_constraints.position_constraints:
+            position_constraint.header.stamp = stamp
+        for orientation_constraint in self.__cartesian_path_request.path_constraints.orientation_constraints:
+            orientation_constraint.header.stamp = stamp
+        #for joint_constraint in self.__cartesian_path_request.path_constraints.joint_constraints:
+            #joint_constraint.header.stamp = stamp
+
+        target_pose = Pose()
+        target_pose.position = self.__move_action_goal.request.goal_constraints[-1].position_constraints[-1].constraint_region.primitive_poses[0].position
+        target_pose.orientation = self.__move_action_goal.request.goal_constraints[-1].orientation_constraints[-1].orientation
+
+        self.__cartesian_path_request.waypoints = [target_pose]
+
+        if not self._plan_cartesian_path_service.wait_for_service(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
+            self._node.get_logger().warn(
+                f"Service '{self._plan_cartesian_path_service.srv_name}' is not yet available. Better luck next time!"
+            )
+            return None
+
+        res = self._plan_cartesian_path_service.call(
+            self.__cartesian_path_request
+        )
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.solution.joint_trajectory
         else:
             self._node.get_logger().warn(
                 f"Planning failed! Error code: {res.error_code.val}."
