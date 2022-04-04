@@ -52,7 +52,7 @@ def main(args=None):
     node.get_logger().info(
         f"Moving to {{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
     )
-    moveit2.move_to_pose(position=position, quat_xyzw=quat_xyzw)
+    moveit2.move_to_pose(position=position, quat_xyzw=quat_xyzw, cartesian=False)
     moveit2.wait_until_executed()
 
     rclpy.shutdown()
