@@ -20,6 +20,8 @@
   <exec_depend>std_srvs</exec_depend>
   <exec_depend>trajectory_msgs</exec_depend>
 
+  <exec_depend>python-trimesh</exec_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

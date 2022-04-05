@@ -11,6 +11,7 @@ from moveit_msgs.msg import (
     MoveItErrorCodes,
     OrientationConstraint,
     PositionConstraint,
+    CollisionObject,
 )
 from moveit_msgs.srv import GetMotionPlan, GetPositionFK, GetPositionIK
 from rclpy.action import ActionClient
@@ -23,8 +24,10 @@ from rclpy.qos import (
     QoSReliabilityPolicy,
 )
 from sensor_msgs.msg import JointState
-from shape_msgs.msg import SolidPrimitive
+from shape_msgs.msg import SolidPrimitive, Mesh, MeshTriangle
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+
+import trimesh
 
 
 class MoveIt2:
@@ -168,6 +171,8 @@ class MoveIt2:
             ),
             callback_group=self._callback_group,
         )
+
+        self.__collision_object_publisher = self._node.create_publisher(CollisionObject, '/collision_object', 10)
 
         self.__joint_state_mutex = threading.Lock()
         self.__joint_state = None
@@ -1148,6 +1153,59 @@ class MoveIt2:
 
         self.__move_action_goal.request.allowed_planning_time = value
 
+    def add_collision_mesh(
+        self,
+        id: str,
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        filename: str,
+        frame_id: Optional[str] = None,
+        operation: int = CollisionObject.ADD,
+    ):
+
+        mesh = trimesh.load(filename)
+        msg = CollisionObject()
+        msg.id = id
+        msg.operation = operation
+        pose = Pose()
+        pose.position.x = float(position[0])
+        pose.position.y = float(position[1])
+        pose.position.z = float(position[2])
+        pose.orientation.x = float(quat_xyzw[0])
+        pose.orientation.y = float(quat_xyzw[1])
+        pose.orientation.z = float(quat_xyzw[2])
+        pose.orientation.w = float(quat_xyzw[3])
+        msg.pose = pose
+
+        msg.mesh_poses.append(Pose()) # Only global poses
+
+        msg.meshes.append(Mesh())
+        for face in mesh.faces:
+            tri = MeshTriangle()
+            for i in range(3):
+                tri.vertex_indices[i] = face[i]
+            msg.meshes[-1].triangles.append(tri)
+        for vert in mesh.vertices:
+            point = Point()
+            point.x = vert[0]
+            point.y = vert[1]
+            point.z = vert[2]
+            msg.meshes[-1].vertices.append(point)
+
+
+        msg.header.frame_id = (
+            frame_id if frame_id is not None else self.__base_link_name
+        )
+        msg.header.stamp =  self._node.get_clock().now().to_msg()
+
+        self.__collision_object_publisher.publish(msg)
+
+    def remove_collision_mesh(self, id: str):
+        msg = CollisionObject()
+        msg.id = id
+        msg.operation = CollisionObject.REMOVE
+        msg.header.stamp =  self._node.get_clock().now().to_msg()
+        self.__collision_object_publisher.publish(msg)
 
 def init_joint_state(
     joint_names: List[str],
