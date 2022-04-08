@@ -6,12 +6,12 @@ from control_msgs.action import FollowJointTrajectory
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
+    CollisionObject,
     Constraints,
     JointConstraint,
     MoveItErrorCodes,
     OrientationConstraint,
     PositionConstraint,
-    CollisionObject,
 )
 from moveit_msgs.srv import GetMotionPlan, GetPositionFK, GetPositionIK
 from rclpy.action import ActionClient
@@ -24,10 +24,8 @@ from rclpy.qos import (
     QoSReliabilityPolicy,
 )
 from sensor_msgs.msg import JointState
-from shape_msgs.msg import SolidPrimitive, Mesh, MeshTriangle
+from shape_msgs.msg import Mesh, MeshTriangle, SolidPrimitive
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-
-import trimesh
 
 
 class MoveIt2:
@@ -172,7 +170,9 @@ class MoveIt2:
             callback_group=self._callback_group,
         )
 
-        self.__collision_object_publisher = self._node.create_publisher(CollisionObject, '/collision_object', 10)
+        self.__collision_object_publisher = self._node.create_publisher(
+            CollisionObject, "/collision_object", 10
+        )
 
         self.__joint_state_mutex = threading.Lock()
         self.__joint_state = None
@@ -1162,41 +1162,51 @@ class MoveIt2:
         frame_id: Optional[str] = None,
         operation: int = CollisionObject.ADD,
     ):
+        try:
+            import trimesh
+        except ImportError as err:
+            raise ImportError(
+                "Python module 'trimesh' not found! Please install it manually in order "
+                "to add collision objects into the MoveIt 2 planning scene."
+            ) from err
 
         mesh = trimesh.load(filename)
         msg = CollisionObject()
-        msg.id = id
-        msg.operation = operation
+
+        if not isinstance(position, Point):
+            position = Point(
+                x=float(position[0]), 
+                y=float(position[1]), 
+                z=float(position[2])
+            )
+        if not isinstance(quat_xyzw, Quaternion):
+            quat_xyzw = Quaternion(
+                x=float(quat_xyzw[0]),
+                y=float(quat_xyzw[1]),
+                z=float(quat_xyzw[2]),
+                w=float(quat_xyzw[3]),
+            )
+
         pose = Pose()
-        pose.position.x = float(position[0])
-        pose.position.y = float(position[1])
-        pose.position.z = float(position[2])
-        pose.orientation.x = float(quat_xyzw[0])
-        pose.orientation.y = float(quat_xyzw[1])
-        pose.orientation.z = float(quat_xyzw[2])
-        pose.orientation.w = float(quat_xyzw[3])
+        pose.position = position
+        pose.orientation = quat_xyzw
         msg.pose = pose
 
-        msg.mesh_poses.append(Pose()) # Only global poses
+        msg.meshes.append(
+            Mesh(
+                triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
+                vertices=[
+                    Point(x=vert[0], y=vert[1], z=vert[2]) for vert in mesh.vertices
+                ],
+            )
+        )
 
-        msg.meshes.append(Mesh())
-        for face in mesh.faces:
-            tri = MeshTriangle()
-            for i in range(3):
-                tri.vertex_indices[i] = face[i]
-            msg.meshes[-1].triangles.append(tri)
-        for vert in mesh.vertices:
-            point = Point()
-            point.x = vert[0]
-            point.y = vert[1]
-            point.z = vert[2]
-            msg.meshes[-1].vertices.append(point)
-
-
+        msg.id = id
+        msg.operation = operation
         msg.header.frame_id = (
             frame_id if frame_id is not None else self.__base_link_name
         )
-        msg.header.stamp =  self._node.get_clock().now().to_msg()
+        msg.header.stamp = self._node.get_clock().now().to_msg()
 
         self.__collision_object_publisher.publish(msg)
 
@@ -1204,8 +1214,9 @@ class MoveIt2:
         msg = CollisionObject()
         msg.id = id
         msg.operation = CollisionObject.REMOVE
-        msg.header.stamp =  self._node.get_clock().now().to_msg()
+        msg.header.stamp = self._node.get_clock().now().to_msg()
         self.__collision_object_publisher.publish(msg)
+
 
 def init_joint_state(
     joint_names: List[str],
