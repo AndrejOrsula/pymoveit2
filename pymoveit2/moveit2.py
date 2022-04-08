@@ -12,7 +12,12 @@ from moveit_msgs.msg import (
     OrientationConstraint,
     PositionConstraint,
 )
-from moveit_msgs.srv import GetMotionPlan, GetPositionFK, GetPositionIK, GetCartesianPath
+from moveit_msgs.srv import (
+    GetCartesianPath,
+    GetMotionPlan,
+    GetPositionFK,
+    GetPositionIK,
+)
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -131,7 +136,7 @@ class MoveIt2:
             )
             self.__kinematic_path_request = GetMotionPlan.Request()
 
-        # create a separate service client for cartesian planning
+        # Create a separate service client for Cartesian planning
         self._plan_cartesian_path_service = self._node.create_client(
             srv_type=GetCartesianPath,
             srv_name="compute_cartesian_path",
@@ -222,7 +227,7 @@ class MoveIt2:
         tolerance_position: float = 0.001,
         tolerance_orientation: float = 0.001,
         weight_position: float = 1.0,
-        cartesian = False,
+        cartesian: bool = False,
         weight_orientation: float = 1.0,
     ):
         """
@@ -279,7 +284,7 @@ class MoveIt2:
         joint_positions: List[float],
         joint_names: Optional[List[str]] = None,
         tolerance: float = 0.001,
-        cartesian = False,
+        cartesian: bool = False,
         weight: float = 1.0,
     ):
         """
@@ -320,7 +325,7 @@ class MoveIt2:
                     joint_names=joint_names,
                     tolerance_joint_position=tolerance,
                     weight_joint_position=weight,
-                    cartesian = cartesian,
+                    cartesian=cartesian,
                 )
             )
 
@@ -340,7 +345,7 @@ class MoveIt2:
         weight_orientation: float = 1.0,
         weight_joint_position: float = 1.0,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
-        cartesian = False,
+        cartesian: bool = False,
     ) -> Optional[JointTrajectory]:
         """
         Plan motion based on previously set goals. Optional arguments can be passed in to
@@ -894,30 +899,50 @@ class MoveIt2:
                 f"Planning failed! Error code: {res.error_code.val}."
             )
             return None
-    def _plan_cartesian_path(
-        self, wait_for_server_timeout_sec: Optional[float] = 1.0
-    ) -> Optional[JointTrajectory]:
 
+    def _plan_cartesian_path(
+        self,
+        max_step: float = 0.0025,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
+    ) -> Optional[JointTrajectory]:
         # Re-use request from move action goal
-        self.__cartesian_path_request.start_state = self.__move_action_goal.request.start_state
-        self.__cartesian_path_request.group_name = self.__move_action_goal.request.group_name
+        self.__cartesian_path_request.start_state = (
+            self.__move_action_goal.request.start_state
+        )
+        self.__cartesian_path_request.group_name = (
+            self.__move_action_goal.request.group_name
+        )
         self.__cartesian_path_request.link_name = self.__end_effector_name
-        self.__cartesian_path_request.max_step = 0.0025
+        self.__cartesian_path_request.max_step = max_step
 
         stamp = self._node.get_clock().now().to_msg()
         self.__cartesian_path_request.header.stamp = stamp
 
-        self.__cartesian_path_request.path_constraints = self.__move_action_goal.request.path_constraints
-        for position_constraint in self.__cartesian_path_request.path_constraints.position_constraints:
+        self.__cartesian_path_request.path_constraints = (
+            self.__move_action_goal.request.path_constraints
+        )
+        for (
+            position_constraint
+        ) in self.__cartesian_path_request.path_constraints.position_constraints:
             position_constraint.header.stamp = stamp
-        for orientation_constraint in self.__cartesian_path_request.path_constraints.orientation_constraints:
+        for (
+            orientation_constraint
+        ) in self.__cartesian_path_request.path_constraints.orientation_constraints:
             orientation_constraint.header.stamp = stamp
-        #for joint_constraint in self.__cartesian_path_request.path_constraints.joint_constraints:
-            #joint_constraint.header.stamp = stamp
+        # no header in joint_constraint message type
 
         target_pose = Pose()
-        target_pose.position = self.__move_action_goal.request.goal_constraints[-1].position_constraints[-1].constraint_region.primitive_poses[0].position
-        target_pose.orientation = self.__move_action_goal.request.goal_constraints[-1].orientation_constraints[-1].orientation
+        target_pose.position = (
+            self.__move_action_goal.request.goal_constraints[-1]
+            .position_constraints[-1]
+            .constraint_region.primitive_poses[0]
+            .position
+        )
+        target_pose.orientation = (
+            self.__move_action_goal.request.goal_constraints[-1]
+            .orientation_constraints[-1]
+            .orientation
+        )
 
         self.__cartesian_path_request.waypoints = [target_pose]
 
@@ -929,9 +954,7 @@ class MoveIt2:
             )
             return None
 
-        res = self._plan_cartesian_path_service.call(
-            self.__cartesian_path_request
-        )
+        res = self._plan_cartesian_path_service.call(self.__cartesian_path_request)
 
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
             return res.solution.joint_trajectory
