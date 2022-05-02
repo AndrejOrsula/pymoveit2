@@ -820,6 +820,77 @@ class MoveIt2:
         self.__is_motion_requested = False
         self.__is_executing = False
 
+    def add_collision_mesh(
+        self,
+        filepath: str,
+        id: str,
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        operation: int = CollisionObject.ADD,
+        frame_id: Optional[str] = None,
+    ):
+        """
+        Add collision object with a mesh geometry specified by `filepath`.
+        Note: This function required 'trimesh' Python module to be installed.
+        """
+
+        try:
+            import trimesh
+        except ImportError as err:
+            raise ImportError(
+                "Python module 'trimesh' not found! Please install it manually in order "
+                "to add collision objects into the MoveIt 2 planning scene."
+            ) from err
+
+        mesh = trimesh.load(filepath)
+        msg = CollisionObject()
+
+        if not isinstance(position, Point):
+            position = Point(
+                x=float(position[0]), y=float(position[1]), z=float(position[2])
+            )
+        if not isinstance(quat_xyzw, Quaternion):
+            quat_xyzw = Quaternion(
+                x=float(quat_xyzw[0]),
+                y=float(quat_xyzw[1]),
+                z=float(quat_xyzw[2]),
+                w=float(quat_xyzw[3]),
+            )
+
+        pose = Pose()
+        pose.position = position
+        pose.orientation = quat_xyzw
+        msg.pose = pose
+
+        msg.meshes.append(
+            Mesh(
+                triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
+                vertices=[
+                    Point(x=vert[0], y=vert[1], z=vert[2]) for vert in mesh.vertices
+                ],
+            )
+        )
+
+        msg.id = id
+        msg.operation = operation
+        msg.header.frame_id = (
+            frame_id if frame_id is not None else self.__base_link_name
+        )
+        msg.header.stamp = self._node.get_clock().now().to_msg()
+
+        self.__collision_object_publisher.publish(msg)
+
+    def remove_collision_mesh(self, id: str):
+        """
+        Remove collision object specified by its `id`.
+        """
+
+        msg = CollisionObject()
+        msg.id = id
+        msg.operation = CollisionObject.REMOVE
+        msg.header.stamp = self._node.get_clock().now().to_msg()
+        self.__collision_object_publisher.publish(msg)
+
     def __joint_state_callback(self, msg: JointState):
 
         # Update only if all relevant joints are included in the message
@@ -910,6 +981,7 @@ class MoveIt2:
         max_step: float = 0.0025,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
     ) -> Optional[JointTrajectory]:
+
         # Re-use request from move action goal
         self.__cartesian_path_request.start_state = (
             self.__move_action_goal.request.start_state
@@ -1243,70 +1315,6 @@ class MoveIt2:
     def allowed_planning_time(self, value: float):
 
         self.__move_action_goal.request.allowed_planning_time = value
-
-    def add_collision_mesh(
-        self,
-        id: str,
-        position: Union[Point, Tuple[float, float, float]],
-        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
-        filename: str,
-        frame_id: Optional[str] = None,
-        operation: int = CollisionObject.ADD,
-    ):
-        try:
-            import trimesh
-        except ImportError as err:
-            raise ImportError(
-                "Python module 'trimesh' not found! Please install it manually in order "
-                "to add collision objects into the MoveIt 2 planning scene."
-            ) from err
-
-        mesh = trimesh.load(filename)
-        msg = CollisionObject()
-
-        if not isinstance(position, Point):
-            position = Point(
-                x=float(position[0]), 
-                y=float(position[1]), 
-                z=float(position[2])
-            )
-        if not isinstance(quat_xyzw, Quaternion):
-            quat_xyzw = Quaternion(
-                x=float(quat_xyzw[0]),
-                y=float(quat_xyzw[1]),
-                z=float(quat_xyzw[2]),
-                w=float(quat_xyzw[3]),
-            )
-
-        pose = Pose()
-        pose.position = position
-        pose.orientation = quat_xyzw
-        msg.pose = pose
-
-        msg.meshes.append(
-            Mesh(
-                triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
-                vertices=[
-                    Point(x=vert[0], y=vert[1], z=vert[2]) for vert in mesh.vertices
-                ],
-            )
-        )
-
-        msg.id = id
-        msg.operation = operation
-        msg.header.frame_id = (
-            frame_id if frame_id is not None else self.__base_link_name
-        )
-        msg.header.stamp = self._node.get_clock().now().to_msg()
-
-        self.__collision_object_publisher.publish(msg)
-
-    def remove_collision_mesh(self, id: str):
-        msg = CollisionObject()
-        msg.id = id
-        msg.operation = CollisionObject.REMOVE
-        msg.header.stamp = self._node.get_clock().now().to_msg()
-        self.__collision_object_publisher.publish(msg)
 
 
 def init_joint_state(
