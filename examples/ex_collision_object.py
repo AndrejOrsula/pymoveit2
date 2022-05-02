@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """
-Example of adding a collision object
-`ros2 run pymoveit2 ex_collision_object.py --ros-args -p object_mesh_file:="/home/user/test.stl"`
+Example of adding and removing a collision object with a mesh geometry.
+Note: Python module `trimesh` is required for this example (`pip install trimesh`).
+`ros2 run pymoveit2 ex_collision_object.py --ros-args -p action:="add" -p position:="[0.5, 0.0, 0.5]" -p quat_xyzw:="[0.0, 0.0, -0.707, 0.707]"`
+`ros2 run pymoveit2 ex_collision_object.py --ros-args -p action:="add" -p filepath:="./my_favourity_mesh.stl"`
+`ros2 run pymoveit2 ex_collision_object.py --ros-args -p action:="remove"`
 """
 
+from os import path
 from threading import Thread
 
 import rclpy
@@ -13,6 +17,10 @@ from rclpy.node import Node
 from pymoveit2 import MoveIt2
 from pymoveit2.robots import panda
 
+DEFAULT_EXAMPLE_MESH = path.join(
+    path.dirname(path.realpath(__file__)), "assets", "suzanne.stl"
+)
+
 
 def main(args=None):
 
@@ -20,11 +28,19 @@ def main(args=None):
 
     # Create node for this example
     node = Node("ex_collision_object")
+
     # Declare parameter for joint positions
     node.declare_parameter(
-        "object_mesh_file",
-        "test.stl",
+        "filepath",
+        "",
     )
+    node.declare_parameter(
+        "action",
+        "add",
+    )
+    node.declare_parameter("position", [0.5, 0.0, 0.5])
+    node.declare_parameter("quat_xyzw", [0.0, 0.0, -0.707, 0.707])
+
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
 
@@ -44,15 +60,38 @@ def main(args=None):
     executor_thread = Thread(target=executor.spin, daemon=True, args=())
     executor_thread.start()
 
-    filename = node.get_parameter("object_mesh_file").get_parameter_value().string_value
+    # Get parameters
+    filepath = node.get_parameter("filepath").get_parameter_value().string_value
+    action = node.get_parameter("action").get_parameter_value().string_value
+    position = node.get_parameter("position").get_parameter_value().double_array_value
+    quat_xyzw = node.get_parameter("quat_xyzw").get_parameter_value().double_array_value
 
-    moveit2.add_collision_mesh(
-        filename=filename,
-        id=filename,
-        position=[0,0,0],
-        quat_xyzw=[0,0,0,0])
+    # Use the default example mesh if invalid
+    if not filepath:
+        node.get_logger().info(f"Using the default example mesh file")
+        filepath = DEFAULT_EXAMPLE_MESH
 
-    # moveit2.remove_collision_mesh(id=filename)
+    # Make sure the mesh file exists
+    if not path.exists(filepath):
+        node.get_logger().error(f"File '{filepath}' does not exist")
+        rclpy.shutdown()
+        exit(1)
+
+    # Determine ID of the collision mesh
+    mesh_id = path.basename(filepath).split(".")[0]
+
+    if "add" == action:
+        # Add collision mesh
+        node.get_logger().info(
+            f"Adding collision mesh '{filepath}' {{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
+        )
+        moveit2.add_collision_mesh(
+            filepath=filepath, id=mesh_id, position=position, quat_xyzw=quat_xyzw
+        )
+    else:
+        # Remove collision mesh
+        node.get_logger().info(f"Removing collision mesh with ID '{mesh_id}'")
+        moveit2.remove_collision_mesh(id=mesh_id)
 
     rclpy.shutdown()
     exit(0)
