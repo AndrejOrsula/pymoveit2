@@ -64,8 +64,8 @@ After that, the individual scripts can be run.
 ```bash
 # Move to joint configuration
 ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]"
-# Move to Cartesian pose
-ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]"
+# Move to Cartesian pose (motion in either joint or Cartesian space)
+ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p cartesian:=False
 # Repeatadly toggle the gripper (or use "open"/"close" actions)
 ros2 run pymoveit2 ex_gripper.py --ros-args -p action:="toggle"
 # Example of using MoveIt 2 Servo to move the end-effector in a circular motion
