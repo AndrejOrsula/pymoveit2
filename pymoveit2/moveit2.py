@@ -6,13 +6,19 @@ from control_msgs.action import FollowJointTrajectory
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
+    CollisionObject,
     Constraints,
     JointConstraint,
     MoveItErrorCodes,
     OrientationConstraint,
     PositionConstraint,
 )
-from moveit_msgs.srv import GetMotionPlan, GetPositionFK, GetPositionIK
+from moveit_msgs.srv import (
+    GetCartesianPath,
+    GetMotionPlan,
+    GetPositionFK,
+    GetPositionIK,
+)
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -23,7 +29,7 @@ from rclpy.qos import (
     QoSReliabilityPolicy,
 )
 from sensor_msgs.msg import JointState
-from shape_msgs.msg import SolidPrimitive
+from shape_msgs.msg import Mesh, MeshTriangle, SolidPrimitive
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 
@@ -131,6 +137,20 @@ class MoveIt2:
             )
             self.__kinematic_path_request = GetMotionPlan.Request()
 
+        # Create a separate service client for Cartesian planning
+        self._plan_cartesian_path_service = self._node.create_client(
+            srv_type=GetCartesianPath,
+            srv_name="compute_cartesian_path",
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=callback_group,
+        )
+        self.__cartesian_path_request = GetCartesianPath.Request()
+
         # Create action client for trajectory execution
         self.__follow_joint_trajectory_action_client = ActionClient(
             node=self._node,
@@ -167,6 +187,10 @@ class MoveIt2:
                 depth=1,
             ),
             callback_group=self._callback_group,
+        )
+
+        self.__collision_object_publisher = self._node.create_publisher(
+            CollisionObject, "/collision_object", 10
         )
 
         self.__joint_state_mutex = threading.Lock()
@@ -208,6 +232,7 @@ class MoveIt2:
         tolerance_position: float = 0.001,
         tolerance_orientation: float = 0.001,
         weight_position: float = 1.0,
+        cartesian: bool = False,
         weight_orientation: float = 1.0,
     ):
         """
@@ -255,6 +280,7 @@ class MoveIt2:
                     tolerance_orientation=tolerance_orientation,
                     weight_position=weight_position,
                     weight_orientation=weight_orientation,
+                    cartesian=cartesian,
                 )
             )
 
@@ -263,6 +289,7 @@ class MoveIt2:
         joint_positions: List[float],
         joint_names: Optional[List[str]] = None,
         tolerance: float = 0.001,
+        cartesian: bool = False,
         weight: float = 1.0,
     ):
         """
@@ -303,6 +330,7 @@ class MoveIt2:
                     joint_names=joint_names,
                     tolerance_joint_position=tolerance,
                     weight_joint_position=weight,
+                    cartesian=cartesian,
                 )
             )
 
@@ -322,6 +350,7 @@ class MoveIt2:
         weight_orientation: float = 1.0,
         weight_joint_position: float = 1.0,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
+        cartesian: bool = False,
     ) -> Optional[JointTrajectory]:
         """
         Plan motion based on previously set goals. Optional arguments can be passed in to
@@ -372,12 +401,15 @@ class MoveIt2:
             self.__move_action_goal.request.start_state.joint_state = self.joint_state
 
         # Plan trajectory by sending a goal (blocking)
-        if self.__execute_via_moveit:
-            # Use action client
-            joint_trajectory = self._send_goal_move_action_plan_only()
+        if cartesian:
+            joint_trajectory = self._plan_cartesian_path()
         else:
-            # Use service
-            joint_trajectory = self._plan_kinematic_path()
+            if self.__execute_via_moveit:
+                # Use action client
+                joint_trajectory = self._send_goal_move_action_plan_only()
+            else:
+                # Use service
+                joint_trajectory = self._plan_kinematic_path()
 
         # Clear all previous goal constrains
         self.clear_goal_constraints()
@@ -788,6 +820,77 @@ class MoveIt2:
         self.__is_motion_requested = False
         self.__is_executing = False
 
+    def add_collision_mesh(
+        self,
+        filepath: str,
+        id: str,
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        operation: int = CollisionObject.ADD,
+        frame_id: Optional[str] = None,
+    ):
+        """
+        Add collision object with a mesh geometry specified by `filepath`.
+        Note: This function required 'trimesh' Python module to be installed.
+        """
+
+        try:
+            import trimesh
+        except ImportError as err:
+            raise ImportError(
+                "Python module 'trimesh' not found! Please install it manually in order "
+                "to add collision objects into the MoveIt 2 planning scene."
+            ) from err
+
+        mesh = trimesh.load(filepath)
+        msg = CollisionObject()
+
+        if not isinstance(position, Point):
+            position = Point(
+                x=float(position[0]), y=float(position[1]), z=float(position[2])
+            )
+        if not isinstance(quat_xyzw, Quaternion):
+            quat_xyzw = Quaternion(
+                x=float(quat_xyzw[0]),
+                y=float(quat_xyzw[1]),
+                z=float(quat_xyzw[2]),
+                w=float(quat_xyzw[3]),
+            )
+
+        pose = Pose()
+        pose.position = position
+        pose.orientation = quat_xyzw
+        msg.pose = pose
+
+        msg.meshes.append(
+            Mesh(
+                triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
+                vertices=[
+                    Point(x=vert[0], y=vert[1], z=vert[2]) for vert in mesh.vertices
+                ],
+            )
+        )
+
+        msg.id = id
+        msg.operation = operation
+        msg.header.frame_id = (
+            frame_id if frame_id is not None else self.__base_link_name
+        )
+        msg.header.stamp = self._node.get_clock().now().to_msg()
+
+        self.__collision_object_publisher.publish(msg)
+
+    def remove_collision_mesh(self, id: str):
+        """
+        Remove collision object specified by its `id`.
+        """
+
+        msg = CollisionObject()
+        msg.id = id
+        msg.operation = CollisionObject.REMOVE
+        msg.header.stamp = self._node.get_clock().now().to_msg()
+        self.__collision_object_publisher.publish(msg)
+
     def __joint_state_callback(self, msg: JointState):
 
         # Update only if all relevant joints are included in the message
@@ -867,6 +970,71 @@ class MoveIt2:
 
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
             return res.trajectory.joint_trajectory
+        else:
+            self._node.get_logger().warn(
+                f"Planning failed! Error code: {res.error_code.val}."
+            )
+            return None
+
+    def _plan_cartesian_path(
+        self,
+        max_step: float = 0.0025,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
+    ) -> Optional[JointTrajectory]:
+
+        # Re-use request from move action goal
+        self.__cartesian_path_request.start_state = (
+            self.__move_action_goal.request.start_state
+        )
+        self.__cartesian_path_request.group_name = (
+            self.__move_action_goal.request.group_name
+        )
+        self.__cartesian_path_request.link_name = self.__end_effector_name
+        self.__cartesian_path_request.max_step = max_step
+
+        stamp = self._node.get_clock().now().to_msg()
+        self.__cartesian_path_request.header.stamp = stamp
+
+        self.__cartesian_path_request.path_constraints = (
+            self.__move_action_goal.request.path_constraints
+        )
+        for (
+            position_constraint
+        ) in self.__cartesian_path_request.path_constraints.position_constraints:
+            position_constraint.header.stamp = stamp
+        for (
+            orientation_constraint
+        ) in self.__cartesian_path_request.path_constraints.orientation_constraints:
+            orientation_constraint.header.stamp = stamp
+        # no header in joint_constraint message type
+
+        target_pose = Pose()
+        target_pose.position = (
+            self.__move_action_goal.request.goal_constraints[-1]
+            .position_constraints[-1]
+            .constraint_region.primitive_poses[0]
+            .position
+        )
+        target_pose.orientation = (
+            self.__move_action_goal.request.goal_constraints[-1]
+            .orientation_constraints[-1]
+            .orientation
+        )
+
+        self.__cartesian_path_request.waypoints = [target_pose]
+
+        if not self._plan_cartesian_path_service.wait_for_service(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
+            self._node.get_logger().warn(
+                f"Service '{self._plan_cartesian_path_service.srv_name}' is not yet available. Better luck next time!"
+            )
+            return None
+
+        res = self._plan_cartesian_path_service.call(self.__cartesian_path_request)
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.solution.joint_trajectory
         else:
             self._node.get_logger().warn(
                 f"Planning failed! Error code: {res.error_code.val}."

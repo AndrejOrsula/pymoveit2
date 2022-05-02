@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Example of moving to a pose goal.
-`ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]"`
+`ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p cartesian:=False`
 """
 
 from threading import Thread
@@ -24,6 +24,7 @@ def main(args=None):
     # Declare parameters for position and orientation
     node.declare_parameter("position", [0.5, 0.0, 0.25])
     node.declare_parameter("quat_xyzw", [1.0, 0.0, 0.0, 0.0])
+    node.declare_parameter("cartesian", False)
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
@@ -47,12 +48,13 @@ def main(args=None):
     # Get parameters
     position = node.get_parameter("position").get_parameter_value().double_array_value
     quat_xyzw = node.get_parameter("quat_xyzw").get_parameter_value().double_array_value
+    cartesian = node.get_parameter("cartesian").get_parameter_value().bool_value
 
     # Move to pose
     node.get_logger().info(
         f"Moving to {{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
     )
-    moveit2.move_to_pose(position=position, quat_xyzw=quat_xyzw)
+    moveit2.move_to_pose(position=position, quat_xyzw=quat_xyzw, cartesian=cartesian)
     moveit2.wait_until_executed()
 
     rclpy.shutdown()
