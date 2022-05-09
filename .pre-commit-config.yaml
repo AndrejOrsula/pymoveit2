@@ -3,7 +3,7 @@
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.2.0
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
@@ -26,7 +26,7 @@ repos:
         args: ["--profile", "black"]
 
   - repo: https://github.com/psf/black
-    rev: 21.10b0
+    rev: 22.3.0
     hooks:
       - id: black
 
@@ -36,6 +36,6 @@ repos:
       - id: beautysh
 
   - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.10
+    rev: 0.7.14
     hooks:
       - id: mdformat
