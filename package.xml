@@ -5,7 +5,7 @@
   <description>Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services</description>
   <maintainer email="orsula.andrej@gmail.com">Andrej Orsula</maintainer>
   <author>Andrej Orsula</author>
-  <license>Apache License 2.0</license>
+  <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
