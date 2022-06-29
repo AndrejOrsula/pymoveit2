@@ -2,60 +2,69 @@
 
 Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services.
 
-| <img width="100%" src="https://user-images.githubusercontent.com/22929099/147369355-5f1b33ef-2e18-4042-9ea3-cd85b1a78fa0.gif" alt="Animation of ex_joint_goal.py"/> | <img width="100%" src="https://user-images.githubusercontent.com/22929099/147369356-b8ad2f4c-1996-47ac-9bfb-7fccd243fd56.gif" alt="Animation of ex_pose_goal.py"/> | <img width="100%" src="https://user-images.githubusercontent.com/22929099/147369354-640831e2-4661-4f3d-8fc2-3e97d7766e1a.gif" alt="Animation of ex_gripper.py"/> | <img width="100%" src="https://user-images.githubusercontent.com/22929099/147374152-50128188-ab73-4d55-a537-b641325ce9c6.gif" alt="Animation of ex_servo.py"/> |
-| :-----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                                                             Joint Goal                                                                              |                                                                             Pose Goal                                                                              |                                                                          Gripper Action                                                                          |                                                                         MoveIt 2 Servo                                                                         |
+<div align="center" class="tg-wrap">
+<table>
+<tbody>
+  <tr>
+    <td width="25%"><img width="100%" src="https://user-images.githubusercontent.com/22929099/147369355-5f1b33ef-2e18-4042-9ea3-cd85b1a78fa0.gif" alt="Animation of ex_joint_goal.py"/></td>
+    <td width="25%"><img width="100%" src="https://user-images.githubusercontent.com/22929099/147369356-b8ad2f4c-1996-47ac-9bfb-7fccd243fd56.gif" alt="Animation of ex_pose_goal.py"/></td>
+    <td width="25%"><img width="100%" src="https://user-images.githubusercontent.com/22929099/147369354-640831e2-4661-4f3d-8fc2-3e97d7766e1a.gif" alt="Animation of ex_gripper.py"/></td>
+    <td width="25%"><img width="100%" src="https://user-images.githubusercontent.com/22929099/147374152-50128188-ab73-4d55-a537-b641325ce9c6.gif" alt="Animation of ex_servo.py"/></td>
+  </tr>
+  <tr>
+    <td width="25%"><div align="center">Joint Goal</div></td>
+    <td width="25%"><div align="center">Pose Goal</div></td>
+    <td width="25%"><div align="center">Gripper Action</div></td>
+    <td width="25%"><div align="center">MoveIt 2 Servo</div></td>
+  </tr>
+</tbody>
+</table>
+</div>
 
 ## Instructions
-
-### Requirements
-
-- **OS:** Ubuntu 20.04 (Focal)
-  - Other distributions might work (not tested).
 
 ### Dependencies
 
 These are the primary dependencies required to use this project.
 
-- ROS 2 [Rolling](https://docs.ros.org/en/rolling/Installation.html)
-  - [Foxy](https://docs.ros.org/en/galactic/Installation.html) and [Galactic](https://docs.ros.org/en/galactic/Installation.html) might work too (not tested)
-- [MoveIt 2](https://moveit.ros.org/install-moveit2/binary)
-  - Install/build a version based on the selected ROS 2 release
-- [Python 3](https://www.python.org/downloads) (tested with `3.8`)
+- ROS 2 [Galactic](https://docs.ros.org/en/galactic/Installation.html), [Humble](https://docs.ros.org/en/humble/Installation.html) or [Rolling](https://docs.ros.org/en/rolling/Installation.html) (tested June 2022)
+- [MoveIt 2](https://moveit.ros.org/install-moveit2/binary) corresponding to the selected ROS 2 distribution
+
+All additional dependencies are installed via [rosdep](https://wiki.ros.org/rosdep) during the building process below.
 
 ### Building
 
-Clone this repository, install dependencies with [rosdep](https://github.com/ros-infrastructure/rosdep), and build with [colcon](https://colcon.readthedocs.io).
+Clone this repository, install dependencies and build with [colcon](https://colcon.readthedocs.io).
 
 ```bash
 # Clone this repository into your favourite ROS 2 workspace
 git clone https://github.com/AndrejOrsula/pymoveit2.git
 # Install dependencies
-rosdep install -r --from-paths . --ignore-src --rosdistro ${ROS_DISTRO}
+rosdep install -y -r -i --rosdistro ${ROS_DISTRO} --from-paths .
 # Build
 colcon build --merge-install --symlink-install --cmake-args "-DCMAKE_BUILD_TYPE=Release"
 ```
 
 ### Sourcing
 
-Before utilising this package, remember to source the ROS 2 workspace overlay.
+Before utilising this package, remember to source the ROS 2 workspace.
 
 ```bash
-source ${PYMOVEIT2_WS_DIR}/install/local_setup.bash
+source install/local_setup.bash
 ```
 
 This enables importing of `pymoveit2` module from external workspaces.
 
 ## Examples
 
-To demostrate `pymoveit2` usage, [examples](./examples) directory contains scripts that demonstrate the basic functionality.
+To demostrate `pymoveit2` usage, [examples](./examples) directory contains scripts that demonstrate the basic functionality. Additional examples can be found under [ign_moveit2_examples](https://github.com/AndrejOrsula/ign_moveit2_examples) repository.
 
-Prior to running the examples, configure an environment for control of a robot with MoveIt 2, e.g. one of the following launch scripts from [panda_ign_moveit2](https://github.com/AndrejOrsula/panda_ign_moveit2).
+Prior to running the examples, configure an environment for control of a robot with MoveIt 2. For instance, one of the following launch scripts from [panda_ign_moveit2](https://github.com/AndrejOrsula/panda_ign_moveit2) repository can be used.
 
 ```bash
 # RViz (fake) ROS 2 control
 ros2 launch panda_moveit_config ex_fake_control.launch.py
-# Ignition Gazebo (simulated) ROS 2 control
+# Gazebo (simulated) ROS 2 control
 ros2 launch panda_moveit_config ex_ign_control.launch.py
 ```
 
@@ -70,6 +79,8 @@ ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p
 ros2 run pymoveit2 ex_gripper.py --ros-args -p action:="toggle"
 # Example of using MoveIt 2 Servo to move the end-effector in a circular motion
 ros2 run pymoveit2 ex_servo.py
+# Example of adding a collision object to the planning scene of MoveIt 2
+ros2 run pymoveit2 ex_collision_object.py --ros-args -p action:="add" -p position:="[0.5, 0.0, 0.5]" -p quat_xyzw:="[0.0, 0.0, -0.707, 0.707]"
 ```
 
 ## Directory Structure
