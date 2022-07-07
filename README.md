@@ -57,7 +57,7 @@ This enables importing of `pymoveit2` module from external workspaces.
 
 ## Examples
 
-To demostrate `pymoveit2` usage, [examples](./examples) directory contains scripts that demonstrate the basic functionality. Additional examples can be found under [ign_moveit2_examples](https://github.com/AndrejOrsula/ign_moveit2_examples) repository.
+To demonstrate `pymoveit2` usage, [examples](./examples) directory contains scripts that demonstrate the basic functionality. Additional examples can be found under [ign_moveit2_examples](https://github.com/AndrejOrsula/ign_moveit2_examples) repository.
 
 Prior to running the examples, configure an environment for control of a robot with MoveIt 2. For instance, one of the following launch scripts from [panda_ign_moveit2](https://github.com/AndrejOrsula/panda_ign_moveit2) repository can be used.
 

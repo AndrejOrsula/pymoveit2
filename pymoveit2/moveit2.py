@@ -59,7 +59,7 @@ class MoveIt2:
           - `end_effector_name` - Name of the robot end effector
           - `group_name` - Name of the planning group for robot arm
           - `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
-                                   FollowJointTrajectory action (controller) is employed othewise
+                                   FollowJointTrajectory action (controller) is employed otherwise
                                    together with a separate planning service client
           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
                                                  while previous is still being executed
@@ -202,7 +202,7 @@ class MoveIt2:
             end_effector=end_effector_name,
         )
 
-        # Flag to detemine whether to execute trajectories via MoveIt2, or rather by calling a separate action with the controller itself
+        # Flag to determine whether to execute trajectories via MoveIt2, or rather by calling a separate action with the controller itself
         # Applies to `move_to_pose()` and `move_to_configuraion()`
         self.__execute_via_moveit = execute_via_moveit
 
@@ -657,9 +657,9 @@ class MoveIt2:
 
     def create_new_goal_constraint(self):
         """
-        Create a new set of goal contraints that will be set together with the request. Each
+        Create a new set of goal constraints that will be set together with the request. Each
         subsequent setting of goals with `set_joint_goal()`, `set_pose_goal()` and others will be
-        added under this newly created set of contraints.
+        added under this newly created set of constraints.
         """
 
         self.__move_action_goal.request.goal_constraints.append(Constraints())
@@ -949,11 +949,11 @@ class MoveIt2:
             stamp
         )
         for (
-            contraints
+            constraints
         ) in self.__kinematic_path_request.motion_plan_request.goal_constraints:
-            for position_constraint in contraints.position_constraints:
+            for position_constraint in constraints.position_constraints:
                 position_constraint.header.stamp = stamp
-            for orientation_constraint in contraints.orientation_constraints:
+            for orientation_constraint in constraints.orientation_constraints:
                 orientation_constraint.header.stamp = stamp
 
         if not self._plan_kinematic_path_service.wait_for_service(

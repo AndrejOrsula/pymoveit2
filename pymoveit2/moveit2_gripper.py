@@ -35,7 +35,7 @@ class MoveIt2Gripper(MoveIt2):
           - `closed_gripper_joint_positions` - Configuration of gripper joints when fully closed
           - `gripper_group_name` - Name of the planning group for robot gripper
           - `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
-                                   FollowJointTrajectory action (controller) is employed othewise
+                                   FollowJointTrajectory action (controller) is employed otherwise
                                    together with a separate planning service client
           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
                                                  while previous is still being executed
