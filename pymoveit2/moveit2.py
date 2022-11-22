@@ -980,6 +980,7 @@ class MoveIt2:
         self,
         max_step: float = 0.0025,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
+        frame_id: Optional[str] = None,
     ) -> Optional[JointTrajectory]:
 
         # Re-use request from move action goal
@@ -991,6 +992,10 @@ class MoveIt2:
         )
         self.__cartesian_path_request.link_name = self.__end_effector_name
         self.__cartesian_path_request.max_step = max_step
+
+        self.__cartesian_path_request.header.frame_id = (
+            frame_id if frame_id is not None else self.__base_link_name
+        )
 
         stamp = self._node.get_clock().now().to_msg()
         self.__cartesian_path_request.header.stamp = stamp
