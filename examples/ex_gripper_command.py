@@ -16,14 +16,14 @@ from pymoveit2 import GripperCommand
 from pymoveit2.robots import panda
 
 
-def main(args=None):
+def main():
 
-    rclpy.init(args=args)
+    rclpy.init()
 
     # Create node for this example
     node = Node("ex_gripper_command")
 
-    # Declare parameter for joint positions
+    # Declare parameter for gripper action
     node.declare_parameter(
         "action",
         "toggle",

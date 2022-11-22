@@ -14,9 +14,9 @@ from pymoveit2 import MoveIt2
 from pymoveit2.robots import panda
 
 
-def main(args=None):
+def main():
 
-    rclpy.init(args=args)
+    rclpy.init()
 
     # Create node for this example
     node = Node("ex_joint_goal")

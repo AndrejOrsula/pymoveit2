@@ -22,9 +22,9 @@ DEFAULT_EXAMPLE_MESH = path.join(
 )
 
 
-def main(args=None):
+def main():
 
-    rclpy.init(args=args)
+    rclpy.init()
 
     # Create node for this example
     node = Node("ex_collision_object")
