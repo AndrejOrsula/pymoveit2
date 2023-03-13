@@ -222,7 +222,6 @@ class GripperCommand:
             self.__wait_until_executed_rate.sleep()
 
     def __joint_state_callback(self, msg: JointState):
-
         # Update only if all relevant joints are included in the message
         for joint_name in self.joint_names:
             if not joint_name in msg.name:
@@ -238,7 +237,6 @@ class GripperCommand:
         goal: GripperCommandAction.Goal,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
     ):
-
         if not self.__gripper_command_action_client.wait_for_server(
             timeout_sec=wait_for_server_timeout_sec
         ):
@@ -255,7 +253,6 @@ class GripperCommand:
         action_result.add_done_callback(self.__response_callback_gripper_command)
 
     def __response_callback_gripper_command(self, response):
-
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
@@ -273,7 +270,6 @@ class GripperCommand:
         )
 
     def __result_callback_gripper_command(self, res):
-
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().error(
                 f"Action '{self.__gripper_command_action_client._action_name}' was unsuccessful: {res.result().status}"
@@ -285,7 +281,6 @@ class GripperCommand:
     def __init_gripper_command_goal(
         cls, position: Union[float, List[float]], max_effort: float
     ) -> GripperCommandAction.Goal:
-
         if hasattr(position, "__getitem__"):
             position = position[0]
 
@@ -297,12 +292,10 @@ class GripperCommand:
 
     @property
     def joint_names(self) -> List[str]:
-
         return self.__joint_names
 
     @property
     def joint_state(self) -> Optional[JointState]:
-
         self.__joint_state_mutex.acquire()
         joint_state = self.__joint_state
         self.__joint_state_mutex.release()
@@ -310,7 +303,6 @@ class GripperCommand:
 
     @property
     def new_joint_state_available(self):
-
         return self.__new_joint_state_available
 
     @property

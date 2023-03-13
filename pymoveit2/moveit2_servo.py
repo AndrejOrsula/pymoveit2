@@ -195,7 +195,6 @@ class MoveIt2Servo:
             return True
 
     def __enable_done_callback(self, future: Future):
-
         result: Trigger.Response = future.result()
 
         if not result.success:
@@ -206,7 +205,6 @@ class MoveIt2Servo:
         self.__is_enabled = result.success
 
     def __disable_done_callback(self, future: Future):
-
         result: Trigger.Response = future.result()
 
         if not result.success:
@@ -218,39 +216,32 @@ class MoveIt2Servo:
 
     @property
     def is_enabled(self) -> bool:
-
         return self.__is_enabled
 
     @property
     def frame_id(self) -> str:
-
         return self.__twist_msg.header.frame_id
 
     @frame_id.setter
     def frame_id(self, value: str):
-
         self.__twist_msg.header.frame_id = value
 
     @property
     def linear_speed(self) -> float:
-
         return self.__twist_msg.twist.linear.x
 
     @linear_speed.setter
     def linear_speed(self, value: float):
-
         self.__twist_msg.twist.linear.x = value
         self.__twist_msg.twist.linear.y = value
         self.__twist_msg.twist.linear.z = value
 
     @property
     def angular_speed(self) -> float:
-
         return self.__twist_msg.twist.angular.x
 
     @angular_speed.setter
     def angular_speed(self, value: float):
-
         self.__twist_msg.twist.angular.x = value
         self.__twist_msg.twist.angular.y = value
         self.__twist_msg.twist.angular.z = value

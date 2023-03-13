@@ -17,7 +17,6 @@ from pymoveit2.robots import panda
 
 
 def main():
-
     rclpy.init()
 
     # Create node for this example
