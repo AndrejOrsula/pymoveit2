@@ -176,21 +176,18 @@ class MoveIt2Gripper(MoveIt2):
         )
 
     def __open_without_planning(self):
-
         self._send_goal_async_follow_joint_trajectory(
             goal=self.__open_dummy_trajectory_goal,
             wait_until_response=False,
         )
 
     def __close_without_planning(self):
-
         self._send_goal_async_follow_joint_trajectory(
             goal=self.__close_dummy_trajectory_goal,
             wait_until_response=False,
         )
 
     def __del_redundant_attributes(self):
-
         self.move_to_pose = None
         self.set_pose_goal = None
         self.set_position_goal = None

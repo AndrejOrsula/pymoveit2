@@ -23,7 +23,6 @@ DEFAULT_EXAMPLE_MESH = path.join(
 
 
 def main():
-
     rclpy.init()
 
     # Create node for this example

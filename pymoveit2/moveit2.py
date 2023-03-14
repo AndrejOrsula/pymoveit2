@@ -892,7 +892,6 @@ class MoveIt2:
         self.__collision_object_publisher.publish(msg)
 
     def __joint_state_callback(self, msg: JointState):
-
         # Update only if all relevant joints are included in the message
         for joint_name in self.joint_names:
             if not joint_name in msg.name:
@@ -906,7 +905,6 @@ class MoveIt2:
     def _send_goal_move_action_plan_only(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
-
         # Set action goal to only do planning without execution
         original_plan_only = self.__move_action_goal.planning_options.plan_only
         self.__move_action_goal.planning_options.plan_only = True
@@ -938,7 +936,6 @@ class MoveIt2:
     def _plan_kinematic_path(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
-
         # Re-use request from move action goal
         self.__kinematic_path_request.motion_plan_request = (
             self.__move_action_goal.request
@@ -982,7 +979,6 @@ class MoveIt2:
         wait_for_server_timeout_sec: Optional[float] = 1.0,
         frame_id: Optional[str] = None,
     ) -> Optional[JointTrajectory]:
-
         # Re-use request from move action goal
         self.__cartesian_path_request.start_state = (
             self.__move_action_goal.request.start_state
@@ -1049,7 +1045,6 @@ class MoveIt2:
     def _send_goal_async_move_action(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ):
-
         stamp = self._node.get_clock().now().to_msg()
         self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
 
@@ -1072,7 +1067,6 @@ class MoveIt2:
         )
 
     def __response_callback_move_action(self, response):
-
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
@@ -1090,7 +1084,6 @@ class MoveIt2:
         )
 
     def __result_callback_move_action(self, res):
-
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().error(
                 f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}."
@@ -1104,7 +1097,6 @@ class MoveIt2:
         wait_for_server_timeout_sec: Optional[float] = 1.0,
         wait_until_response: bool = False,
     ):
-
         if not self.__follow_joint_trajectory_action_client.wait_for_server(
             timeout_sec=wait_for_server_timeout_sec
         ):
@@ -1135,7 +1127,6 @@ class MoveIt2:
             )
 
     def __response_callback_follow_joint_trajectory(self, response):
-
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
@@ -1155,12 +1146,10 @@ class MoveIt2:
         )
 
     def __response_callback_with_event_set_follow_joint_trajectory(self, response):
-
         self.__response_callback_follow_joint_trajectory(response)
         self.__future_done_event.set()
 
     def __result_callback_follow_joint_trajectory(self, res):
-
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().error(
                 f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
@@ -1172,7 +1161,6 @@ class MoveIt2:
     def __init_move_action_goal(
         cls, frame_id: str, group_name: str, end_effector: str
     ) -> MoveGroup.Goal:
-
         move_action_goal = MoveGroup.Goal()
         move_action_goal.request.workspace_parameters.header.frame_id = frame_id
         # move_action_goal.request.workspace_parameters.header.stamp = "Set during request"
@@ -1209,7 +1197,6 @@ class MoveIt2:
         return move_action_goal
 
     def __init_compute_fk(self):
-
         self.__compute_fk_client = self._node.create_client(
             srv_type=GetPositionFK,
             srv_name="compute_fk",
@@ -1226,7 +1213,6 @@ class MoveIt2:
         self.__compute_fk_req.robot_state.is_diff = False
 
     def __init_compute_ik(self):
-
         # Service client for IK
         self.__compute_ik_client = self._node.create_client(
             srv_type=GetPositionIK,
@@ -1255,12 +1241,10 @@ class MoveIt2:
 
     @property
     def joint_names(self) -> List[str]:
-
         return self.__joint_names
 
     @property
     def joint_state(self) -> Optional[JointState]:
-
         self.__joint_state_mutex.acquire()
         joint_state = self.__joint_state
         self.__joint_state_mutex.release()
@@ -1268,57 +1252,46 @@ class MoveIt2:
 
     @property
     def new_joint_state_available(self):
-
         return self.__new_joint_state_available
 
     @property
     def max_velocity(self) -> float:
-
         return self.__move_action_goal.request.max_velocity_scaling_factor
 
     @max_velocity.setter
     def max_velocity(self, value: float):
-
         self.__move_action_goal.request.max_velocity_scaling_factor = value
 
     @property
     def max_acceleration(self) -> float:
-
         return self.__move_action_goal.request.max_acceleration_scaling_factor
 
     @max_acceleration.setter
     def max_acceleration(self, value: float):
-
         self.__move_action_goal.request.max_acceleration_scaling_factor = value
 
     @property
     def max_cartesian_speed(self) -> float:
-
         return self.__move_action_goal.request.max_cartesian_speed
 
     @max_cartesian_speed.setter
     def max_cartesian_speed(self, value: float):
-
         self.__move_action_goal.request.max_cartesian_speed = value
 
     @property
     def num_planning_attempts(self) -> int:
-
         return self.__move_action_goal.request.num_planning_attempts
 
     @num_planning_attempts.setter
     def num_planning_attempts(self, value: int):
-
         self.__move_action_goal.request.num_planning_attempts = value
 
     @property
     def allowed_planning_time(self) -> float:
-
         return self.__move_action_goal.request.allowed_planning_time
 
     @allowed_planning_time.setter
     def allowed_planning_time(self, value: float):
-
         self.__move_action_goal.request.allowed_planning_time = value
 
 
@@ -1328,7 +1301,6 @@ def init_joint_state(
     joint_velocities: Optional[List[str]] = None,
     joint_effort: Optional[List[str]] = None,
 ) -> JointState:
-
     joint_state = JointState()
 
     joint_state.name = joint_names
@@ -1348,7 +1320,6 @@ def init_joint_state(
 def init_follow_joint_trajectory_goal(
     joint_trajectory: JointTrajectory,
 ) -> Optional[FollowJointTrajectory.Goal]:
-
     if joint_trajectory is None:
         return None
 
@@ -1368,7 +1339,6 @@ def init_follow_joint_trajectory_goal(
 def init_dummy_joint_trajectory_from_state(
     joint_state: JointState, duration_sec: int = 0, duration_nanosec: int = 0
 ) -> JointTrajectory:
-
     joint_trajectory = JointTrajectory()
     joint_trajectory.joint_names = joint_state.name
 
