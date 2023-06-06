@@ -2,6 +2,8 @@
 
 Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services.
 
+> Note: The official Python library for MoveIt 2 `moveit_py` is now available. Check the announcement [here](https://picknik.ai/moveit/ros/python/google/2023/04/28/GSOC-MoveIt-2-Python-Bindings.html)!
+
 <div align="center" class="tg-wrap">
 <table>
 <tbody>
