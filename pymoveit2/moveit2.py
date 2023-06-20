@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple, Union
 
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
-from moveit_msgs.action import MoveGroup
+from moveit_msgs.action import MoveGroup, ExecuteTrajectory
 from moveit_msgs.msg import (
     AttachedCollisionObject,
     CollisionObject,
@@ -52,7 +52,6 @@ class MoveIt2:
         group_name: str = "arm",
         execute_via_moveit: bool = False,
         callback_group: Optional[CallbackGroup] = None,
-        follow_joint_trajectory_action_name: str = "joint_trajectory_controller/follow_joint_trajectory",
     ):
         """
         Construct an instance of `MoveIt2` interface.
@@ -65,7 +64,6 @@ class MoveIt2:
                                    ExecuteTrajectory action is employed otherwise
                                    together with a separate planning service client
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
-          - `follow_joint_trajectory_action_name` - Name of the action server for the controller
         """
 
         self._node = node
@@ -153,10 +151,10 @@ class MoveIt2:
         self.__cartesian_path_request = GetCartesianPath.Request()
 
         # Create action client for trajectory execution
-        self.__follow_joint_trajectory_action_client = ActionClient(
+        self.__execute_trajectory_action_client = ActionClient(
             node=self._node,
-            action_type=FollowJointTrajectory,
-            action_name=follow_joint_trajectory_action_name,
+            action_type=ExecuteTrajectory,
+            action_name="execute_trajectory",
             goal_service_qos_profile=QoSProfile(
                 durability=QoSDurabilityPolicy.VOLATILE,
                 reliability=QoSReliabilityPolicy.RELIABLE,
@@ -625,17 +623,17 @@ class MoveIt2:
             )
             return
 
-        follow_joint_trajectory_goal = init_follow_joint_trajectory_goal(
+        execute_trajectory_goal = init_execute_trajectory_goal(
             joint_trajectory=joint_trajectory
         )
 
-        if follow_joint_trajectory_goal is None:
+        if execute_trajectory_goal is None:
             self._node.get_logger().warn(
                 "Cannot execute motion because the provided/planned trajectory is invalid."
             )
             return
 
-        self._send_goal_async_follow_joint_trajectory(goal=follow_joint_trajectory_goal)
+        self._send_goal_async_execute_trajectory(goal=execute_trajectory_goal)
 
     def wait_until_executed(self) -> bool:
         """
@@ -667,12 +665,12 @@ class MoveIt2:
                 joint_positions=joint_state,
             )
         joint_trajectory = init_dummy_joint_trajectory_from_state(joint_state)
-        follow_joint_trajectory_goal = init_follow_joint_trajectory_goal(
+        execute_trajectory_goal = init_execute_trajectory_goal(
             joint_trajectory=joint_trajectory
         )
 
-        self._send_goal_async_follow_joint_trajectory(
-            goal=follow_joint_trajectory_goal,
+        self._send_goal_async_execute_trajectory(
+            goal=execute_trajectory_goal,
             wait_until_response=sync,
         )
 
@@ -1558,47 +1556,47 @@ class MoveIt2:
         self.__is_executing = False
         self.__execution_mutex.release()
 
-    def _send_goal_async_follow_joint_trajectory(
+    def _send_goal_async_execute_trajectory(
         self,
-        goal: FollowJointTrajectory,
+        goal: ExecuteTrajectory,
         wait_until_response: bool = False,
     ):
         self.__execution_mutex.acquire()
-        if not self.__follow_joint_trajectory_action_client.server_is_ready():
+        if not self.__execute_trajectory_action_client.server_is_ready():
             self._node.get_logger().warn(
-                f"Action server '{self.__follow_joint_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
+                f"Action server '{self.__execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
             )
             return None
 
         self.__is_motion_requested = True
-        action_result = self.__follow_joint_trajectory_action_client.send_goal_async(
+        action_result = self.__execute_trajectory_action_client.send_goal_async(
             goal=goal,
             feedback_callback=None,
         )
 
         action_result.add_done_callback(
-            self.__response_callback_follow_joint_trajectory
+            self.__response_callback_execute_trajectory
         )
 
         if wait_until_response:
             self.__execution_mutex.release()
             self.__future_done_event.clear()
             action_result.add_done_callback(
-                self.__response_callback_with_event_set_follow_joint_trajectory
+                self.__response_callback_with_event_set_execute_trajectory
             )
             self.__future_done_event.wait()
         else:
             action_result.add_done_callback(
-                self.__response_callback_follow_joint_trajectory
+                self.__response_callback_execute_trajectory
             )
             self.__execution_mutex.release()
 
-    def __response_callback_follow_joint_trajectory(self, response):
+    def __response_callback_execute_trajectory(self, response):
         self.__execution_mutex.acquire()
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
-                f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was rejected."
+                f"Action '{self.__execute_trajectory_action_client._action_name}' was rejected."
             )
             self.__is_motion_requested = False
             return
@@ -1607,28 +1605,30 @@ class MoveIt2:
         self.__is_executing = True
         self.__is_motion_requested = False
 
-        self.__get_result_future_follow_joint_trajectory = (
+        self.__get_result_future_execute_trajectory = (
             goal_handle.get_result_async()
         )
-        self.__get_result_future_follow_joint_trajectory.add_done_callback(
-            self.__result_callback_follow_joint_trajectory
+        self.__get_result_future_execute_trajectory.add_done_callback(
+            self.__result_callback_execute_trajectory
         )
         self.__execution_mutex.release()
 
-    def __response_callback_with_event_set_follow_joint_trajectory(self, response):
-        self.__response_callback_follow_joint_trajectory(response)
+    def __response_callback_with_event_set_execute_trajectory(self, response):
+        self.__response_callback_execute_trajectory(response)
         self.__future_done_event.set()
 
-    def __result_callback_follow_joint_trajectory(self, res):
+    def __result_callback_execute_trajectory(self, res):
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().error(
-                f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
+                f"Action '{self.__execute_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
             self.motion_suceeded = False
         else:
             self.motion_suceeded = True
 
+        self.__last_error_code = res.result().result.error_code
+        
         self.__execution_goal_handle = None
         self.__is_executing = False
         self.__execution_mutex.release()
@@ -1797,23 +1797,17 @@ def init_joint_state(
     return joint_state
 
 
-def init_follow_joint_trajectory_goal(
+def init_execute_trajectory_goal(
     joint_trajectory: JointTrajectory,
-) -> Optional[FollowJointTrajectory.Goal]:
+) -> Optional[ExecuteTrajectory.Goal]:
     if joint_trajectory is None:
         return None
 
-    follow_joint_trajectory_goal = FollowJointTrajectory.Goal()
+    execute_trajectory_goal = ExecuteTrajectory.Goal()
 
-    follow_joint_trajectory_goal.trajectory = joint_trajectory
-    # follow_joint_trajectory_goal.multi_dof_trajectory = "Ignored"
-    # follow_joint_trajectory_goal.path_tolerance = "Ignored"
-    # follow_joint_trajectory_goal.component_path_tolerance = "Ignored"
-    # follow_joint_trajectory_goal.goal_tolerance = "Ignored"
-    # follow_joint_trajectory_goal.component_goal_tolerance = "Ignored"
-    # follow_joint_trajectory_goal.goal_time_tolerance = "Ignored"
+    execute_trajectory_goal.trajectory.joint_trajectory = joint_trajectory
 
-    return follow_joint_trajectory_goal
+    return execute_trajectory_goal
 
 
 def init_dummy_joint_trajectory_from_state(
