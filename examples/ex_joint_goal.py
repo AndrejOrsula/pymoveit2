@@ -11,7 +11,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 
 from pymoveit2 import MoveIt2
-from pymoveit2.robots import panda
+from pymoveit2.robots import kinova
 
 
 def main():
@@ -24,13 +24,12 @@ def main():
     node.declare_parameter(
         "joint_positions",
         [
-            0.0,
-            0.0,
-            0.0,
-            -0.7853981633974483,
-            0.0,
-            1.5707963267948966,
-            0.7853981633974483,
+            -1.47568,
+            2.92779,
+            1.00845,
+            -2.0847,
+            1.43588,
+            1.32575
         ],
     )
 
@@ -40,10 +39,10 @@ def main():
     # Create MoveIt 2 interface
     moveit2 = MoveIt2(
         node=node,
-        joint_names=panda.joint_names(),
-        base_link_name=panda.base_link_name(),
-        end_effector_name=panda.end_effector_name(),
-        group_name=panda.MOVE_GROUP_ARM,
+        joint_names=kinova.joint_names(),
+        base_link_name=kinova.base_link_name(),
+        end_effector_name="forkTip",
+        group_name=kinova.MOVE_GROUP_ARM,
         callback_group=callback_group,
     )
 
