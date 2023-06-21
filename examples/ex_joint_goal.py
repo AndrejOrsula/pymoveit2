@@ -71,8 +71,10 @@ def main():
         rate.sleep()
     print("Current State: " + str(moveit2.query_state()))
     future = moveit2.get_execution_future()
-    #print("Cancelling goal")
-    #moveit2.cancel_execution()
+    onesec = node.create_rate(1)
+    onesec.sleep()
+    print("Cancelling goal")
+    moveit2.cancel_execution()
     while not future.done():
         rate.sleep()
     print("Result status: " + str(future.result().status))
