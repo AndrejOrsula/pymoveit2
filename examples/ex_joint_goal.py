@@ -66,15 +66,17 @@ def main():
     node.get_logger().info(f"Moving to {{joint_positions: {list(joint_positions)}}}")
     moveit2.move_to_configuration(joint_positions)
     rate = node.create_rate(10)
+    print("Current State: " + str(moveit2.query_state()))
     while moveit2.query_state() != MoveIt2State.EXECUTING:
         rate.sleep()
     print("Current State: " + str(moveit2.query_state()))
-    print("Cancelling goal")
-    future = moveit2.cancel_execution()
-    print("Current State: " + str(moveit2.query_state()))
+    future = moveit2.get_execution_future()
+    #print("Cancelling goal")
+    #moveit2.cancel_execution()
     while not future.done():
         rate.sleep()
-    print("Cancellation result: " + str(future.result().return_code))
+    print("Result status: " + str(future.result().status))
+    print("Result error code: " + str(future.result().result.error_code))
 
     rclpy.shutdown()
     executor_thread.join()

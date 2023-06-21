@@ -19,6 +19,7 @@ from moveit_msgs.srv import (
     GetPositionFK,
     GetPositionIK,
 )
+from std_msgs.msg import String
 
 import rclpy
 from rclpy.action import ActionClient
@@ -42,7 +43,6 @@ class MoveIt2State(Enum):
     IDLE = 0
     REQUESTING = 1
     EXECUTING = 2
-    CANCELING = 3
 
 class MoveIt2:
     """
@@ -57,7 +57,7 @@ class MoveIt2:
         base_link_name: str,
         end_effector_name: str,
         group_name: str = "arm",
-        execute_via_moveit: bool = False,
+        use_move_action: bool = False,
         callback_group: Optional[CallbackGroup] = None,
     ):
         """
@@ -67,7 +67,7 @@ class MoveIt2:
           - `base_link_name` - Name of the robot base link
           - `end_effector_name` - Name of the robot end effector
           - `group_name` - Name of the planning group for robot arm
-          - `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
+          - `use_move_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
                                    ExecuteTrajectory action is employed otherwise
                                    together with a separate planning service client
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
@@ -90,7 +90,7 @@ class MoveIt2:
             callback_group=self._callback_group,
         )
 
-        if execute_via_moveit:
+        if use_move_action:
             # Create action client for move action
             self.__move_action_client = ActionClient(
                 node=self._node,
@@ -202,6 +202,10 @@ class MoveIt2:
             AttachedCollisionObject, "/attached_collision_object", 10
         )
 
+        self.__cancellation_pub = self._node.create_publisher(
+            String, "/trajectory_execution_event", 1
+        )
+
         self.__joint_state_mutex = threading.Lock()
         self.__joint_state = None
         self.__new_joint_state_available = False
@@ -214,7 +218,7 @@ class MoveIt2:
         # Flag to determine whether to execute trajectories via Move Group Action, or rather by calling
         # the separate ExecuteTrajectory action
         # Applies to `move_to_pose()` and `move_to_configuraion()`
-        self.__execute_via_moveit = execute_via_moveit
+        self.__use_move_action = use_move_action
 
         # Store additional variables for later use
         self.__joint_names = joint_names
@@ -226,7 +230,6 @@ class MoveIt2:
         self.__is_motion_requested = False
         self.__is_executing = False
         self.motion_suceeded = False
-        self.__cancellation_future = None
         self.__execution_goal_handle = None
         self.__last_error_code = None
         self.__wait_until_executed_rate = self._node.create_rate(1000.0)
@@ -241,44 +244,23 @@ class MoveIt2:
             if self.__is_motion_requested:
                 return MoveIt2State.REQUESTING
             elif self.__is_executing:
-                print(self.__execution_goal_handle.status)
-                if self.__cancellation_future is None:
-                    return MoveIt2State.EXECUTING
-                else:
-                    return MoveIt2State.CANCELING
+                return MoveIt2State.EXECUTING
             else:
                 return MoveIt2State.IDLE
 
-    def cancel_execution(self) -> Optional[Future]:
+    def cancel_execution(self):
         if self.query_state() != MoveIt2State.EXECUTING:
             self._node.get_logger().warn(
                     "Attempted to cancel without active goal."
                 )
             return None
 
-        with self.__execution_mutex:
-            self.__cancellation_future = self.__execution_goal_handle.cancel_goal_async()
-            self.__cancellation_future.add_done_callback(
-                self.__cancel_callback
-            )
-
-        return self.__cancellation_future
-
-    def __cancel_callback(self, response):
-        self.__execution_mutex.acquire()
-        cancel_response = response.result()
-        if len(cancel_response.goals_canceling) > 0:
-            self._node.get_logger().info('Execution successfully canceled')
-            self.__is_executing = False
-            self.__execution_goal_handle = None
-            self.__cancellation_future = None
-        else:
-            self._node.get_logger().error('Execution failed to cancel')
-        self.__execution_mutex.release()
+        cancel_string = String()
+        cancel_string.data = "stop"
+        self.__cancellation_pub.publish(cancel_string)
 
     def get_execution_future(self) -> Optional[Future]:
-        with self.__execution_mutex:
-            if self.query_state() != MoveIt2State.EXECUTING:
+        if self.query_state() != MoveIt2State.EXECUTING:
                 self._node.get_logger().warn(
                         "Need active goal for future."
                     )
@@ -345,7 +327,7 @@ class MoveIt2:
                 pose=Pose(position=position, orientation=quat_xyzw),
             )
 
-        if self.__execute_via_moveit and not cartesian:
+        if self.__use_move_action and not cartesian:
             if self.__is_motion_requested or self.__is_executing:
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
@@ -401,7 +383,7 @@ class MoveIt2:
         passed in to internally use `set_joint_goal()` to define a goal during the call.
         """
 
-        if self.__execute_via_moveit:
+        if self.__use_move_action:
             if self.__is_motion_requested or self.__is_executing:
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
@@ -1508,7 +1490,6 @@ class MoveIt2:
         self.__execution_mutex.acquire()
         stamp = self._node.get_clock().now().to_msg()
         self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
-
         if not self.__move_action_client.server_is_ready():
             self._node.get_logger().warn(
                 f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
@@ -1550,7 +1531,7 @@ class MoveIt2:
     def __result_callback_move_action(self, res):
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().error(
+            self._node.get_logger().warn(
                 f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
             self.motion_suceeded = False
@@ -1615,7 +1596,7 @@ class MoveIt2:
     def __result_callback_execute_trajectory(self, res):
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().error(
+            self._node.get_logger().warn(
                 f"Action '{self.__execute_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
             self.motion_suceeded = False
