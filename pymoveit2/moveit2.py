@@ -23,6 +23,7 @@ from moveit_msgs.srv import (
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
+from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 from rclpy.qos import (
     QoSDurabilityPolicy,
@@ -36,6 +37,12 @@ from shape_msgs.msg import Mesh, MeshTriangle, SolidPrimitive
 from std_msgs.msg import Header
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
+from enum import Enum
+class MoveIt2State(Enum):
+    IDLE = 0
+    REQUESTING = 1
+    EXECUTING = 2
+    CANCELING = 3
 
 class MoveIt2:
     """
@@ -136,6 +143,44 @@ class MoveIt2:
             )
             self.__kinematic_path_request = GetMotionPlan.Request()
 
+            # And create a separate action client for trajectory execution
+            self.__execute_trajectory_action_client = ActionClient(
+                node=self._node,
+                action_type=ExecuteTrajectory,
+                action_name="execute_trajectory",
+                goal_service_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.RELIABLE,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=1,
+                ),
+                result_service_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.RELIABLE,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=5,
+                ),
+                cancel_service_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.RELIABLE,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=5,
+                ),
+                feedback_sub_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=1,
+                ),
+                status_sub_qos_profile=QoSProfile(
+                    durability=QoSDurabilityPolicy.VOLATILE,
+                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                    history=QoSHistoryPolicy.KEEP_LAST,
+                    depth=1,
+                ),
+                callback_group=self._callback_group,
+            )
+
         # Create a separate service client for Cartesian planning
         self._plan_cartesian_path_service = self._node.create_client(
             srv_type=GetCartesianPath,
@@ -149,44 +194,6 @@ class MoveIt2:
             callback_group=callback_group,
         )
         self.__cartesian_path_request = GetCartesianPath.Request()
-
-        # Create action client for trajectory execution
-        self.__execute_trajectory_action_client = ActionClient(
-            node=self._node,
-            action_type=ExecuteTrajectory,
-            action_name="execute_trajectory",
-            goal_service_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.RELIABLE,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-            ),
-            result_service_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.RELIABLE,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=5,
-            ),
-            cancel_service_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.RELIABLE,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=5,
-            ),
-            feedback_sub_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-            ),
-            status_sub_qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-            ),
-            callback_group=self._callback_group,
-        )
 
         self.__collision_object_publisher = self._node.create_publisher(
             CollisionObject, "/collision_object", 10
@@ -229,32 +236,27 @@ class MoveIt2:
         self.__future_done_event = threading.Event()
 
     #### Execution Polling Functions
-    from enum import Enum
-    class MoveIt2State(Enum):
-        IDLE = 0
-        REQUESTING = 1
-        EXECUTING = 2
-        CANCELING = 3
-
     def query_state(self) -> MoveIt2State:
         with self.__execution_mutex:
             if self.__is_motion_requested:
                 return MoveIt2State.REQUESTING
             elif self.__is_executing:
+                print(self.__execution_goal_handle.status)
                 if self.__cancellation_future is None:
                     return MoveIt2State.EXECUTING
                 else:
                     return MoveIt2State.CANCELING
-            else return MoveIt2State.IDLE
+            else:
+                return MoveIt2State.IDLE
 
     def cancel_execution(self) -> Optional[Future]:
-        with self.__execution_mutex:
-            if self.query_state() != MoveIt2State.EXECUTING:
-                self._node.get_logger().warn(
-                        "Attempted to cancel without active goal."
-                    )
-                return None
+        if self.query_state() != MoveIt2State.EXECUTING:
+            self._node.get_logger().warn(
+                    "Attempted to cancel without active goal."
+                )
+            return None
 
+        with self.__execution_mutex:
             self.__cancellation_future = self.__execution_goal_handle.cancel_goal_async()
             self.__cancellation_future.add_done_callback(
                 self.__cancel_callback
@@ -266,12 +268,12 @@ class MoveIt2:
         self.__execution_mutex.acquire()
         cancel_response = response.result()
         if len(cancel_response.goals_canceling) > 0:
-            self.__node.get_logger().info('Execution successfully canceled')
+            self._node.get_logger().info('Execution successfully canceled')
             self.__is_executing = False
             self.__execution_goal_handle = None
             self.__cancellation_future = None
         else:
-            self.__node.get_logger().error('Execution failed to cancel')
+            self._node.get_logger().error('Execution failed to cancel')
         self.__execution_mutex.release()
 
     def get_execution_future(self) -> Optional[Future]:
@@ -457,12 +459,16 @@ class MoveIt2:
         """
         Call plan_async and wait on future
         """
-        future = self.plan(**locals())
+        future = self.plan_async(**{key: value for key, value in locals().items() if key != 'self'})
 
         if future is None:
             return None
 
-        rclpy.spin_until_future_complete(self._node, future)
+        # 10ms sleep
+        rate = self._node.create_rate(10)
+        while not future.done():
+            rate.sleep()
+
         res = future.result()
 
         # Cartesian
@@ -1503,7 +1509,7 @@ class MoveIt2:
         stamp = self._node.get_clock().now().to_msg()
         self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
 
-        if not self.__move_action_client.service_is_ready():
+        if not self.__move_action_client.server_is_ready():
             self._node.get_logger().warn(
                 f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
             )
@@ -1518,6 +1524,7 @@ class MoveIt2:
         self.__send_goal_future_move_action.add_done_callback(
             self.__response_callback_move_action
         )
+
         self.__execution_mutex.release()
 
     def __response_callback_move_action(self, response):
@@ -1562,34 +1569,23 @@ class MoveIt2:
         wait_until_response: bool = False,
     ):
         self.__execution_mutex.acquire()
+
         if not self.__execute_trajectory_action_client.server_is_ready():
             self._node.get_logger().warn(
                 f"Action server '{self.__execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
             )
-            return None
+            return
 
         self.__is_motion_requested = True
-        action_result = self.__execute_trajectory_action_client.send_goal_async(
+        self.__send_goal_future_execute_trajectory = self.__execute_trajectory_action_client.send_goal_async(
             goal=goal,
             feedback_callback=None,
         )
 
-        action_result.add_done_callback(
+        self.__send_goal_future_execute_trajectory.add_done_callback(
             self.__response_callback_execute_trajectory
         )
-
-        if wait_until_response:
-            self.__execution_mutex.release()
-            self.__future_done_event.clear()
-            action_result.add_done_callback(
-                self.__response_callback_with_event_set_execute_trajectory
-            )
-            self.__future_done_event.wait()
-        else:
-            action_result.add_done_callback(
-                self.__response_callback_execute_trajectory
-            )
-            self.__execution_mutex.release()
+        self.__execution_mutex.release()
 
     def __response_callback_execute_trajectory(self, response):
         self.__execution_mutex.acquire()
@@ -1614,7 +1610,6 @@ class MoveIt2:
         self.__execution_mutex.release()
 
     def __response_callback_with_event_set_execute_trajectory(self, response):
-        self.__response_callback_execute_trajectory(response)
         self.__future_done_event.set()
 
     def __result_callback_execute_trajectory(self, res):
@@ -1628,7 +1623,7 @@ class MoveIt2:
             self.motion_suceeded = True
 
         self.__last_error_code = res.result().result.error_code
-        
+
         self.__execution_goal_handle = None
         self.__is_executing = False
         self.__execution_mutex.release()
