@@ -128,20 +128,20 @@ class MoveIt2:
                 ),
                 callback_group=self._callback_group,
             )
-        else:
-            # Otherwise create a separate service client for planning
-            self._plan_kinematic_path_service = self._node.create_client(
-                srv_type=GetMotionPlan,
-                srv_name="plan_kinematic_path",
-                qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                callback_group=callback_group,
-            )
-            self.__kinematic_path_request = GetMotionPlan.Request()
+            
+        # Also create a separate service client for planning
+        self._plan_kinematic_path_service = self._node.create_client(
+            srv_type=GetMotionPlan,
+            srv_name="plan_kinematic_path",
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=callback_group,
+        )
+        self.__kinematic_path_request = GetMotionPlan.Request()
 
             # And create a separate action client for trajectory execution
             self.__execute_trajectory_action_client = ActionClient(
