@@ -943,7 +943,7 @@ class MoveIt2:
 
         self.__move_action_goal.request.goal_constraints.append(Constraints())
 
-    def set_joint_path(
+    def set_path_joint_constraint(
         self,
         joint_positions: List[float],
         joint_names: Optional[List[str]] = None,
@@ -980,7 +980,7 @@ class MoveIt2:
             # Append to other constraints
             self.__move_action_goal.request.path_constraints.joint_constraints.append(constraint)
 
-    def set_position_path(
+    def set_path_position_constraint(
         self,
         position: Union[Point, Tuple[float, float, float]],
         frame_id: Optional[str] = None,
@@ -1031,7 +1031,7 @@ class MoveIt2:
         # Append to other constraints
         self.__move_action_goal.request.path_constraints.position_constraints.append(constraint)
 
-    def set_orientation_path(
+    def set_path_orientation_constraint(
         self,
         quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
         frame_id: Optional[str] = None,
