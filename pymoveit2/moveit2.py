@@ -217,7 +217,7 @@ class MoveIt2:
 
         # Flag to determine whether to execute trajectories via Move Group Action, or rather by calling
         # the separate ExecuteTrajectory action
-        # Applies to `move_to_pose()` and `move_to_configuraion()`
+        # Applies to `move_to_pose()` and `move_to_configuration()`
         self.__use_move_action = use_move_action
 
         # Store additional variables for later use
@@ -450,6 +450,19 @@ class MoveIt2:
         rate = self._node.create_rate(10)
         while not future.done():
             rate.sleep()
+
+        return self.get_trajectory(future, cartesian=cartesian)
+
+    def get_trajectory(self, future: Future, cartesian: bool = False) -> Optional[JointTrajectory]:
+        """
+        Takes in a future returned by plan_async and returns the trajectory if the future is done
+        and planning was successful, else None.
+        """
+        if (not future.done()):
+            self._node.get_logger().warn(
+                "Cannot get trajectory because future is not done."
+            )
+            return None
 
         res = future.result()
 
