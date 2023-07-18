@@ -845,7 +845,7 @@ class MoveIt2:
         quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
-        tolerance: float = 0.001,
+        tolerance_xyz: Tuple[float, float, float] = [0.001, 0.001, 0.001],
         weight: float = 1.0,
     ):
         """
@@ -875,9 +875,9 @@ class MoveIt2:
             constraint.orientation.w = float(quat_xyzw[3])
 
         # Define tolerances
-        constraint.absolute_x_axis_tolerance = tolerance
-        constraint.absolute_y_axis_tolerance = tolerance
-        constraint.absolute_z_axis_tolerance = tolerance
+        constraint.absolute_x_axis_tolerance = tolerance_xyz[0]
+        constraint.absolute_y_axis_tolerance = tolerance_xyz[1]
+        constraint.absolute_z_axis_tolerance = tolerance_xyz[2]
 
         # Set weight of the constraint
         constraint.weight = weight
@@ -1036,7 +1036,7 @@ class MoveIt2:
         quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
-        tolerance: float = 0.001,
+        tolerance_xyz: Tuple[float, float, float] = [0.001, 0.001, 0.001],
         weight: float = 1.0,
     ):
         """
@@ -1066,9 +1066,9 @@ class MoveIt2:
             constraint.orientation.w = float(quat_xyzw[3])
 
         # Define tolerances
-        constraint.absolute_x_axis_tolerance = tolerance
-        constraint.absolute_y_axis_tolerance = tolerance
-        constraint.absolute_z_axis_tolerance = tolerance
+        constraint.absolute_x_axis_tolerance = tolerance_xyz[0]
+        constraint.absolute_y_axis_tolerance = tolerance_xyz[1]
+        constraint.absolute_z_axis_tolerance = tolerance_xyz[2]
 
         # Set weight of the constraint
         constraint.weight = weight
