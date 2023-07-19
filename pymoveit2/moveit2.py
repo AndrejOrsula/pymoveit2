@@ -846,8 +846,8 @@ class MoveIt2:
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
         tolerance: Union[float, Tuple[float, float, float]] = 0.001,
-        parameterization: int = 0, # 0: Euler, 1: Rotation Vector
         weight: float = 1.0,
+        parameterization: int = 0, # 0: Euler, 1: Rotation Vector
     ):
         """
         Set Cartesian orientation goal of `target_link` with respect to `frame_id`.
@@ -1045,8 +1045,8 @@ class MoveIt2:
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
         tolerance: Union[float, Tuple[float, float, float]] = 0.001,
-        parameterization: int = 0, # 0: Euler Angles, 1: Rotation Vector
         weight: float = 1.0,
+        parameterization: int = 0, # 0: Euler Angles, 1: Rotation Vector
     ):
         """
         Set Cartesian orientation goal of `target_link` with respect to `frame_id`.
