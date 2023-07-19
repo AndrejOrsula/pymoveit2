@@ -1116,6 +1116,13 @@ class MoveIt2:
 
         self.__move_action_goal.request.path_constraints = Constraints()
 
+    def set_planner_id(self, planner_id: str):
+        """
+        Set the ID of the planner to be used.
+        """
+
+        self.__move_action_goal.request.planner_id = planner_id
+
     def compute_fk(
         self,
         joint_state: Optional[Union[JointState, List[float]]] = None,
