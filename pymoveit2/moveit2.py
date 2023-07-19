@@ -725,7 +725,7 @@ class MoveIt2:
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
         tolerance_position: float = 0.001,
-        tolerance_orientation: float = 0.001,
+        tolerance_orientation: Union[float, Tuple[float, float, float]] = 0.001,
         weight_position: float = 1.0,
         weight_orientation: float = 1.0,
     ):
