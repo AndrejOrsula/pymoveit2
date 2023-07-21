@@ -1,3 +1,4 @@
+import copy
 import threading
 from enum import Enum
 from typing import List, Optional, Tuple, Union
@@ -7,6 +8,7 @@ from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import ExecuteTrajectory, MoveGroup
 from moveit_msgs.msg import (
     AttachedCollisionObject,
+    AllowedCollisionEntry,
     CollisionObject,
     Constraints,
     JointConstraint,
@@ -15,8 +17,10 @@ from moveit_msgs.msg import (
     PositionConstraint,
 )
 from moveit_msgs.srv import (
+    ApplyPlanningScene,
     GetCartesianPath,
     GetMotionPlan,
+    GetPlanningScene,
     GetPositionFK,
     GetPositionIK,
 )
@@ -219,6 +223,27 @@ class MoveIt2:
                 depth=1,
             ),
             callback_group=self._callback_group,
+
+        # Create a service for getting the planning scene
+        self._get_planning_scene_service = self._node.create_client(
+            srv_type=GetPlanningScene,
+            srv_name="get_planning_scene",
+            qos_profile=QoSProfile(    
+            callback_group=callback_group,
+        )
+        self.__planning_scene = None
+
+        # Create a service for applying the planning scene
+        self._apply_planning_scene_service = self._node.create_client(
+            srv_type=ApplyPlanningScene,
+            srv_name="apply_planning_scene",
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=callback_group,
         )
 
         self.__collision_object_publisher = self._node.create_publisher(
@@ -1690,6 +1715,104 @@ class MoveIt2:
             object=CollisionObject(operation=CollisionObject.REMOVE)
         )
         self.__attached_collision_object_publisher.publish(msg)
+
+    def __update_planning_scene(self) -> bool:
+        """
+        Gets the current planning scene. Returns whether the service call was
+        successful.
+        """
+
+        if not self._get_planning_scene_service.service_is_ready():
+            self._node.get_logger().warn(
+                f"Service '{self._get_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
+            )
+            return False
+        self.__planning_scene = self._get_planning_scene_service.call(
+            GetPlanningScene.Request()
+        ).scene
+        return True
+
+    def enable_collisions(self, id: str) -> bool:
+        """
+        Takes in the ID of an element in the planning scene. Modified the allowed
+        collision matrix to allow collisions between that element and all other
+        elements. Returns whether it succeeded.
+        """
+        # Update the planning scene
+        if not self.__update_planning_scene():
+            return False
+        allowed_collision_matrix = self.__planning_scene.allowed_collision_matrix
+        old_allowed_collision_matrix = copy.deepcopy(allowed_collision_matrix)
+
+        # Destructively modify the allowed collision matrix. For every current
+        # link, disable collision with the object with ID. For the object with
+        # ID, disable collision with every current link.
+        allowed_collision_matrix.entry_names.append(id)
+        for i in range(len(allowed_collision_matrix.entry_values)):
+            allowed_collision_matrix.entry_values[i].enabled.append(True)
+        allowed_collision_matrix.entry_values.append(
+            AllowedCollisionEntry(
+                enabled=[True for _ in range(len(allowed_collision_matrix.entry_names))]
+            )
+        )
+
+        # Apply the new planning scene
+        if not self._apply_planning_scene_service.service_is_ready():
+            self._node.get_logger().warn(
+                f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
+            )
+            return False
+        resp = self._apply_planning_scene_service.call(
+            ApplyPlanningScene.Request(
+                scene=self.__planning_scene
+            )
+        )
+
+        # If it failed, restore the old planning scene
+        if not resp.success:
+            self.__planning_scene.allowed_collision_matrix = old_allowed_collision_matrix
+
+        return resp.success
+
+    def disable_collisions(self, id: str) -> bool:
+        """
+        Takes in the ID of an element in the planning scene. Modified the allowed
+        collision matrix to disallow collisions between that element and all other
+        elements. Returns whether it succeeded.
+        """
+        # Update the planning scene
+        if not self.__update_planning_scene():
+            return False
+        allowed_collision_matrix = self.__planning_scene.allowed_collision_matrix
+        old_allowed_collision_matrix = copy.deepcopy(allowed_collision_matrix)
+
+        # Destructively modify the allowed collision matrix to remove the object
+        # with ID.
+        if id in allowed_collision_matrix.entry_names:
+            j = allowed_collision_matrix.entry_names.index(id)
+            # Remove the object's row and column from the allowed collision matrix
+            allowed_collision_matrix.entry_names.pop(j)
+            allowed_collision_matrix.entry_values.pop(j)
+            for i in range(len(allowed_collision_matrix.entry_values)):
+                allowed_collision_matrix.entry_values[i].enabled.pop(j)
+
+        # Apply the new planning scene
+        if not self._apply_planning_scene_service.service_is_ready():
+            self._node.get_logger().warn(
+                f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
+            )
+            return False
+        resp = self._apply_planning_scene_service.call(
+            ApplyPlanningScene.Request(
+                scene=self.__planning_scene
+            )
+        )
+
+        # If it failed, restore the old planning scene
+        if not resp.success:
+            self.__planning_scene.allowed_collision_matrix = old_allowed_collision_matrix
+
+        return resp.success
 
     def __joint_state_callback(self, msg: JointState):
         # Update only if all relevant joints are included in the message
