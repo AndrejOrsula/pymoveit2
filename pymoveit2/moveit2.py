@@ -1509,6 +1509,7 @@ class MoveIt2:
             )
             return
 
+        self.__last_error_code = None
         self.__is_motion_requested = True
         self.__send_goal_future_move_action = self.__move_action_client.send_goal_async(
             goal=self.__move_action_goal,
@@ -1570,6 +1571,7 @@ class MoveIt2:
             )
             return
 
+        self.__last_error_code = None
         self.__is_motion_requested = True
         self.__send_goal_future_execute_trajectory = self.__execute_trajectory_action_client.send_goal_async(
             goal=goal,
