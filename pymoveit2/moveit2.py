@@ -276,6 +276,7 @@ class MoveIt2:
                     position=position,
                     quat_xyzw=quat_xyzw,
                     frame_id=frame_id,
+                    target_link=target_link,
                     tolerance_position=tolerance_position,
                     tolerance_orientation=tolerance_orientation,
                     weight_position=weight_position,
@@ -343,6 +344,7 @@ class MoveIt2:
         joint_positions: Optional[List[float]] = None,
         joint_names: Optional[List[str]] = None,
         frame_id: Optional[str] = None,
+        target_link: Optional[str] = None,
         tolerance_position: float = 0.001,
         tolerance_orientation: float = 0.001,
         tolerance_joint_position: float = 0.001,
@@ -364,6 +366,7 @@ class MoveIt2:
             self.set_position_goal(
                 position=position,
                 frame_id=frame_id,
+                target_link=target_link,
                 tolerance=tolerance_position,
                 weight=weight_position,
             )
@@ -372,6 +375,7 @@ class MoveIt2:
             self.set_orientation_goal(
                 quat_xyzw=quat_xyzw,
                 frame_id=frame_id,
+                target_link=target_link,
                 tolerance=tolerance_orientation,
                 weight=weight_orientation,
             )
