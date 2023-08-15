@@ -1,7 +1,7 @@
 from typing import List
 
-MOVE_GROUP_ARM: str = "jaco_arm"
-MOVE_GROUP_GRIPPER: str = "hand"
+MOVE_GROUP_ARM: str = "arm"
+MOVE_GROUP_GRIPPER: str = "gripper"
 
 JACO_PREFIX: str = "j2"
 MICO_PREFIX: str = "m1"
