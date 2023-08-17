@@ -1,13 +1,22 @@
 from typing import List
 
+# Documentation:
+# https://github.com/Kinovarobotics/kinova-ros/
+
 MOVE_GROUP_ARM: str = "arm"
 MOVE_GROUP_GRIPPER: str = "gripper"
 
 JACO_PREFIX: str = "j2"
 MICO_PREFIX: str = "m1"
 
-def get_prefix(version_prefix: str = JACO_PREFIX, arm_dof: int = 6, hand_dof: int = 2) -> str:
-    return version_prefix + "n" + str(arm_dof) + "s" + str(hand_dof) + "00_"
+def get_prefix(version_prefix: str = JACO_PREFIX, 
+    arm_dof: int = 6, hand_dof: int = 2,
+    spherical = False, assistive = False) -> str:
+    return (version_prefix +
+        ("s" if spherical else "n") +
+        str(arm_dof) +
+        ("a" if assistive else "s") +
+        str(hand_dof) + "00_")
 
 def joint_names(prefix: str = get_prefix()) -> List[str]:
     res = []
