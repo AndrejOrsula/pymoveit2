@@ -1732,53 +1732,15 @@ class MoveIt2:
         ).scene
         return True
 
-    def enable_collisions(self, id: str) -> bool:
+    def allow_collisions(self, id: str, allow: bool) -> bool:
         """
-        Takes in the ID of an element in the planning scene. Modified the allowed
-        collision matrix to allow collisions between that element and all other
-        elements. Returns whether it succeeded.
-        """
-        # Update the planning scene
-        if not self.__update_planning_scene():
-            return False
-        allowed_collision_matrix = self.__planning_scene.allowed_collision_matrix
-        old_allowed_collision_matrix = copy.deepcopy(allowed_collision_matrix)
-
-        # Destructively modify the allowed collision matrix. For every current
-        # link, disable collision with the object with ID. For the object with
-        # ID, disable collision with every current link.
-        allowed_collision_matrix.entry_names.append(id)
-        for i in range(len(allowed_collision_matrix.entry_values)):
-            allowed_collision_matrix.entry_values[i].enabled.append(True)
-        allowed_collision_matrix.entry_values.append(
-            AllowedCollisionEntry(
-                enabled=[True for _ in range(len(allowed_collision_matrix.entry_names))]
-            )
-        )
-
-        # Apply the new planning scene
-        if not self._apply_planning_scene_service.service_is_ready():
-            self._node.get_logger().warn(
-                f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
-            )
-            return False
-        resp = self._apply_planning_scene_service.call(
-            ApplyPlanningScene.Request(
-                scene=self.__planning_scene
-            )
-        )
-
-        # If it failed, restore the old planning scene
-        if not resp.success:
-            self.__planning_scene.allowed_collision_matrix = old_allowed_collision_matrix
-
-        return resp.success
-
-    def disable_collisions(self, id: str) -> bool:
-        """
-        Takes in the ID of an element in the planning scene. Modified the allowed
-        collision matrix to disallow collisions between that element and all other
-        elements. Returns whether it succeeded.
+        Takes in the ID of an element in the planning scene. Modifies the allowed
+        collision matrix to (dis)allow collisions between that object and all other
+        object.
+        
+        If `allow` is True, a plan will succeed even if the robot collides with that object.
+        If `allow` is False, a plan will fail if the robot collides with that object.
+        Returns whether it succesfully updated the allowed collision matrix.
         """
         # Update the planning scene
         if not self.__update_planning_scene():
@@ -1786,15 +1748,26 @@ class MoveIt2:
         allowed_collision_matrix = self.__planning_scene.allowed_collision_matrix
         old_allowed_collision_matrix = copy.deepcopy(allowed_collision_matrix)
 
-        # Destructively modify the allowed collision matrix to remove the object
-        # with ID.
-        if id in allowed_collision_matrix.entry_names:
+        # Get the location in the allowed collision matrix of the object
+        j = None
+        if id not in allowed_collision_matrix.entry_names:
+            allowed_collision_matrix.entry_names.append(id)
+        else:
             j = allowed_collision_matrix.entry_names.index(id)
-            # Remove the object's row and column from the allowed collision matrix
-            allowed_collision_matrix.entry_names.pop(j)
-            allowed_collision_matrix.entry_values.pop(j)
-            for i in range(len(allowed_collision_matrix.entry_values)):
-                allowed_collision_matrix.entry_values[i].enabled.pop(j)
+        # For all other objects, (dis)allow collisions with the object with `id`
+        for i in range(len(allowed_collision_matrix.entry_values)):
+            if j is None:
+                allowed_collision_matrix.entry_values[i].enabled.append(allow)
+            elif i != j:
+                allowed_collision_matrix.entry_values[i].enabled[j] = allow
+        # For the object with `id`, (dis)allow collisions with all other objects
+        allowed_collision_entry = AllowedCollisionEntry(
+            enabled=[allow for _ in range(len(allowed_collision_matrix.entry_names))]
+        )
+        if j is None:
+            allowed_collision_matrix.entry_values.append(allowed_collision_entry)
+        else:
+            allowed_collision_matrix.entry_values[j] = allowed_collision_entry
 
         # Apply the new planning scene
         if not self._apply_planning_scene_service.service_is_ready():
@@ -1923,7 +1896,6 @@ class MoveIt2:
             )
             return
 
-        self.__last_error_code = None
         self.__is_motion_requested = True
         self.__send_goal_future_move_action = self.__move_action_client.send_goal_async(
             goal=self.__move_action_goal,
@@ -1985,7 +1957,6 @@ class MoveIt2:
             )
             return
 
-        self.__last_error_code = None
         self.__is_motion_requested = True
         self.__send_goal_future_execute_trajectory = (
             self._execute_trajectory_action_client.send_goal_async(
