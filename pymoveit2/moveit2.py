@@ -2192,6 +2192,12 @@ class MoveIt2:
     def planner_id(self, value: str):
         self.__move_action_goal.request.planner_id = value
 
+    def cartesian_avoid_collisions(self) -> bool:
+        return self.__cartesian_path_request.request.avoid_collisions
+
+    @cartesian_avoid_collisions.setter
+    def cartesian_avoid_collisions(self, value: bool):
+        self.__cartesian_path_request.avoid_collisions = value
 
 def init_joint_state(
     joint_names: List[str],
