@@ -1116,13 +1116,6 @@ class MoveIt2:
 
         self.__move_action_goal.request.path_constraints = Constraints()
 
-    def set_planner_id(self, planner_id: str):
-        """
-        Set the ID of the planner to be used.
-        """
-
-        self.__move_action_goal.request.planner_id = planner_id
-
     def compute_fk(
         self,
         joint_state: Optional[Union[JointState, List[float]]] = None,
@@ -1940,8 +1933,8 @@ class MoveIt2:
         move_action_goal.request.path_constraints = Constraints()
         # move_action_goal.request.trajectory_constraints = "Ignored"
         # move_action_goal.request.reference_trajectories = "Ignored"
-        # move_action_goal.request.pipeline_id = "Ignored"
-        # move_action_goal.request.planner_id = "Ignored"
+        move_action_goal.request.pipeline_id = ""
+        move_action_goal.request.planner_id = ""
         move_action_goal.request.group_name = group_name
         move_action_goal.request.num_planning_attempts = 5
         move_action_goal.request.allowed_planning_time = 0.5
@@ -2063,6 +2056,21 @@ class MoveIt2:
     def allowed_planning_time(self, value: float):
         self.__move_action_goal.request.allowed_planning_time = value
 
+    @property
+    def pipeline_id(self) -> int:
+        return self.__move_action_goal.request.pipeline_id
+
+    @pipeline_id.setter
+    def pipeline_id(self, value: str):
+        self.__move_action_goal.request.pipeline_id = value
+
+    @property
+    def planner_id(self) -> int:
+        return self.__move_action_goal.request.planner_id
+
+    @planner_id.setter
+    def planner_id(self, value: str):
+        self.__move_action_goal.request.planner_id = value
 
 def init_joint_state(
     joint_names: List[str],
