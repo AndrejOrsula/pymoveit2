@@ -518,6 +518,7 @@ class MoveIt2:
 
         return self.get_trajectory(future, cartesian=cartesian)
 
+
     def plan_async(
         self,
         pose: Optional[Union[PoseStamped, Pose]] = None,
@@ -651,13 +652,19 @@ class MoveIt2:
         return future
 
     def get_trajectory(
-        self, future: Future, cartesian: bool = False
+        self,
+        future: Future,
+        cartesian: bool = False,
+        cartesian_fraction_threshold: float = 0.0,
     ) -> Optional[JointTrajectory]:
         """
         Takes in a future returned by plan_async and returns the trajectory if the future is done
         and planning was successful, else None.
+
+        For cartesian plans, the plan is rejected if the fraction of the path that was completed is
+        less than `cartesian_fraction_threshold`.
         """
-        if not future.done():
+        if (not future.done()):
             self._node.get_logger().warn(
                 "Cannot get trajectory because future is not done."
             )
@@ -668,13 +675,20 @@ class MoveIt2:
         # Cartesian
         if cartesian:
             if MoveItErrorCodes.SUCCESS == res.error_code.val:
-                return res.solution.joint_trajectory
+                if res.fraction >= cartesian_fraction_threshold:
+                    return res.solution.joint_trajectory
+                else:
+                    self._node.get_logger().warn(
+                        f"Planning failed! Cartesian planner completed {res.fraction} "
+                        f"of the trajectory, less than the threshold {cartesian_fraction_threshold}."
+                    )
+                    return None
             else:
                 self._node.get_logger().warn(
                     f"Planning failed! Error code: {res.error_code.val}."
                 )
                 return None
-
+        
         # Else Kinematic
         res = res.motion_plan_response
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
