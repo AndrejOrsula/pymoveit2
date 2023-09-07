@@ -635,10 +635,10 @@ class MoveIt2:
         # Plan trajectory asynchronously by service call
         if cartesian:
             future = self._plan_cartesian_path(
+                max_step=max_step,
                 frame_id=pose_stamped.header.frame_id
                 if pose_stamped is not None
                 else frame_id,
-                max_step=max_step,
             )
         else:
             # Use service
