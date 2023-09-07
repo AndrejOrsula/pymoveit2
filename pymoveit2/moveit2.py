@@ -2185,6 +2185,14 @@ class MoveIt2:
         self.__cartesian_path_request.avoid_collisions = value
 
     @property
+    def cartesian_jump_threshold(self) -> float:
+        return self.__cartesian_path_request.request.jump_threshold
+
+    @cartesian_jump_threshold.setter
+    def cartesian_jump_threshold(self, value: float):
+        self.__cartesian_path_request.jump_threshold = value
+
+    @property
     def pipeline_id(self) -> int:
         return self.__move_action_goal.request.pipeline_id
 
