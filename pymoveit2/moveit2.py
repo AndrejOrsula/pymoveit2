@@ -232,6 +232,7 @@ class MoveIt2:
             callback_group=callback_group,
         )
         self.__planning_scene = None
+        self.__old_allowed_collision_matrix = None
 
         # Create a service for applying the planning scene
         self._apply_planning_scene_service = self._node.create_client(
@@ -1741,12 +1742,14 @@ class MoveIt2:
         If `allow` is True, a plan will succeed even if the robot collides with that object.
         If `allow` is False, a plan will fail if the robot collides with that object.
         Returns whether it succesfully updated the allowed collision matrix.
+
+        Returns the future of the service call.
         """
         # Update the planning scene
         if not self.__update_planning_scene():
             return False
         allowed_collision_matrix = self.__planning_scene.allowed_collision_matrix
-        old_allowed_collision_matrix = copy.deepcopy(allowed_collision_matrix)
+        self.__old_allowed_collision_matrix = copy.deepcopy(allowed_collision_matrix)
 
         # Get the location in the allowed collision matrix of the object
         j = None
@@ -1775,15 +1778,26 @@ class MoveIt2:
                 f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
             return False
-        resp = self._apply_planning_scene_service.call(
+        return self._apply_planning_scene_service.call_async(
             ApplyPlanningScene.Request(
                 scene=self.__planning_scene
             )
         )
 
+    def process_allow_collision_future(self, future: Future) -> bool:
+        """
+        Return whether the allow collision service call is done and has succeeded
+        or not. If it failed, reset the allowed collision matrix to the old one.
+        """
+        if not future.done():
+            return False
+
+        # Get response
+        resp = future.result()
+
         # If it failed, restore the old planning scene
         if not resp.success:
-            self.__planning_scene.allowed_collision_matrix = old_allowed_collision_matrix
+            self.__planning_scene.allowed_collision_matrix = self.__old_allowed_collision_matrix
 
         return resp.success
 
