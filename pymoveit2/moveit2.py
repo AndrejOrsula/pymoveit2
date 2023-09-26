@@ -1120,7 +1120,7 @@ class MoveIt2:
         self,
         joint_state: Optional[Union[JointState, List[float]]] = None,
         fk_link_names: Optional[List[str]] = None,
-    ) -> Optional[PoseStamped]:
+    ) -> Optional[List[PoseStamped]]:
         """
         Call compute_fk_async and wait on future
         """
