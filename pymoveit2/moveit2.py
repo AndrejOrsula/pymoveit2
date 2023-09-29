@@ -6,6 +6,7 @@ from control_msgs.action import FollowJointTrajectory
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import (
+    AttachedCollisionObject,
     CollisionObject,
     Constraints,
     JointConstraint,
@@ -30,6 +31,7 @@ from rclpy.qos import (
 )
 from sensor_msgs.msg import JointState
 from shape_msgs.msg import Mesh, MeshTriangle, SolidPrimitive
+from std_msgs.msg import Header
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 
@@ -191,6 +193,9 @@ class MoveIt2:
 
         self.__collision_object_publisher = self._node.create_publisher(
             CollisionObject, "/collision_object", 10
+        )
+        self.__attached_collision_object_publisher = self._node.create_publisher(
+            AttachedCollisionObject, "/attached_collision_object", 10
         )
 
         self.__joint_state_mutex = threading.Lock()
@@ -824,14 +829,209 @@ class MoveIt2:
         self.__is_motion_requested = False
         self.__is_executing = False
 
+    def add_collision_primitive(
+        self,
+        id: str,
+        primitive_type: int,
+        dimensions: Tuple[float, float, float],
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
+        frame_id: Optional[str] = None,
+        operation: int = CollisionObject.ADD,
+    ):
+        """
+        Add collision object with a primitive geometry specified by its dimensions.
+
+        `primitive_type` can be one of the following:
+            - `SolidPrimitive.BOX`
+            - `SolidPrimitive.SPHERE`
+            - `SolidPrimitive.CYLINDER`
+            - `SolidPrimitive.CONE`
+        """
+
+        if (pose is None) and (position is None or quat_xyzw is None):
+            raise ValueError(
+                "Either `pose` or `position` and `quat_xyzw` must be specified!"
+            )
+
+        if isinstance(pose, PoseStamped):
+            pose_stamped = pose
+        elif isinstance(pose, Pose):
+            pose_stamped = PoseStamped(
+                header=Header(
+                    stamp=self._node.get_clock().now().to_msg(),
+                    frame_id=frame_id
+                    if frame_id is not None
+                    else self.__base_link_name,
+                ),
+                pose=pose,
+            )
+        else:
+            if not isinstance(position, Point):
+                position = Point(
+                    x=float(position[0]), y=float(position[1]), z=float(position[2])
+                )
+            if not isinstance(quat_xyzw, Quaternion):
+                quat_xyzw = Quaternion(
+                    x=float(quat_xyzw[0]),
+                    y=float(quat_xyzw[1]),
+                    z=float(quat_xyzw[2]),
+                    w=float(quat_xyzw[3]),
+                )
+            pose_stamped = PoseStamped(
+                header=Header(
+                    stamp=self._node.get_clock().now().to_msg(),
+                    frame_id=frame_id
+                    if frame_id is not None
+                    else self.__base_link_name,
+                ),
+                pose=Pose(position=position, orientation=quat_xyzw),
+            )
+
+        msg = CollisionObject(
+            header=pose_stamped.header,
+            id=id,
+            operation=operation,
+            pose=pose_stamped.pose,
+        )
+
+        msg.primitives.append(
+            SolidPrimitive(type=primitive_type, dimensions=dimensions)
+        )
+
+        self.__collision_object_publisher.publish(msg)
+
+    def add_collision_box(
+        self,
+        id: str,
+        size: Tuple[float, float, float],
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
+        frame_id: Optional[str] = None,
+        operation: int = CollisionObject.ADD,
+    ):
+        """
+        Add collision object with a box geometry specified by its size.
+        """
+
+        assert len(size) == 3, "Invalid size of the box!"
+
+        self.add_collision_primitive(
+            id=id,
+            primitive_type=SolidPrimitive.BOX,
+            dimensions=size,
+            pose=pose,
+            position=position,
+            quat_xyzw=quat_xyzw,
+            frame_id=frame_id,
+            operation=operation,
+        )
+
+    def add_collision_sphere(
+        self,
+        id: str,
+        radius: float,
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
+        frame_id: Optional[str] = None,
+        operation: int = CollisionObject.ADD,
+    ):
+        """
+        Add collision object with a sphere geometry specified by its radius.
+        """
+
+        if quat_xyzw is None:
+            quat_xyzw = Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)
+
+        self.add_collision_primitive(
+            id=id,
+            primitive_type=SolidPrimitive.SPHERE,
+            dimensions=[
+                radius,
+            ],
+            pose=pose,
+            position=position,
+            quat_xyzw=quat_xyzw,
+            frame_id=frame_id,
+            operation=operation,
+        )
+
+    def add_collision_cylinder(
+        self,
+        id: str,
+        height: float,
+        radius: float,
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
+        frame_id: Optional[str] = None,
+        operation: int = CollisionObject.ADD,
+    ):
+        """
+        Add collision object with a cylinder geometry specified by its height and radius.
+        """
+
+        self.add_collision_primitive(
+            id=id,
+            primitive_type=SolidPrimitive.CYLINDER,
+            dimensions=[height, radius],
+            pose=pose,
+            position=position,
+            quat_xyzw=quat_xyzw,
+            frame_id=frame_id,
+            operation=operation,
+        )
+
+    def add_collision_cone(
+        self,
+        id: str,
+        height: float,
+        radius: float,
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
+        frame_id: Optional[str] = None,
+        operation: int = CollisionObject.ADD,
+    ):
+        """
+        Add collision object with a cone geometry specified by its height and radius.
+        """
+
+        self.add_collision_primitive(
+            id=id,
+            primitive_type=SolidPrimitive.CONE,
+            dimensions=[height, radius],
+            pose=pose,
+            position=position,
+            quat_xyzw=quat_xyzw,
+            frame_id=frame_id,
+            operation=operation,
+        )
+
     def add_collision_mesh(
         self,
         filepath: str,
         id: str,
-        position: Union[Point, Tuple[float, float, float]],
-        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
-        operation: int = CollisionObject.ADD,
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
         frame_id: Optional[str] = None,
+        operation: int = CollisionObject.ADD,
     ):
         """
         Add collision object with a mesh geometry specified by `filepath`.
@@ -846,26 +1046,53 @@ class MoveIt2:
                 "to add collision objects into the MoveIt 2 planning scene."
             ) from err
 
+        if (pose is None) or (position is None or quat_xyzw is None):
+            raise ValueError(
+                "Either `pose` or `position` and `quat_xyzw` must be specified!"
+            )
+
+        if isinstance(pose, PoseStamped):
+            pose_stamped = pose
+        elif isinstance(pose, Pose):
+            pose_stamped = PoseStamped(
+                header=Header(
+                    stamp=self._node.get_clock().now().to_msg(),
+                    frame_id=frame_id
+                    if frame_id is not None
+                    else self.__base_link_name,
+                ),
+                pose=pose,
+            )
+        else:
+            if not isinstance(position, Point):
+                position = Point(
+                    x=float(position[0]), y=float(position[1]), z=float(position[2])
+                )
+            if not isinstance(quat_xyzw, Quaternion):
+                quat_xyzw = Quaternion(
+                    x=float(quat_xyzw[0]),
+                    y=float(quat_xyzw[1]),
+                    z=float(quat_xyzw[2]),
+                    w=float(quat_xyzw[3]),
+                )
+            pose_stamped = PoseStamped(
+                header=Header(
+                    stamp=self._node.get_clock().now().to_msg(),
+                    frame_id=frame_id
+                    if frame_id is not None
+                    else self.__base_link_name,
+                ),
+                pose=Pose(position=position, orientation=quat_xyzw),
+            )
+
+        msg = CollisionObject(
+            header=pose_stamped.header,
+            id=id,
+            operation=operation,
+            pose=pose_stamped.pose,
+        )
+
         mesh = trimesh.load(filepath)
-        msg = CollisionObject()
-
-        if not isinstance(position, Point):
-            position = Point(
-                x=float(position[0]), y=float(position[1]), z=float(position[2])
-            )
-        if not isinstance(quat_xyzw, Quaternion):
-            quat_xyzw = Quaternion(
-                x=float(quat_xyzw[0]),
-                y=float(quat_xyzw[1]),
-                z=float(quat_xyzw[2]),
-                w=float(quat_xyzw[3]),
-            )
-
-        pose = Pose()
-        pose.position = position
-        pose.orientation = quat_xyzw
-        msg.pose = pose
-
         msg.meshes.append(
             Mesh(
                 triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
@@ -875,16 +1102,9 @@ class MoveIt2:
             )
         )
 
-        msg.id = id
-        msg.operation = operation
-        msg.header.frame_id = (
-            frame_id if frame_id is not None else self.__base_link_name
-        )
-        msg.header.stamp = self._node.get_clock().now().to_msg()
-
         self.__collision_object_publisher.publish(msg)
 
-    def remove_collision_mesh(self, id: str):
+    def remove_collision_object(self, id: str):
         """
         Remove collision object specified by its `id`.
         """
@@ -894,6 +1114,57 @@ class MoveIt2:
         msg.operation = CollisionObject.REMOVE
         msg.header.stamp = self._node.get_clock().now().to_msg()
         self.__collision_object_publisher.publish(msg)
+
+    def remove_collision_mesh(self, id: str):
+        """
+        Remove collision mesh specified by its `id`.
+        Identical to `remove_collision_object()`.
+        """
+
+        self.remove_collision_object(id)
+
+    def attach_collision_object(
+        self,
+        id: str,
+        link_name: Optional[str] = None,
+        touch_links: List[str] = [],
+        weight: float = 0.0,
+    ):
+        """
+        Attach collision object to the robot.
+        """
+
+        if link_name is None:
+            link_name = self.__end_effector_name
+
+        msg = AttachedCollisionObject(
+            object=CollisionObject(id=id, operation=CollisionObject.ADD)
+        )
+        msg.link_name = link_name
+        msg.touch_links = touch_links
+        msg.weight = weight
+
+        self.__attached_collision_object_publisher.publish(msg)
+
+    def detach_collision_object(self, id: int):
+        """
+        Detach collision object from the robot.
+        """
+
+        msg = AttachedCollisionObject(
+            object=CollisionObject(id=id, operation=CollisionObject.REMOVE)
+        )
+        self.__attached_collision_object_publisher.publish(msg)
+
+    def detach_all_collision_objects(self):
+        """
+        Detach collision object from the robot.
+        """
+
+        msg = AttachedCollisionObject(
+            object=CollisionObject(operation=CollisionObject.REMOVE)
+        )
+        self.__attached_collision_object_publisher.publish(msg)
 
     def __joint_state_callback(self, msg: JointState):
         # Update only if all relevant joints are included in the message
@@ -1242,6 +1513,10 @@ class MoveIt2:
         # self.__compute_ik_req.ik_request.pose_stamped_vector = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.sec = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.nanosec = "Ignored"
+
+    @property
+    def follow_joint_trajectory_action_client(self) -> str:
+        return self.__follow_joint_trajectory_action_client
 
     @property
     def joint_names(self) -> List[str]:
