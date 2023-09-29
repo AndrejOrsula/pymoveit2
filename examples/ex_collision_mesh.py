@@ -2,7 +2,7 @@
 """
 Example of adding and removing a collision object with a mesh geometry.
 Note: Python module `trimesh` is required for this example (`pip install trimesh`).
-- ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p position:="[0.25, 0.0, 0.1]" -p quat_xyzw:="[0.0, 0.0, -0.7071, 0.7071]"
+- ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p position:="[0.5, 0.0, 0.5]" -p quat_xyzw:="[0.0, 0.0, -0.7071, 0.7071]"
 - ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p filepath:="./my_favourity_mesh.stl"
 - ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="remove"
 """
@@ -37,7 +37,7 @@ def main():
         "action",
         "add",
     )
-    node.declare_parameter("position", [0.25, 0.0, 0.1])
+    node.declare_parameter("position", [0.5, 0.0, 0.5])
     node.declare_parameter("quat_xyzw", [0.0, 0.0, -0.7071, 0.7071])
 
     # Create callback group that allows execution of callbacks in parallel without restrictions

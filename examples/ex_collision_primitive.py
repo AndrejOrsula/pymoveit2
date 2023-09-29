@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Example of adding and removing a collision object with a primitive geometry.
-- ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p shape:="sphere" -p position:="[0.2, 0.0, 0.1]" -p dimensions:="[0.04]"
+- ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p shape:="sphere" -p position:="[0.5, 0.0, 0.5]" -p dimensions:="[0.04]"
 - ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p shape:="cylinder" -p position:="[0.2, 0.0, -0.045]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p dimensions:="[0.04, 0.02]"
 - ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p action:="remove" -p shape:="sphere"
 """
@@ -31,7 +31,7 @@ def main():
         "action",
         "add",
     )
-    node.declare_parameter("position", [0.25, 0.0, 0.1])
+    node.declare_parameter("position", [0.5, 0.0, 0.5])
     node.declare_parameter("quat_xyzw", [0.0, 0.0, -0.7071, 0.7071])
     node.declare_parameter("dimensions", [0.1, 0.1, 0.1])
 
