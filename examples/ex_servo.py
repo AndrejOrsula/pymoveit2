@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Example of using MoveIt 2 Servo to perform a circular motion.
-`ros2 run pymoveit2 ex_servo.py`
+- ros2 run pymoveit2 ex_servo.py
 """
 
 

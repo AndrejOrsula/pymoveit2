@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Example of moving to a pose goal.
-`ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p cartesian:=False`
+- ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p cartesian:=False
 """
 
 from threading import Thread
@@ -38,11 +38,16 @@ def main():
         callback_group=callback_group,
     )
 
-    # Spin the node in background thread(s)
+    # Spin the node in background thread(s) and wait a bit for initialization
     executor = rclpy.executors.MultiThreadedExecutor(2)
     executor.add_node(node)
     executor_thread = Thread(target=executor.spin, daemon=True, args=())
     executor_thread.start()
+    node.create_rate(1.0).sleep()
+
+    # Scale down velocity and acceleration of joints (percentage of maximum)
+    moveit2.max_velocity = 0.5
+    moveit2.max_acceleration = 0.5
 
     # Get parameters
     position = node.get_parameter("position").get_parameter_value().double_array_value
@@ -57,6 +62,7 @@ def main():
     moveit2.wait_until_executed()
 
     rclpy.shutdown()
+    executor_thread.join()
     exit(0)
 
 
