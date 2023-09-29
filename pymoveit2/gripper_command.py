@@ -180,7 +180,7 @@ class GripperCommand:
 
         self.__send_goal_async_gripper_command(self.__close_gripper_command_goal)
 
-    def reset_open(self):
+    def reset_open(self, **kwargs):
         """
         Reset into open configuration by sending a dummy joint trajectory.
         This is useful for simulated robots that allow instantaneous reset of joints.
@@ -189,7 +189,7 @@ class GripperCommand:
         self.force_reset_executing_state()
         self.__send_goal_async_gripper_command(self.__open_gripper_command_goal)
 
-    def reset_closed(self):
+    def reset_closed(self, **kwargs):
         """
         Reset into closed configuration by sending a dummy joint trajectory.
         This is useful for simulated robots that allow instantaneous reset of joints.
@@ -289,6 +289,10 @@ class GripperCommand:
         gripper_cmd_goal.command.max_effort = max_effort
 
         return gripper_cmd_goal
+
+    @property
+    def gripper_command_action_client(self) -> str:
+        return self.__gripper_command_action_client
 
     @property
     def joint_names(self) -> List[str]:
