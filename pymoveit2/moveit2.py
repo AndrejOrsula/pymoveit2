@@ -2217,6 +2217,22 @@ class MoveIt2:
         self.__cartesian_path_request.jump_threshold = value
 
     @property
+    def cartesian_prismatic_jump_threshold(self) -> float:
+        return self.__cartesian_path_request.request.prismatic_jump_threshold
+
+    @cartesian_prismatic_jump_threshold.setter
+    def cartesian_prismatic_jump_threshold(self, value: float):
+        self.__cartesian_path_request.prismatic_jump_threshold = value
+
+    @property
+    def cartesian_revolute_jump_threshold(self) -> float:
+        return self.__cartesian_path_request.request.revolute_jump_threshold
+
+    @cartesian_revolute_jump_threshold.setter
+    def cartesian_revolute_jump_threshold(self, value: float):
+        self.__cartesian_path_request.revolute_jump_threshold = value
+
+    @property
     def pipeline_id(self) -> int:
         return self.__move_action_goal.request.pipeline_id
 
