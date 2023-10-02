@@ -86,58 +86,57 @@ class MoveIt2:
             callback_group=self._callback_group,
         )
 
-        if execute_via_moveit:
-            # Create action client for move action
-            self.__move_action_client = ActionClient(
-                node=self._node,
-                action_type=MoveGroup,
-                action_name="move_action",
-                goal_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                result_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=5,
-                ),
-                cancel_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=5,
-                ),
-                feedback_sub_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                status_sub_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                callback_group=self._callback_group,
-            )
-        else:
-            # Otherwise create a separate service client for planning
-            self._plan_kinematic_path_service = self._node.create_client(
-                srv_type=GetMotionPlan,
-                srv_name="plan_kinematic_path",
-                qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                callback_group=callback_group,
-            )
-            self.__kinematic_path_request = GetMotionPlan.Request()
+        # Create action client for move action
+        self.__move_action_client = ActionClient(
+            node=self._node,
+            action_type=MoveGroup,
+            action_name="move_action",
+            goal_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            result_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=5,
+            ),
+            cancel_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=5,
+            ),
+            feedback_sub_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            status_sub_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=self._callback_group,
+        )
+
+        # Otherwise create a separate service client for planning
+        self._plan_kinematic_path_service = self._node.create_client(
+            srv_type=GetMotionPlan,
+            srv_name="plan_kinematic_path",
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=callback_group,
+        )
+        self.__kinematic_path_request = GetMotionPlan.Request()
 
         # Create a separate service client for Cartesian planning
         self._plan_cartesian_path_service = self._node.create_client(
@@ -245,7 +244,7 @@ class MoveIt2:
         passed in to internally use `set_pose_goal()` to define a goal during the call.
         """
 
-        if self.__execute_via_moveit:
+        if self.__execute_via_moveit and not cartesian:
             if self.__ignore_new_calls_while_executing and self.__is_executing:
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
@@ -295,7 +294,6 @@ class MoveIt2:
         joint_positions: List[float],
         joint_names: Optional[List[str]] = None,
         tolerance: float = 0.001,
-        cartesian: bool = False,
         weight: float = 1.0,
     ):
         """
@@ -336,7 +334,6 @@ class MoveIt2:
                     joint_names=joint_names,
                     tolerance_joint_position=tolerance,
                     weight_joint_position=weight,
-                    cartesian=cartesian,
                 )
             )
 
