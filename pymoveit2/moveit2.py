@@ -1043,7 +1043,7 @@ class MoveIt2:
                 "to add collision objects into the MoveIt 2 planning scene."
             ) from err
 
-        if (pose is None) or (position is None or quat_xyzw is None):
+        if (pose is None) and (position is None or quat_xyzw is None):
             raise ValueError(
                 "Either `pose` or `position` and `quat_xyzw` must be specified!"
             )
