@@ -86,58 +86,57 @@ class MoveIt2:
             callback_group=self._callback_group,
         )
 
-        if execute_via_moveit:
-            # Create action client for move action
-            self.__move_action_client = ActionClient(
-                node=self._node,
-                action_type=MoveGroup,
-                action_name="move_action",
-                goal_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                result_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=5,
-                ),
-                cancel_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=5,
-                ),
-                feedback_sub_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                status_sub_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                callback_group=self._callback_group,
-            )
-        else:
-            # Otherwise create a separate service client for planning
-            self._plan_kinematic_path_service = self._node.create_client(
-                srv_type=GetMotionPlan,
-                srv_name="plan_kinematic_path",
-                qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                callback_group=callback_group,
-            )
-            self.__kinematic_path_request = GetMotionPlan.Request()
+        # Create action client for move action
+        self.__move_action_client = ActionClient(
+            node=self._node,
+            action_type=MoveGroup,
+            action_name="move_action",
+            goal_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            result_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=5,
+            ),
+            cancel_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=5,
+            ),
+            feedback_sub_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            status_sub_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=self._callback_group,
+        )
+
+        # Otherwise create a separate service client for planning
+        self._plan_kinematic_path_service = self._node.create_client(
+            srv_type=GetMotionPlan,
+            srv_name="plan_kinematic_path",
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=callback_group,
+        )
+        self.__kinematic_path_request = GetMotionPlan.Request()
 
         # Create a separate service client for Cartesian planning
         self._plan_cartesian_path_service = self._node.create_client(
@@ -223,6 +222,7 @@ class MoveIt2:
         # Internal states that monitor the current motion requests and execution
         self.__is_motion_requested = False
         self.__is_executing = False
+        self.motion_suceeded = False
         self.__wait_until_executed_rate = self._node.create_rate(1000.0)
 
         # Event that enables waiting until async future is done
@@ -230,8 +230,11 @@ class MoveIt2:
 
     def move_to_pose(
         self,
-        position: Union[Point, Tuple[float, float, float]],
-        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
         target_link: Optional[str] = None,
         frame_id: Optional[str] = None,
         tolerance_position: float = 0.001,
@@ -245,7 +248,41 @@ class MoveIt2:
         passed in to internally use `set_pose_goal()` to define a goal during the call.
         """
 
-        if self.__execute_via_moveit:
+        if isinstance(pose, PoseStamped):
+            pose_stamped = pose
+        elif isinstance(pose, Pose):
+            pose_stamped = PoseStamped(
+                header=Header(
+                    stamp=self._node.get_clock().now().to_msg(),
+                    frame_id=frame_id
+                    if frame_id is not None
+                    else self.__base_link_name,
+                ),
+                pose=pose,
+            )
+        else:
+            if not isinstance(position, Point):
+                position = Point(
+                    x=float(position[0]), y=float(position[1]), z=float(position[2])
+                )
+            if not isinstance(quat_xyzw, Quaternion):
+                quat_xyzw = Quaternion(
+                    x=float(quat_xyzw[0]),
+                    y=float(quat_xyzw[1]),
+                    z=float(quat_xyzw[2]),
+                    w=float(quat_xyzw[3]),
+                )
+            pose_stamped = PoseStamped(
+                header=Header(
+                    stamp=self._node.get_clock().now().to_msg(),
+                    frame_id=frame_id
+                    if frame_id is not None
+                    else self.__base_link_name,
+                ),
+                pose=Pose(position=position, orientation=quat_xyzw),
+            )
+
+        if self.__execute_via_moveit and not cartesian:
             if self.__ignore_new_calls_while_executing and self.__is_executing:
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
@@ -255,9 +292,9 @@ class MoveIt2:
 
             # Set goal
             self.set_pose_goal(
-                position=position,
-                quat_xyzw=quat_xyzw,
-                frame_id=frame_id,
+                position=pose_stamped.pose.position,
+                quat_xyzw=pose_stamped.pose.orientation,
+                frame_id=pose_stamped.header.frame_id,
                 target_link=target_link,
                 tolerance_position=tolerance_position,
                 tolerance_orientation=tolerance_orientation,
@@ -278,9 +315,9 @@ class MoveIt2:
             # Plan via MoveIt 2 and then execute directly with the controller
             self.execute(
                 self.plan(
-                    position=position,
-                    quat_xyzw=quat_xyzw,
-                    frame_id=frame_id,
+                    position=pose_stamped.pose.position,
+                    quat_xyzw=pose_stamped.pose.orientation,
+                    frame_id=pose_stamped.header.frame_id,
                     target_link=target_link,
                     tolerance_position=tolerance_position,
                     tolerance_orientation=tolerance_orientation,
@@ -295,7 +332,6 @@ class MoveIt2:
         joint_positions: List[float],
         joint_names: Optional[List[str]] = None,
         tolerance: float = 0.001,
-        cartesian: bool = False,
         weight: float = 1.0,
     ):
         """
@@ -336,12 +372,12 @@ class MoveIt2:
                     joint_names=joint_names,
                     tolerance_joint_position=tolerance,
                     weight_joint_position=weight,
-                    cartesian=cartesian,
                 )
             )
 
     def plan(
         self,
+        pose: Optional[Union[PoseStamped, Pose]] = None,
         position: Optional[Union[Point, Tuple[float, float, float]]] = None,
         quat_xyzw: Optional[
             Union[Quaternion, Tuple[float, float, float, float]]
@@ -367,23 +403,66 @@ class MoveIt2:
         one, optional argument `start_` can be defined.
         """
 
-        if position is not None:
+        pose_stamped = None
+        if pose is not None:
+            if isinstance(pose, PoseStamped):
+                pose_stamped = pose
+            elif isinstance(pose, Pose):
+                pose_stamped = PoseStamped(
+                    header=Header(
+                        stamp=self._node.get_clock().now().to_msg(),
+                        frame_id=frame_id
+                        if frame_id is not None
+                        else self.__base_link_name,
+                    ),
+                    pose=pose,
+                )
+
             self.set_position_goal(
-                position=position,
-                frame_id=frame_id,
+                position=pose_stamped.pose.position,
+                frame_id=pose_stamped.header.frame_id,
                 target_link=target_link,
                 tolerance=tolerance_position,
                 weight=weight_position,
             )
-
-        if quat_xyzw is not None:
             self.set_orientation_goal(
-                quat_xyzw=quat_xyzw,
-                frame_id=frame_id,
+                quat_xyzw=pose_stamped.pose.orientation,
+                frame_id=pose_stamped.header.frame_id,
                 target_link=target_link,
                 tolerance=tolerance_orientation,
                 weight=weight_orientation,
             )
+        else:
+            if position is not None:
+                if not isinstance(position, Point):
+                    position = Point(
+                        x=float(position[0]), y=float(position[1]), z=float(position[2])
+                    )
+
+                self.set_position_goal(
+                    position=position,
+                    frame_id=frame_id,
+                    target_link=target_link,
+                    tolerance=tolerance_position,
+                    weight=weight_position,
+                )
+
+            if quat_xyzw is not None:
+                if not isinstance(quat_xyzw, Quaternion):
+                    quat_xyzw = Quaternion(
+                        x=float(quat_xyzw[0]),
+                        y=float(quat_xyzw[1]),
+                        z=float(quat_xyzw[2]),
+                        w=float(quat_xyzw[3]),
+                    )
+
+                self.set_orientation_goal(
+                    quat_xyzw=quat_xyzw,
+                    frame_id=frame_id,
+                    target_link=target_link,
+                    tolerance=tolerance_orientation,
+                    weight=weight_orientation,
+                )
 
         if joint_positions is not None:
             self.set_joint_goal(
@@ -411,7 +490,11 @@ class MoveIt2:
 
         # Plan trajectory by sending a goal (blocking)
         if cartesian:
-            joint_trajectory = self._plan_cartesian_path()
+            joint_trajectory = self._plan_cartesian_path(
+                frame_id=pose_stamped.header.frame_id
+                if pose_stamped is not None
+                else frame_id
+            )
         else:
             if self.__execute_via_moveit:
                 # Use action client
@@ -450,7 +533,7 @@ class MoveIt2:
 
         self._send_goal_async_follow_joint_trajectory(goal=follow_joint_trajectory_goal)
 
-    def wait_until_executed(self):
+    def wait_until_executed(self) -> bool:
         """
         Wait until the previously requested motion is finalised through either a success or failure.
         """
@@ -459,10 +542,12 @@ class MoveIt2:
             self._node.get_logger().warn(
                 "Cannot wait until motion is executed (no motion is in progress)."
             )
-            return
+            return False
 
         while self.__is_motion_requested or self.__is_executing:
             self.__wait_until_executed_rate.sleep()
+
+        return self.motion_suceeded
 
     def reset_controller(
         self, joint_state: Union[JointState, List[float]], sync: bool = True
@@ -489,8 +574,11 @@ class MoveIt2:
 
     def set_pose_goal(
         self,
-        position: Union[Point, Tuple[float, float, float]],
-        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
         frame_id: Optional[str] = None,
         target_link: Optional[str] = None,
         tolerance_position: float = 0.001,
@@ -502,16 +590,55 @@ class MoveIt2:
         This is direct combination of `set_position_goal()` and `set_orientation_goal()`.
         """
 
+        if (pose is None) and (position is None or quat_xyzw is None):
+            raise ValueError(
+                "Either `pose` or `position` and `quat_xyzw` must be specified!"
+            )
+
+        if isinstance(pose, PoseStamped):
+            pose_stamped = pose
+        elif isinstance(pose, Pose):
+            pose_stamped = PoseStamped(
+                header=Header(
+                    stamp=self._node.get_clock().now().to_msg(),
+                    frame_id=frame_id
+                    if frame_id is not None
+                    else self.__base_link_name,
+                ),
+                pose=pose,
+            )
+        else:
+            if not isinstance(position, Point):
+                position = Point(
+                    x=float(position[0]), y=float(position[1]), z=float(position[2])
+                )
+            if not isinstance(quat_xyzw, Quaternion):
+                quat_xyzw = Quaternion(
+                    x=float(quat_xyzw[0]),
+                    y=float(quat_xyzw[1]),
+                    z=float(quat_xyzw[2]),
+                    w=float(quat_xyzw[3]),
+                )
+            pose_stamped = PoseStamped(
+                header=Header(
+                    stamp=self._node.get_clock().now().to_msg(),
+                    frame_id=frame_id
+                    if frame_id is not None
+                    else self.__base_link_name,
+                ),
+                pose=Pose(position=position, orientation=quat_xyzw),
+            )
+
         self.set_position_goal(
-            position=position,
-            frame_id=frame_id,
+            position=pose_stamped.pose.position,
+            frame_id=pose_stamped.header.frame_id,
             target_link=target_link,
             tolerance=tolerance_position,
             weight=weight_position,
         )
         self.set_orientation_goal(
-            quat_xyzw=quat_xyzw,
-            frame_id=frame_id,
+            quat_xyzw=pose_stamped.pose.orientation,
+            frame_id=pose_stamped.header.frame_id,
             target_link=target_link,
             tolerance=tolerance_orientation,
             weight=weight_orientation,
@@ -718,7 +845,11 @@ class MoveIt2:
         res = self.__compute_fk_client.call(self.__compute_fk_req)
 
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
-            return res.pose_stamped
+            pose_stamped = res.pose_stamped
+            if isinstance(pose_stamped, List):
+                return res.pose_stamped[0]
+            else:
+                return res.pose_stamped
         else:
             self._node.get_logger().warn(
                 f"FK computation failed! Error code: {res.error_code.val}."
@@ -1046,7 +1177,7 @@ class MoveIt2:
                 "to add collision objects into the MoveIt 2 planning scene."
             ) from err
 
-        if (pose is None) or (position is None or quat_xyzw is None):
+        if (pose is None) and (position is None or quat_xyzw is None):
             raise ValueError(
                 "Either `pose` or `position` and `quat_xyzw` must be specified!"
             )
@@ -1363,6 +1494,9 @@ class MoveIt2:
             self._node.get_logger().error(
                 f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
+            self.motion_suceeded = False
+        else:
+            self.motion_suceeded = True
 
         self.__is_executing = False
 
@@ -1429,6 +1563,9 @@ class MoveIt2:
             self._node.get_logger().error(
                 f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
+            self.motion_suceeded = False
+        else:
+            self.motion_suceeded = True
 
         self.__is_executing = False
 

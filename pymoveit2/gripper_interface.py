@@ -175,7 +175,7 @@ class GripperInterface(MoveIt2Gripper, GripperCommand):
 
         self._interface.force_reset_executing_state(self=self)
 
-    def wait_until_executed(self):
+    def wait_until_executed(self) -> bool:
         """
         Wait until the previously requested motion is finalised through either a success or failure.
         """
@@ -186,6 +186,6 @@ class GripperInterface(MoveIt2Gripper, GripperCommand):
             self._node.get_logger().error(
                 f"Unable to wait until a motion is executed because the appropriate interface cannot be determined."
             )
-            return
+            return False
 
-        self._interface.wait_until_executed(self=self)
+        return self._interface.wait_until_executed(self=self)
