@@ -95,7 +95,7 @@ class GripperInterface(MoveIt2Gripper, GripperCommand):
         else:
             self.open(skip_if_noop=False)
 
-    def open(self, skip_if_noop: bool = True):
+    def open(self, skip_if_noop: bool = False):
         """
         Open the gripper.
         - `skip_if_noop` - No action will be performed if the gripper is already open.
@@ -111,7 +111,7 @@ class GripperInterface(MoveIt2Gripper, GripperCommand):
 
         self._interface.open(self=self, skip_if_noop=skip_if_noop)
 
-    def close(self, skip_if_noop: bool = True):
+    def close(self, skip_if_noop: bool = False):
         """
         Close the gripper.
         - `skip_if_noop` - No action will be performed if the gripper is not open.
