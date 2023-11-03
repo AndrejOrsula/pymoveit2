@@ -1733,7 +1733,7 @@ class MoveIt2:
         ).scene
         return True
 
-    def allow_collisions(self, id: str, allow: bool) -> bool:
+    def allow_collisions(self, id: str, allow: bool) -> Optional[Future]:
         """
         Takes in the ID of an element in the planning scene. Modifies the allowed
         collision matrix to (dis)allow collisions between that object and all other
@@ -1747,7 +1747,7 @@ class MoveIt2:
         """
         # Update the planning scene
         if not self.__update_planning_scene():
-            return False
+            return None
         allowed_collision_matrix = self.__planning_scene.allowed_collision_matrix
         self.__old_allowed_collision_matrix = copy.deepcopy(allowed_collision_matrix)
 
@@ -1777,7 +1777,7 @@ class MoveIt2:
             self._node.get_logger().warn(
                 f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
-            return False
+            return None
         return self._apply_planning_scene_service.call_async(
             ApplyPlanningScene.Request(
                 scene=self.__planning_scene
