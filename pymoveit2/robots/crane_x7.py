@@ -8,6 +8,7 @@ CLOSED_GRIPPER_JOINT_POSITIONS: List[float] = [0.0, 0.0]
 
 robot_prefix = "crane_x7_"
 
+
 def joint_names(prefix: str = robot_prefix) -> List[str]:
     return [
         prefix + "shoulder_fixed_part_pan_joint",
