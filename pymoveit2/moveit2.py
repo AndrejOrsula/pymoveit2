@@ -24,6 +24,7 @@ from moveit_msgs.srv import (
     GetPositionFK,
     GetPositionIK,
 )
+import numpy as np
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -1618,12 +1619,14 @@ class MoveIt2:
         ] = None,
         frame_id: Optional[str] = None,
         operation: int = CollisionObject.ADD,
+        scale: Union[float, Tuple[float, float, float]] = 1.0,
     ):
         """
         Add collision object with a mesh geometry specified by `filepath`.
         Note: This function required 'trimesh' Python module to be installed.
         """
 
+        # Load the mesh
         try:
             import trimesh
         except ImportError as err:
@@ -1679,6 +1682,14 @@ class MoveIt2:
         )
 
         mesh = trimesh.load(filepath)
+
+        # Scale the mesh
+        if isinstance(scale, float):
+            scale = (scale, scale, scale)
+        transform = np.eye(4)
+        transform.fill_diagonal(scale)
+        mesh.apply_transform(transform)
+
         msg.meshes.append(
             Mesh(
                 triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
