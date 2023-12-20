@@ -134,7 +134,7 @@ class MoveIt2:
             ),
             callback_group=self._callback_group,
         )
-            
+
         # Also create a separate service client for planning
         self._plan_kinematic_path_service = self._node.create_client(
             srv_type=GetMotionPlan,
@@ -148,6 +148,20 @@ class MoveIt2:
             callback_group=callback_group,
         )
         self.__kinematic_path_request = GetMotionPlan.Request()
+
+        # Create a separate service client for Cartesian planning
+        self._plan_cartesian_path_service = self._node.create_client(
+            srv_type=GetCartesianPath,
+            srv_name="compute_cartesian_path",
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=callback_group,
+        )
+        self.__cartesian_path_request = GetCartesianPath.Request()
 
         # Create action client for trajectory execution
         self.__execute_trajectory_action_client = ActionClient(
@@ -186,20 +200,6 @@ class MoveIt2:
             ),
             callback_group=self._callback_group,
         )
-
-        # Create a separate service client for Cartesian planning
-        self._plan_cartesian_path_service = self._node.create_client(
-            srv_type=GetCartesianPath,
-            srv_name="compute_cartesian_path",
-            qos_profile=QoSProfile(
-                durability=QoSDurabilityPolicy.VOLATILE,
-                reliability=QoSReliabilityPolicy.RELIABLE,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-            ),
-            callback_group=callback_group,
-        )
-        self.__cartesian_path_request = GetCartesianPath.Request()
 
         self.__collision_object_publisher = self._node.create_publisher(
             CollisionObject, "/collision_object", 10
@@ -635,10 +635,10 @@ class MoveIt2:
         Execute joint_trajectory by communicating directly with the controller.
         """
 
-            if (
-                self.__ignore_new_calls_while_executing and
-                (self.__is_motion_requested or self.__is_executing)
-            ):
+        if (
+            self.__ignore_new_calls_while_executing and
+            (self.__is_motion_requested or self.__is_executing)
+        ):
             self._node.get_logger().warn(
                 "Controller is already following a trajectory. Skipping motion."
             )

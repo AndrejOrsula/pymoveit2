@@ -2,6 +2,8 @@
 """
 Example of moving to a joint configuration.
 - ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]"
+- ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]" -p synchronous:=False -p cancel_after_secs:=1.0
+- ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]" -p synchronous:=False -p cancel_after_secs:=-1.0
 """
 
 from threading import Thread
@@ -10,7 +12,7 @@ import rclpy
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 
-from pymoveit2 import MoveIt2
+from pymoveit2 import MoveIt2, MoveIt2State
 from pymoveit2.robots import panda
 
 
@@ -33,6 +35,9 @@ def main():
             0.7853981633974483,
         ],
     )
+    node.declare_parameter("synchronous", True)
+    # If negative, don't cancel. Only used if synchronous is False
+    node.declare_parameter("cancel_after_secs", -1.0)
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
@@ -58,15 +63,47 @@ def main():
     moveit2.max_velocity = 0.5
     moveit2.max_acceleration = 0.5
 
-    # Get parameter
+    # Get parameters
     joint_positions = (
         node.get_parameter("joint_positions").get_parameter_value().double_array_value
     )
+    synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
+    cancel_after_secs = node.get_parameter("cancel_after_secs").get_parameter_value().double_value
 
     # Move to joint configuration
     node.get_logger().info(f"Moving to {{joint_positions: {list(joint_positions)}}}")
     moveit2.move_to_configuration(joint_positions)
-    moveit2.wait_until_executed()
+    if synchronous:
+        # Note: the same functionality can be achieved by setting
+        # `synchronous:=false` and `cancel_after_secs` to a negative value.
+        moveit2.wait_until_executed()
+    else:
+        # Wait for the request to get accepted (i.e., for execution to start)
+        print("Current State: " + str(moveit2.query_state()))
+        rate = node.create_rate(10)
+        while moveit2.query_state() != MoveIt2State.EXECUTING:
+            rate.sleep()
+
+        # Get the future
+        print("Current State: " + str(moveit2.query_state()))
+        future = moveit2.get_execution_future()
+
+        # Cancel the goal
+        if cancel_after_secs >= 0.0:
+            # Sleep for the specified time
+            sleep_time = node.create_rate(cancel_after_secs)
+            sleep_time.sleep()
+            # Cancel the goal
+            print("Cancelling goal")
+            moveit2.cancel_execution()
+
+        # Wait until the future is done
+        while not future.done():
+            rate.sleep()
+
+        # Print the result
+        print("Result status: " + str(future.result().status))
+        print("Result error code: " + str(future.result().result.error_code))
 
     rclpy.shutdown()
     executor_thread.join()
