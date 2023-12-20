@@ -21,10 +21,8 @@ from moveit_msgs.srv import (
 )
 from std_msgs.msg import String
 
-import rclpy
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
-from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 from rclpy.qos import (
     QoSDurabilityPolicy,
@@ -40,6 +38,14 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 from enum import Enum
 class MoveIt2State(Enum):
+    """
+    An enum the represents the current execution state of the MoveIt2 interface.
+    - IDLE: No motion is being requested or executed
+    - REQUESTING: Execution has been requested, but the request has not yet been
+      accepted.
+    - EXECUTING: Execution has been requested and accepted, and has not yet been
+      completed.
+    """
     IDLE = 0
     REQUESTING = 1
     EXECUTING = 2
@@ -57,7 +63,8 @@ class MoveIt2:
         base_link_name: str,
         end_effector_name: str,
         group_name: str = "arm",
-        use_move_action: bool = False,
+        use_move_group_action: bool = False,
+        ignore_new_calls_while_executing: bool = False,
         callback_group: Optional[CallbackGroup] = None,
     ):
         """
@@ -67,9 +74,9 @@ class MoveIt2:
           - `base_link_name` - Name of the robot base link
           - `end_effector_name` - Name of the robot end effector
           - `group_name` - Name of the planning group for robot arm
-          - `use_move_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
-                                   ExecuteTrajectory action is employed otherwise
-                                   together with a separate planning service client
+          - `use_move_group_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
+                               ExecuteTrajectory action is employed otherwise
+                               together with a separate planning service client
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
         """
 
@@ -90,44 +97,43 @@ class MoveIt2:
             callback_group=self._callback_group,
         )
 
-        if use_move_action:
-            # Create action client for move action
-            self.__move_action_client = ActionClient(
-                node=self._node,
-                action_type=MoveGroup,
-                action_name="move_action",
-                goal_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                result_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=5,
-                ),
-                cancel_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=5,
-                ),
-                feedback_sub_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                status_sub_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                callback_group=self._callback_group,
-            )
+        # Create action client for move action
+        self.__move_action_client = ActionClient(
+            node=self._node,
+            action_type=MoveGroup,
+            action_name="move_action",
+            goal_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            result_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=5,
+            ),
+            cancel_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=5,
+            ),
+            feedback_sub_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            status_sub_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=self._callback_group,
+        )
             
         # Also create a separate service client for planning
         self._plan_kinematic_path_service = self._node.create_client(
@@ -143,7 +149,7 @@ class MoveIt2:
         )
         self.__kinematic_path_request = GetMotionPlan.Request()
 
-        # And create a separate action client for trajectory execution
+        # Create action client for trajectory execution
         self.__execute_trajectory_action_client = ActionClient(
             node=self._node,
             action_type=ExecuteTrajectory,
@@ -218,7 +224,10 @@ class MoveIt2:
         # Flag to determine whether to execute trajectories via Move Group Action, or rather by calling
         # the separate ExecuteTrajectory action
         # Applies to `move_to_pose()` and `move_to_configuration()`
-        self.__use_move_action = use_move_action
+        self.__use_move_group_action = use_move_group_action
+
+        # Flag that determines whether a new goal can be sent while the previous one is being executed
+        self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
 
         # Store additional variables for later use
         self.__joint_names = joint_names
@@ -327,8 +336,11 @@ class MoveIt2:
                 pose=Pose(position=position, orientation=quat_xyzw),
             )
 
-        if self.__use_move_action and not cartesian:
-            if self.__is_motion_requested or self.__is_executing:
+        if self.__use_move_group_action and not cartesian:
+            if (
+                self.__ignore_new_calls_while_executing and
+                (self.__is_motion_requested or self.__is_executing)
+            ):
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
                 )
@@ -383,8 +395,11 @@ class MoveIt2:
         passed in to internally use `set_joint_goal()` to define a goal during the call.
         """
 
-        if self.__use_move_action:
-            if self.__is_motion_requested or self.__is_executing:
+        if self.__use_move_group_action:
+            if (
+                self.__ignore_new_calls_while_executing and
+                (self.__is_motion_requested or self.__is_executing)
+            ):
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
                 )
@@ -452,39 +467,6 @@ class MoveIt2:
             rate.sleep()
 
         return self.get_trajectory(future, cartesian=cartesian)
-
-    def get_trajectory(self, future: Future, cartesian: bool = False) -> Optional[JointTrajectory]:
-        """
-        Takes in a future returned by plan_async and returns the trajectory if the future is done
-        and planning was successful, else None.
-        """
-        if (not future.done()):
-            self._node.get_logger().warn(
-                "Cannot get trajectory because future is not done."
-            )
-            return None
-
-        res = future.result()
-
-        # Cartesian
-        if cartesian:
-            if MoveItErrorCodes.SUCCESS == res.error_code.val:
-                return res.solution.joint_trajectory
-            else:
-                self._node.get_logger().warn(
-                    f"Planning failed! Error code: {res.error_code.val}."
-                )
-                return None
-        
-        # Else Kinematic
-        res = res.motion_plan_response
-        if MoveItErrorCodes.SUCCESS == res.error_code.val:
-            return res.trajectory.joint_trajectory
-        else:
-            self._node.get_logger().warn(
-                f"Planning failed! Error code: {res.error_code.val}."
-            )
-            return None
 
     def plan_async(
         self,
@@ -615,12 +597,48 @@ class MoveIt2:
 
         return future
 
+    def get_trajectory(self, future: Future, cartesian: bool = False) -> Optional[JointTrajectory]:
+        """
+        Takes in a future returned by plan_async and returns the trajectory if the future is done
+        and planning was successful, else None.
+        """
+        if (not future.done()):
+            self._node.get_logger().warn(
+                "Cannot get trajectory because future is not done."
+            )
+            return None
+
+        res = future.result()
+
+        # Cartesian
+        if cartesian:
+            if MoveItErrorCodes.SUCCESS == res.error_code.val:
+                return res.solution.joint_trajectory
+            else:
+                self._node.get_logger().warn(
+                    f"Planning failed! Error code: {res.error_code.val}."
+                )
+                return None
+        
+        # Else Kinematic
+        res = res.motion_plan_response
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.trajectory.joint_trajectory
+        else:
+            self._node.get_logger().warn(
+                f"Planning failed! Error code: {res.error_code.val}."
+            )
+            return None
+
     def execute(self, joint_trajectory: JointTrajectory):
         """
         Execute joint_trajectory by communicating directly with the controller.
         """
 
-        if self.__is_motion_requested or self.__is_executing:
+            if (
+                self.__ignore_new_calls_while_executing and
+                (self.__is_motion_requested or self.__is_executing)
+            ):
             self._node.get_logger().warn(
                 "Controller is already following a trajectory. Skipping motion."
             )
