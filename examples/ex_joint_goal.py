@@ -10,8 +10,8 @@ import rclpy
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 
-from pymoveit2 import MoveIt2, MoveIt2State
-from pymoveit2.robots import kinova
+from pymoveit2 import MoveIt2
+from pymoveit2.robots import panda
 
 
 def main():
@@ -24,12 +24,13 @@ def main():
     node.declare_parameter(
         "joint_positions",
         [
-            -1.47568,
-            2.92779,
-            1.00845,
-            -2.0847,
-            1.43588,
-            1.32575
+            0.0,
+            0.0,
+            0.0,
+            -0.7853981633974483,
+            0.0,
+            1.5707963267948966,
+            0.7853981633974483,
         ],
     )
 
@@ -39,10 +40,10 @@ def main():
     # Create MoveIt 2 interface
     moveit2 = MoveIt2(
         node=node,
-        joint_names=kinova.joint_names(),
-        base_link_name=kinova.base_link_name(),
-        end_effector_name="forkTip",
-        group_name=kinova.MOVE_GROUP_ARM,
+        joint_names=panda.joint_names(),
+        base_link_name=panda.base_link_name(),
+        end_effector_name=panda.end_effector_name(),
+        group_name=panda.MOVE_GROUP_ARM,
         callback_group=callback_group,
     )
 
@@ -65,20 +66,7 @@ def main():
     # Move to joint configuration
     node.get_logger().info(f"Moving to {{joint_positions: {list(joint_positions)}}}")
     moveit2.move_to_configuration(joint_positions)
-    rate = node.create_rate(10)
-    print("Current State: " + str(moveit2.query_state()))
-    while moveit2.query_state() != MoveIt2State.EXECUTING:
-        rate.sleep()
-    print("Current State: " + str(moveit2.query_state()))
-    future = moveit2.get_execution_future()
-    onesec = node.create_rate(1)
-    onesec.sleep()
-    print("Cancelling goal")
-    moveit2.cancel_execution()
-    while not future.done():
-        rate.sleep()
-    print("Result status: " + str(future.result().status))
-    print("Result error code: " + str(future.result().result.error_code))
+    moveit2.wait_until_executed()
 
     rclpy.shutdown()
     executor_thread.join()

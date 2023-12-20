@@ -143,43 +143,43 @@ class MoveIt2:
         )
         self.__kinematic_path_request = GetMotionPlan.Request()
 
-            # And create a separate action client for trajectory execution
-            self.__execute_trajectory_action_client = ActionClient(
-                node=self._node,
-                action_type=ExecuteTrajectory,
-                action_name="execute_trajectory",
-                goal_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                result_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=5,
-                ),
-                cancel_service_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.RELIABLE,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=5,
-                ),
-                feedback_sub_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                status_sub_qos_profile=QoSProfile(
-                    durability=QoSDurabilityPolicy.VOLATILE,
-                    reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                    history=QoSHistoryPolicy.KEEP_LAST,
-                    depth=1,
-                ),
-                callback_group=self._callback_group,
-            )
+        # And create a separate action client for trajectory execution
+        self.__execute_trajectory_action_client = ActionClient(
+            node=self._node,
+            action_type=ExecuteTrajectory,
+            action_name="execute_trajectory",
+            goal_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            result_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=5,
+            ),
+            cancel_service_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=5,
+            ),
+            feedback_sub_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            status_sub_qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
+            callback_group=self._callback_group,
+        )
 
         # Create a separate service client for Cartesian planning
         self._plan_cartesian_path_service = self._node.create_client(
@@ -488,6 +488,7 @@ class MoveIt2:
 
     def plan_async(
         self,
+        pose: Optional[Union[PoseStamped, Pose]] = None,
         position: Optional[Union[Point, Tuple[float, float, float]]] = None,
         quat_xyzw: Optional[
             Union[Quaternion, Tuple[float, float, float, float]]
@@ -495,6 +496,7 @@ class MoveIt2:
         joint_positions: Optional[List[float]] = None,
         joint_names: Optional[List[str]] = None,
         frame_id: Optional[str] = None,
+        target_link: Optional[str] = None,
         tolerance_position: float = 0.001,
         tolerance_orientation: float = 0.001,
         tolerance_joint_position: float = 0.001,
