@@ -77,7 +77,7 @@ class MoveIt2:
           - `use_move_group_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
                                ExecuteTrajectory action is employed otherwise
                                together with a separate planning service client
-           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
+          - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
                                                  while previous is still being executed
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
         """
