@@ -63,9 +63,11 @@ class MoveIt2:
         base_link_name: str,
         end_effector_name: str,
         group_name: str = "arm",
-        use_move_group_action: bool = False,
+        execute_via_moveit: bool = False,
         ignore_new_calls_while_executing: bool = False,
         callback_group: Optional[CallbackGroup] = None,
+        follow_joint_trajectory_action_name: str = "joint_trajectory_controller/follow_joint_trajectory",
+        use_move_group_action: bool = False,
     ):
         """
         Construct an instance of `MoveIt2` interface.
@@ -74,16 +76,31 @@ class MoveIt2:
           - `base_link_name` - Name of the robot base link
           - `end_effector_name` - Name of the robot end effector
           - `group_name` - Name of the planning group for robot arm
-          - `use_move_group_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
-                               ExecuteTrajectory action is employed otherwise
-                               together with a separate planning service client
+          - [DEPRECATED] `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
+                                   FollowJointTrajectory action (controller) is employed otherwise
+                                   together with a separate planning service client
           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
                                                  while previous is still being executed
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
+          - [DEPRECATED] `follow_joint_trajectory_action_name` - Name of the action server for the controller
+          - `use_move_group_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
+                               ExecuteTrajectory action is employed otherwise
+                               together with a separate planning service client
         """
 
         self._node = node
         self._callback_group = callback_group
+
+        # Check for deprecated parameters
+        if execute_via_moveit:
+            self._node.get_logger().warn(
+                "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
+            )
+            use_move_group_action = True
+        if follow_joint_trajectory_action_name != "joint_trajectory_controller/follow_joint_trajectory":
+            self._node.get_logger().warn(
+                "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
+            )
 
         # Create subscriber for current joint states
         self._node.create_subscription(

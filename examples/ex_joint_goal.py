@@ -36,8 +36,8 @@ def main():
         ],
     )
     node.declare_parameter("synchronous", True)
-    # If negative, don't cancel. Only used if synchronous is False
-    node.declare_parameter("cancel_after_secs", -1.0)
+    # If non-positive, don't cancel. Only used if synchronous is False
+    node.declare_parameter("cancel_after_secs", 0.0)
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
@@ -89,7 +89,7 @@ def main():
         future = moveit2.get_execution_future()
 
         # Cancel the goal
-        if cancel_after_secs >= 0.0:
+        if cancel_after_secs > 0.0:
             # Sleep for the specified time
             sleep_time = node.create_rate(cancel_after_secs)
             sleep_time.sleep()

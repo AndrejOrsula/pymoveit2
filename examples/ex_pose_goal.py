@@ -2,6 +2,8 @@
 """
 Example of moving to a pose goal.
 - ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p cartesian:=False
+- ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p cartesian:=False -p synchronous:=False -p cancel_after_secs:=1.0
+- ros2 run pymoveit2 ex_pose_goal.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p cartesian:=False -p synchronous:=False -p cancel_after_secs:=-1.0
 """
 
 from threading import Thread
@@ -25,8 +27,8 @@ def main():
     node.declare_parameter("quat_xyzw", [1.0, 0.0, 0.0, 0.0])
     node.declare_parameter("cartesian", False)
     node.declare_parameter("synchronous", True)
-    # If negative, don't cancel. Only used if synchronous is False
-    node.declare_parameter("cancel_after_secs", -1.0)
+    # If non-positive, don't cancel. Only used if synchronous is False
+    node.declare_parameter("cancel_after_secs", 0.0)
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
@@ -80,7 +82,7 @@ def main():
         future = moveit2.get_execution_future()
 
         # Cancel the goal
-        if cancel_after_secs >= 0.0:
+        if cancel_after_secs > 0.0:
             # Sleep for the specified time
             sleep_time = node.create_rate(cancel_after_secs)
             sleep_time.sleep()
