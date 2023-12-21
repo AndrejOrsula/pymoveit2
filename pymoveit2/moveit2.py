@@ -1,9 +1,10 @@
 import threading
+from enum import Enum
 from typing import List, Optional, Tuple, Union
 
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
-from moveit_msgs.action import MoveGroup, ExecuteTrajectory
+from moveit_msgs.action import ExecuteTrajectory, MoveGroup
 from moveit_msgs.msg import (
     AttachedCollisionObject,
     CollisionObject,
@@ -19,8 +20,6 @@ from moveit_msgs.srv import (
     GetPositionFK,
     GetPositionIK,
 )
-from std_msgs.msg import String
-
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -33,10 +32,10 @@ from rclpy.qos import (
 from rclpy.task import Future
 from sensor_msgs.msg import JointState
 from shape_msgs.msg import Mesh, MeshTriangle, SolidPrimitive
-from std_msgs.msg import Header
+from std_msgs.msg import Header, String
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
-from enum import Enum
+
 class MoveIt2State(Enum):
     """
     An enum the represents the current execution state of the MoveIt2 interface.
@@ -46,9 +45,11 @@ class MoveIt2State(Enum):
     - EXECUTING: Execution has been requested and accepted, and has not yet been
       completed.
     """
+
     IDLE = 0
     REQUESTING = 1
     EXECUTING = 2
+
 
 class MoveIt2:
     """
@@ -97,7 +98,10 @@ class MoveIt2:
                 "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
             )
             use_move_group_action = True
-        if follow_joint_trajectory_action_name != "joint_trajectory_controller/follow_joint_trajectory":
+        if (
+            follow_joint_trajectory_action_name
+            != "joint_trajectory_controller/follow_joint_trajectory"
+        ):
             self._node.get_logger().warn(
                 "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
             )
@@ -278,9 +282,7 @@ class MoveIt2:
 
     def cancel_execution(self):
         if self.query_state() != MoveIt2State.EXECUTING:
-            self._node.get_logger().warn(
-                    "Attempted to cancel without active goal."
-                )
+            self._node.get_logger().warn("Attempted to cancel without active goal.")
             return None
 
         cancel_string = String()
@@ -289,10 +291,8 @@ class MoveIt2:
 
     def get_execution_future(self) -> Optional[Future]:
         if self.query_state() != MoveIt2State.EXECUTING:
-                self._node.get_logger().warn(
-                        "Need active goal for future."
-                    )
-                return None
+            self._node.get_logger().warn("Need active goal for future.")
+            return None
 
         return self.__execution_goal_handle.get_result_async()
 
@@ -356,9 +356,8 @@ class MoveIt2:
             )
 
         if self.__use_move_group_action and not cartesian:
-            if (
-                self.__ignore_new_calls_while_executing and
-                (self.__is_motion_requested or self.__is_executing)
+            if self.__ignore_new_calls_while_executing and (
+                self.__is_motion_requested or self.__is_executing
             ):
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
@@ -415,9 +414,8 @@ class MoveIt2:
         """
 
         if self.__use_move_group_action:
-            if (
-                self.__ignore_new_calls_while_executing and
-                (self.__is_motion_requested or self.__is_executing)
+            if self.__ignore_new_calls_while_executing and (
+                self.__is_motion_requested or self.__is_executing
             ):
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
@@ -475,7 +473,9 @@ class MoveIt2:
         """
         Call plan_async and wait on future
         """
-        future = self.plan_async(**{key: value for key, value in locals().items() if key != 'self'})
+        future = self.plan_async(
+            **{key: value for key, value in locals().items() if key != "self"}
+        )
 
         if future is None:
             return None
@@ -616,12 +616,14 @@ class MoveIt2:
 
         return future
 
-    def get_trajectory(self, future: Future, cartesian: bool = False) -> Optional[JointTrajectory]:
+    def get_trajectory(
+        self, future: Future, cartesian: bool = False
+    ) -> Optional[JointTrajectory]:
         """
         Takes in a future returned by plan_async and returns the trajectory if the future is done
         and planning was successful, else None.
         """
-        if (not future.done()):
+        if not future.done():
             self._node.get_logger().warn(
                 "Cannot get trajectory because future is not done."
             )
@@ -638,7 +640,7 @@ class MoveIt2:
                     f"Planning failed! Error code: {res.error_code.val}."
                 )
                 return None
-        
+
         # Else Kinematic
         res = res.motion_plan_response
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
@@ -654,9 +656,8 @@ class MoveIt2:
         Execute joint_trajectory by communicating directly with the controller.
         """
 
-        if (
-            self.__ignore_new_calls_while_executing and
-            (self.__is_motion_requested or self.__is_executing)
+        if self.__ignore_new_calls_while_executing and (
+            self.__is_motion_requested or self.__is_executing
         ):
             self._node.get_logger().warn(
                 "Controller is already following a trajectory. Skipping motion."
@@ -1536,7 +1537,9 @@ class MoveIt2:
             )
             return None
 
-        return self._plan_cartesian_path_service.call_async(self.__cartesian_path_request)
+        return self._plan_cartesian_path_service.call_async(
+            self.__cartesian_path_request
+        )
 
     def _send_goal_async_move_action(self):
         self.__execution_mutex.acquire()
@@ -1612,9 +1615,11 @@ class MoveIt2:
 
         self.__last_error_code = None
         self.__is_motion_requested = True
-        self.__send_goal_future_execute_trajectory = self.__execute_trajectory_action_client.send_goal_async(
-            goal=goal,
-            feedback_callback=None,
+        self.__send_goal_future_execute_trajectory = (
+            self.__execute_trajectory_action_client.send_goal_async(
+                goal=goal,
+                feedback_callback=None,
+            )
         )
 
         self.__send_goal_future_execute_trajectory.add_done_callback(
@@ -1636,9 +1641,7 @@ class MoveIt2:
         self.__is_executing = True
         self.__is_motion_requested = False
 
-        self.__get_result_future_execute_trajectory = (
-            goal_handle.get_result_async()
-        )
+        self.__get_result_future_execute_trajectory = goal_handle.get_result_async()
         self.__get_result_future_execute_trajectory.add_done_callback(
             self.__result_callback_execute_trajectory
         )

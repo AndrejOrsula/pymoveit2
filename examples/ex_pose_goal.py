@@ -59,7 +59,9 @@ def main():
     quat_xyzw = node.get_parameter("quat_xyzw").get_parameter_value().double_array_value
     cartesian = node.get_parameter("cartesian").get_parameter_value().bool_value
     synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
-    cancel_after_secs = node.get_parameter("cancel_after_secs").get_parameter_value().double_value
+    cancel_after_secs = (
+        node.get_parameter("cancel_after_secs").get_parameter_value().double_value
+    )
 
     # Move to pose
     node.get_logger().info(

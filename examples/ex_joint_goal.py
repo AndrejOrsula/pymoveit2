@@ -68,7 +68,9 @@ def main():
         node.get_parameter("joint_positions").get_parameter_value().double_array_value
     )
     synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
-    cancel_after_secs = node.get_parameter("cancel_after_secs").get_parameter_value().double_value
+    cancel_after_secs = (
+        node.get_parameter("cancel_after_secs").get_parameter_value().double_value
+    )
 
     # Move to joint configuration
     node.get_logger().info(f"Moving to {{joint_positions: {list(joint_positions)}}}")
