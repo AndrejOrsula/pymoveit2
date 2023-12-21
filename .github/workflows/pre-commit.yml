@@ -1,0 +1,32 @@
+name: pre-commit
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.10"
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      ## Run pre-commit and try to apply fixes
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.0
+      - name: Apply fixes from pre-commit
+        uses: pre-commit-ci/lite-action@v1.0.1
+        if: always()
