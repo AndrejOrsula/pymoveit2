@@ -39,7 +39,6 @@ def main():
         closed_gripper_joint_positions=panda.CLOSED_GRIPPER_JOINT_POSITIONS,
         gripper_group_name=panda.MOVE_GROUP_GRIPPER,
         callback_group=callback_group,
-        follow_joint_trajectory_action_name="gripper_trajectory_controller/follow_joint_trajectory",
         gripper_command_action_name="gripper_action_controller/gripper_cmd",
     )
 

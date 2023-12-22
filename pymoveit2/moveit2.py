@@ -1,10 +1,10 @@
 import threading
+from enum import Enum
 from typing import List, Optional, Tuple, Union
 
 from action_msgs.msg import GoalStatus
-from control_msgs.action import FollowJointTrajectory
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
-from moveit_msgs.action import MoveGroup
+from moveit_msgs.action import ExecuteTrajectory, MoveGroup
 from moveit_msgs.msg import (
     AttachedCollisionObject,
     CollisionObject,
@@ -29,10 +29,26 @@ from rclpy.qos import (
     QoSProfile,
     QoSReliabilityPolicy,
 )
+from rclpy.task import Future
 from sensor_msgs.msg import JointState
 from shape_msgs.msg import Mesh, MeshTriangle, SolidPrimitive
-from std_msgs.msg import Header
+from std_msgs.msg import Header, String
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+
+
+class MoveIt2State(Enum):
+    """
+    An enum the represents the current execution state of the MoveIt2 interface.
+    - IDLE: No motion is being requested or executed
+    - REQUESTING: Execution has been requested, but the request has not yet been
+      accepted.
+    - EXECUTING: Execution has been requested and accepted, and has not yet been
+      completed.
+    """
+
+    IDLE = 0
+    REQUESTING = 1
+    EXECUTING = 2
 
 
 class MoveIt2:
@@ -51,7 +67,8 @@ class MoveIt2:
         execute_via_moveit: bool = False,
         ignore_new_calls_while_executing: bool = False,
         callback_group: Optional[CallbackGroup] = None,
-        follow_joint_trajectory_action_name: str = "joint_trajectory_controller/follow_joint_trajectory",
+        follow_joint_trajectory_action_name: str = "DEPRECATED",
+        use_move_group_action: bool = False,
     ):
         """
         Construct an instance of `MoveIt2` interface.
@@ -60,17 +77,31 @@ class MoveIt2:
           - `base_link_name` - Name of the robot base link
           - `end_effector_name` - Name of the robot end effector
           - `group_name` - Name of the planning group for robot arm
-          - `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
+          - [DEPRECATED] `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
                                    FollowJointTrajectory action (controller) is employed otherwise
                                    together with a separate planning service client
           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
                                                  while previous is still being executed
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
-          - `follow_joint_trajectory_action_name` - Name of the action server for the controller
+          - [DEPRECATED] `follow_joint_trajectory_action_name` - Name of the action server for the controller
+          - `use_move_group_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
+                               ExecuteTrajectory action is employed otherwise
+                               together with a separate planning service client
         """
 
         self._node = node
         self._callback_group = callback_group
+
+        # Check for deprecated parameters
+        if execute_via_moveit:
+            self._node.get_logger().warn(
+                "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
+            )
+            use_move_group_action = True
+        if follow_joint_trajectory_action_name != "DEPRECATED":
+            self._node.get_logger().warn(
+                "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
+            )
 
         # Create subscriber for current joint states
         self._node.create_subscription(
@@ -124,7 +155,7 @@ class MoveIt2:
             callback_group=self._callback_group,
         )
 
-        # Otherwise create a separate service client for planning
+        # Also create a separate service client for planning
         self._plan_kinematic_path_service = self._node.create_client(
             srv_type=GetMotionPlan,
             srv_name="plan_kinematic_path",
@@ -153,10 +184,10 @@ class MoveIt2:
         self.__cartesian_path_request = GetCartesianPath.Request()
 
         # Create action client for trajectory execution
-        self.__follow_joint_trajectory_action_client = ActionClient(
+        self._execute_trajectory_action_client = ActionClient(
             node=self._node,
-            action_type=FollowJointTrajectory,
-            action_name=follow_joint_trajectory_action_name,
+            action_type=ExecuteTrajectory,
+            action_name="execute_trajectory",
             goal_service_qos_profile=QoSProfile(
                 durability=QoSDurabilityPolicy.VOLATILE,
                 reliability=QoSReliabilityPolicy.RELIABLE,
@@ -197,6 +228,10 @@ class MoveIt2:
             AttachedCollisionObject, "/attached_collision_object", 10
         )
 
+        self.__cancellation_pub = self._node.create_publisher(
+            String, "/trajectory_execution_event", 1
+        )
+
         self.__joint_state_mutex = threading.Lock()
         self.__joint_state = None
         self.__new_joint_state_available = False
@@ -206,11 +241,12 @@ class MoveIt2:
             end_effector=end_effector_name,
         )
 
-        # Flag to determine whether to execute trajectories via MoveIt2, or rather by calling a separate action with the controller itself
-        # Applies to `move_to_pose()` and `move_to_configuraion()`
-        self.__execute_via_moveit = execute_via_moveit
+        # Flag to determine whether to execute trajectories via Move Group Action, or rather by calling
+        # the separate ExecuteTrajectory action
+        # Applies to `move_to_pose()` and `move_to_configuration()`
+        self.__use_move_group_action = use_move_group_action
 
-        # Flag that determines whether a new goal can be send while the previous one is being executed
+        # Flag that determines whether a new goal can be sent while the previous one is being executed
         self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
 
         # Store additional variables for later use
@@ -223,10 +259,44 @@ class MoveIt2:
         self.__is_motion_requested = False
         self.__is_executing = False
         self.motion_suceeded = False
+        self.__execution_goal_handle = None
+        self.__last_error_code = None
         self.__wait_until_executed_rate = self._node.create_rate(1000.0)
+        self.__execution_mutex = threading.Lock()
 
         # Event that enables waiting until async future is done
         self.__future_done_event = threading.Event()
+
+    #### Execution Polling Functions
+    def query_state(self) -> MoveIt2State:
+        with self.__execution_mutex:
+            if self.__is_motion_requested:
+                return MoveIt2State.REQUESTING
+            elif self.__is_executing:
+                return MoveIt2State.EXECUTING
+            else:
+                return MoveIt2State.IDLE
+
+    def cancel_execution(self):
+        if self.query_state() != MoveIt2State.EXECUTING:
+            self._node.get_logger().warn("Attempted to cancel without active goal.")
+            return None
+
+        cancel_string = String()
+        cancel_string.data = "stop"
+        self.__cancellation_pub.publish(cancel_string)
+
+    def get_execution_future(self) -> Optional[Future]:
+        if self.query_state() != MoveIt2State.EXECUTING:
+            self._node.get_logger().warn("Need active goal for future.")
+            return None
+
+        return self.__execution_goal_handle.get_result_async()
+
+    def get_last_execution_error_code(self) -> Optional[MoveItErrorCodes]:
+        return self.__last_error_code
+
+    ####
 
     def move_to_pose(
         self,
@@ -282,13 +352,14 @@ class MoveIt2:
                 pose=Pose(position=position, orientation=quat_xyzw),
             )
 
-        if self.__execute_via_moveit and not cartesian:
-            if self.__ignore_new_calls_while_executing and self.__is_executing:
+        if self.__use_move_group_action and not cartesian:
+            if self.__ignore_new_calls_while_executing and (
+                self.__is_motion_requested or self.__is_executing
+            ):
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
                 )
                 return
-            self.__is_motion_requested = True
 
             # Set goal
             self.set_pose_goal(
@@ -339,13 +410,14 @@ class MoveIt2:
         passed in to internally use `set_joint_goal()` to define a goal during the call.
         """
 
-        if self.__execute_via_moveit:
-            if self.__ignore_new_calls_while_executing and self.__is_executing:
+        if self.__use_move_group_action:
+            if self.__ignore_new_calls_while_executing and (
+                self.__is_motion_requested or self.__is_executing
+            ):
                 self._node.get_logger().warn(
                     "Controller is already following a trajectory. Skipping motion."
                 )
                 return
-            self.__is_motion_requested = True
 
             # Set goal
             self.set_joint_goal(
@@ -395,6 +467,43 @@ class MoveIt2:
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         cartesian: bool = False,
     ) -> Optional[JointTrajectory]:
+        """
+        Call plan_async and wait on future
+        """
+        future = self.plan_async(
+            **{key: value for key, value in locals().items() if key != "self"}
+        )
+
+        if future is None:
+            return None
+
+        # 10ms sleep
+        rate = self._node.create_rate(10)
+        while not future.done():
+            rate.sleep()
+
+        return self.get_trajectory(future, cartesian=cartesian)
+
+    def plan_async(
+        self,
+        pose: Optional[Union[PoseStamped, Pose]] = None,
+        position: Optional[Union[Point, Tuple[float, float, float]]] = None,
+        quat_xyzw: Optional[
+            Union[Quaternion, Tuple[float, float, float, float]]
+        ] = None,
+        joint_positions: Optional[List[float]] = None,
+        joint_names: Optional[List[str]] = None,
+        frame_id: Optional[str] = None,
+        target_link: Optional[str] = None,
+        tolerance_position: float = 0.001,
+        tolerance_orientation: float = 0.001,
+        tolerance_joint_position: float = 0.001,
+        weight_position: float = 1.0,
+        weight_orientation: float = 1.0,
+        weight_joint_position: float = 1.0,
+        start_joint_state: Optional[Union[JointState, List[float]]] = None,
+        cartesian: bool = False,
+    ) -> Optional[Future]:
         """
         Plan motion based on previously set goals. Optional arguments can be passed in to
         internally use `set_position_goal()`, `set_orientation_goal()` or `set_joint_goal()`
@@ -488,50 +597,81 @@ class MoveIt2:
         elif self.joint_state is not None:
             self.__move_action_goal.request.start_state.joint_state = self.joint_state
 
-        # Plan trajectory by sending a goal (blocking)
+        # Plan trajectory asynchronously by service call
         if cartesian:
-            joint_trajectory = self._plan_cartesian_path(
+            future = self._plan_cartesian_path(
                 frame_id=pose_stamped.header.frame_id
                 if pose_stamped is not None
                 else frame_id
             )
         else:
-            if self.__execute_via_moveit:
-                # Use action client
-                joint_trajectory = self._send_goal_move_action_plan_only()
-            else:
-                # Use service
-                joint_trajectory = self._plan_kinematic_path()
+            # Use service
+            future = self._plan_kinematic_path()
 
         # Clear all previous goal constrains
         self.clear_goal_constraints()
 
-        return joint_trajectory
+        return future
+
+    def get_trajectory(
+        self, future: Future, cartesian: bool = False
+    ) -> Optional[JointTrajectory]:
+        """
+        Takes in a future returned by plan_async and returns the trajectory if the future is done
+        and planning was successful, else None.
+        """
+        if not future.done():
+            self._node.get_logger().warn(
+                "Cannot get trajectory because future is not done."
+            )
+            return None
+
+        res = future.result()
+
+        # Cartesian
+        if cartesian:
+            if MoveItErrorCodes.SUCCESS == res.error_code.val:
+                return res.solution.joint_trajectory
+            else:
+                self._node.get_logger().warn(
+                    f"Planning failed! Error code: {res.error_code.val}."
+                )
+                return None
+
+        # Else Kinematic
+        res = res.motion_plan_response
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.trajectory.joint_trajectory
+        else:
+            self._node.get_logger().warn(
+                f"Planning failed! Error code: {res.error_code.val}."
+            )
+            return None
 
     def execute(self, joint_trajectory: JointTrajectory):
         """
         Execute joint_trajectory by communicating directly with the controller.
         """
 
-        if self.__ignore_new_calls_while_executing and self.__is_executing:
+        if self.__ignore_new_calls_while_executing and (
+            self.__is_motion_requested or self.__is_executing
+        ):
             self._node.get_logger().warn(
                 "Controller is already following a trajectory. Skipping motion."
             )
             return
-        self.__is_motion_requested = True
 
-        follow_joint_trajectory_goal = init_follow_joint_trajectory_goal(
+        execute_trajectory_goal = init_execute_trajectory_goal(
             joint_trajectory=joint_trajectory
         )
 
-        if follow_joint_trajectory_goal is None:
+        if execute_trajectory_goal is None:
             self._node.get_logger().warn(
                 "Cannot execute motion because the provided/planned trajectory is invalid."
             )
-            self.__is_motion_requested = False
             return
 
-        self._send_goal_async_follow_joint_trajectory(goal=follow_joint_trajectory_goal)
+        self._send_goal_async_execute_trajectory(goal=execute_trajectory_goal)
 
     def wait_until_executed(self) -> bool:
         """
@@ -563,12 +703,12 @@ class MoveIt2:
                 joint_positions=joint_state,
             )
         joint_trajectory = init_dummy_joint_trajectory_from_state(joint_state)
-        follow_joint_trajectory_goal = init_follow_joint_trajectory_goal(
+        execute_trajectory_goal = init_execute_trajectory_goal(
             joint_trajectory=joint_trajectory
         )
 
-        self._send_goal_async_follow_joint_trajectory(
-            goal=follow_joint_trajectory_goal,
+        self._send_goal_async_execute_trajectory(
+            goal=execute_trajectory_goal,
             wait_until_response=sync,
         )
 
@@ -957,8 +1097,10 @@ class MoveIt2:
         used. This function is applicable only in a very few edge-cases, so it should almost never be used.
         """
 
+        self.__execution_mutex.acquire()
         self.__is_motion_requested = False
         self.__is_executing = False
+        self.__execution_mutex.release()
 
     def add_collision_primitive(
         self,
@@ -1308,40 +1450,7 @@ class MoveIt2:
         self.__new_joint_state_available = True
         self.__joint_state_mutex.release()
 
-    def _send_goal_move_action_plan_only(
-        self, wait_for_server_timeout_sec: Optional[float] = 1.0
-    ) -> Optional[JointTrajectory]:
-        # Set action goal to only do planning without execution
-        original_plan_only = self.__move_action_goal.planning_options.plan_only
-        self.__move_action_goal.planning_options.plan_only = True
-
-        stamp = self._node.get_clock().now().to_msg()
-        self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
-
-        if not self.__move_action_client.wait_for_server(
-            timeout_sec=wait_for_server_timeout_sec
-        ):
-            self._node.get_logger().warn(
-                f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
-            )
-            return None
-
-        move_action_result = self.__move_action_client.send_goal(
-            goal=self.__move_action_goal,
-            feedback_callback=None,
-        )
-
-        # Revert back to original planning/execution mode
-        self.__move_action_goal.planning_options.plan_only = original_plan_only
-
-        if move_action_result.status == GoalStatus.STATUS_SUCCEEDED:
-            return move_action_result.result.planned_trajectory.joint_trajectory
-        else:
-            return None
-
-    def _plan_kinematic_path(
-        self, wait_for_server_timeout_sec: Optional[float] = 1.0
-    ) -> Optional[JointTrajectory]:
+    def _plan_kinematic_path(self) -> Optional[Future]:
         # Re-use request from move action goal
         self.__kinematic_path_request.motion_plan_request = (
             self.__move_action_goal.request
@@ -1359,32 +1468,21 @@ class MoveIt2:
             for orientation_constraint in constraints.orientation_constraints:
                 orientation_constraint.header.stamp = stamp
 
-        if not self._plan_kinematic_path_service.wait_for_service(
-            timeout_sec=wait_for_server_timeout_sec
-        ):
+        if not self._plan_kinematic_path_service.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self._plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
 
-        res = self._plan_kinematic_path_service.call(
+        return self._plan_kinematic_path_service.call_async(
             self.__kinematic_path_request
-        ).motion_plan_response
-
-        if MoveItErrorCodes.SUCCESS == res.error_code.val:
-            return res.trajectory.joint_trajectory
-        else:
-            self._node.get_logger().warn(
-                f"Planning failed! Error code: {res.error_code.val}."
-            )
-            return None
+        )
 
     def _plan_cartesian_path(
         self,
         max_step: float = 0.0025,
-        wait_for_server_timeout_sec: Optional[float] = 1.0,
         frame_id: Optional[str] = None,
-    ) -> Optional[JointTrajectory]:
+    ) -> Optional[Future]:
         # Re-use request from move action goal
         self.__cartesian_path_request.start_state = (
             self.__move_action_goal.request.start_state
@@ -1430,39 +1528,28 @@ class MoveIt2:
 
         self.__cartesian_path_request.waypoints = [target_pose]
 
-        if not self._plan_cartesian_path_service.wait_for_service(
-            timeout_sec=wait_for_server_timeout_sec
-        ):
+        if not self._plan_cartesian_path_service.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self._plan_cartesian_path_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
 
-        res = self._plan_cartesian_path_service.call(self.__cartesian_path_request)
+        return self._plan_cartesian_path_service.call_async(
+            self.__cartesian_path_request
+        )
 
-        if MoveItErrorCodes.SUCCESS == res.error_code.val:
-            return res.solution.joint_trajectory
-        else:
-            self._node.get_logger().warn(
-                f"Planning failed! Error code: {res.error_code.val}."
-            )
-            return None
-
-    def _send_goal_async_move_action(
-        self, wait_for_server_timeout_sec: Optional[float] = 1.0
-    ):
+    def _send_goal_async_move_action(self):
+        self.__execution_mutex.acquire()
         stamp = self._node.get_clock().now().to_msg()
         self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
-
-        if not self.__move_action_client.wait_for_server(
-            timeout_sec=wait_for_server_timeout_sec
-        ):
+        if not self.__move_action_client.server_is_ready():
             self._node.get_logger().warn(
                 f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
             )
-            self.__is_motion_requested = False
             return
 
+        self.__last_error_code = None
+        self.__is_motion_requested = True
         self.__send_goal_future_move_action = self.__move_action_client.send_goal_async(
             goal=self.__move_action_goal,
             feedback_callback=None,
@@ -1472,7 +1559,10 @@ class MoveIt2:
             self.__response_callback_move_action
         )
 
+        self.__execution_mutex.release()
+
     def __response_callback_move_action(self, response):
+        self.__execution_mutex.acquire()
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
@@ -1481,6 +1571,7 @@ class MoveIt2:
             self.__is_motion_requested = False
             return
 
+        self.__execution_goal_handle = goal_handle
         self.__is_executing = True
         self.__is_motion_requested = False
 
@@ -1488,86 +1579,89 @@ class MoveIt2:
         self.__get_result_future_move_action.add_done_callback(
             self.__result_callback_move_action
         )
+        self.__execution_mutex.release()
 
     def __result_callback_move_action(self, res):
+        self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().error(
+            self._node.get_logger().warn(
                 f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
             self.motion_suceeded = False
         else:
             self.motion_suceeded = True
 
-        self.__is_executing = False
+        self.__last_error_code = res.result().result.error_code
 
-    def _send_goal_async_follow_joint_trajectory(
+        self.__execution_goal_handle = None
+        self.__is_executing = False
+        self.__execution_mutex.release()
+
+    def _send_goal_async_execute_trajectory(
         self,
-        goal: FollowJointTrajectory,
-        wait_for_server_timeout_sec: Optional[float] = 1.0,
+        goal: ExecuteTrajectory,
         wait_until_response: bool = False,
     ):
-        if not self.__follow_joint_trajectory_action_client.wait_for_server(
-            timeout_sec=wait_for_server_timeout_sec
-        ):
+        self.__execution_mutex.acquire()
+
+        if not self._execute_trajectory_action_client.server_is_ready():
             self._node.get_logger().warn(
-                f"Action server '{self.__follow_joint_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
+                f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
             )
-            self.__is_motion_requested = False
-            return None
+            return
 
-        action_result = self.__follow_joint_trajectory_action_client.send_goal_async(
-            goal=goal,
-            feedback_callback=None,
+        self.__last_error_code = None
+        self.__is_motion_requested = True
+        self.__send_goal_future_execute_trajectory = (
+            self._execute_trajectory_action_client.send_goal_async(
+                goal=goal,
+                feedback_callback=None,
+            )
         )
 
-        action_result.add_done_callback(
-            self.__response_callback_follow_joint_trajectory
+        self.__send_goal_future_execute_trajectory.add_done_callback(
+            self.__response_callback_execute_trajectory
         )
+        self.__execution_mutex.release()
 
-        if wait_until_response:
-            self.__future_done_event.clear()
-            action_result.add_done_callback(
-                self.__response_callback_with_event_set_follow_joint_trajectory
-            )
-            self.__future_done_event.wait(timeout=wait_for_server_timeout_sec)
-        else:
-            action_result.add_done_callback(
-                self.__response_callback_follow_joint_trajectory
-            )
-
-    def __response_callback_follow_joint_trajectory(self, response):
+    def __response_callback_execute_trajectory(self, response):
+        self.__execution_mutex.acquire()
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
-                f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was rejected."
+                f"Action '{self._execute_trajectory_action_client._action_name}' was rejected."
             )
             self.__is_motion_requested = False
             return
 
+        self.__execution_goal_handle = goal_handle
         self.__is_executing = True
         self.__is_motion_requested = False
 
-        self.__get_result_future_follow_joint_trajectory = (
-            goal_handle.get_result_async()
+        self.__get_result_future_execute_trajectory = goal_handle.get_result_async()
+        self.__get_result_future_execute_trajectory.add_done_callback(
+            self.__result_callback_execute_trajectory
         )
-        self.__get_result_future_follow_joint_trajectory.add_done_callback(
-            self.__result_callback_follow_joint_trajectory
-        )
+        self.__execution_mutex.release()
 
-    def __response_callback_with_event_set_follow_joint_trajectory(self, response):
-        self.__response_callback_follow_joint_trajectory(response)
+    def __response_callback_with_event_set_execute_trajectory(self, response):
         self.__future_done_event.set()
 
-    def __result_callback_follow_joint_trajectory(self, res):
+    def __result_callback_execute_trajectory(self, res):
+        self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().error(
-                f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
+            self._node.get_logger().warn(
+                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
             self.motion_suceeded = False
         else:
             self.motion_suceeded = True
 
+        self.__last_error_code = res.result().result.error_code
+
+        self.__execution_goal_handle = None
         self.__is_executing = False
+        self.__execution_mutex.release()
 
     @classmethod
     def __init_move_action_goal(
@@ -1733,23 +1827,17 @@ def init_joint_state(
     return joint_state
 
 
-def init_follow_joint_trajectory_goal(
+def init_execute_trajectory_goal(
     joint_trajectory: JointTrajectory,
-) -> Optional[FollowJointTrajectory.Goal]:
+) -> Optional[ExecuteTrajectory.Goal]:
     if joint_trajectory is None:
         return None
 
-    follow_joint_trajectory_goal = FollowJointTrajectory.Goal()
+    execute_trajectory_goal = ExecuteTrajectory.Goal()
 
-    follow_joint_trajectory_goal.trajectory = joint_trajectory
-    # follow_joint_trajectory_goal.multi_dof_trajectory = "Ignored"
-    # follow_joint_trajectory_goal.path_tolerance = "Ignored"
-    # follow_joint_trajectory_goal.component_path_tolerance = "Ignored"
-    # follow_joint_trajectory_goal.goal_tolerance = "Ignored"
-    # follow_joint_trajectory_goal.component_goal_tolerance = "Ignored"
-    # follow_joint_trajectory_goal.goal_time_tolerance = "Ignored"
+    execute_trajectory_goal.trajectory.joint_trajectory = joint_trajectory
 
-    return follow_joint_trajectory_goal
+    return execute_trajectory_goal
 
 
 def init_dummy_joint_trajectory_from_state(
