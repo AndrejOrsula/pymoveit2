@@ -67,7 +67,7 @@ class MoveIt2:
         execute_via_moveit: bool = False,
         ignore_new_calls_while_executing: bool = False,
         callback_group: Optional[CallbackGroup] = None,
-        follow_joint_trajectory_action_name: str = "joint_trajectory_controller/follow_joint_trajectory",
+        follow_joint_trajectory_action_name: str = "DEPRECATED",
         use_move_group_action: bool = False,
     ):
         """
@@ -98,10 +98,7 @@ class MoveIt2:
                 "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
             )
             use_move_group_action = True
-        if (
-            follow_joint_trajectory_action_name
-            != "joint_trajectory_controller/follow_joint_trajectory"
-        ):
+        if follow_joint_trajectory_action_name != "DEPRECATED":
             self._node.get_logger().warn(
                 "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
             )
@@ -187,7 +184,7 @@ class MoveIt2:
         self.__cartesian_path_request = GetCartesianPath.Request()
 
         # Create action client for trajectory execution
-        self.__execute_trajectory_action_client = ActionClient(
+        self._execute_trajectory_action_client = ActionClient(
             node=self._node,
             action_type=ExecuteTrajectory,
             action_name="execute_trajectory",
@@ -1607,16 +1604,16 @@ class MoveIt2:
     ):
         self.__execution_mutex.acquire()
 
-        if not self.__execute_trajectory_action_client.server_is_ready():
+        if not self._execute_trajectory_action_client.server_is_ready():
             self._node.get_logger().warn(
-                f"Action server '{self.__execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
+                f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
             )
             return
 
         self.__last_error_code = None
         self.__is_motion_requested = True
         self.__send_goal_future_execute_trajectory = (
-            self.__execute_trajectory_action_client.send_goal_async(
+            self._execute_trajectory_action_client.send_goal_async(
                 goal=goal,
                 feedback_callback=None,
             )
@@ -1632,7 +1629,7 @@ class MoveIt2:
         goal_handle = response.result()
         if not goal_handle.accepted:
             self._node.get_logger().warn(
-                f"Action '{self.__execute_trajectory_action_client._action_name}' was rejected."
+                f"Action '{self._execute_trajectory_action_client._action_name}' was rejected."
             )
             self.__is_motion_requested = False
             return
@@ -1654,7 +1651,7 @@ class MoveIt2:
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().warn(
-                f"Action '{self.__execute_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
+                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
             self.motion_suceeded = False
         else:
