@@ -25,7 +25,8 @@ class MoveIt2Gripper(MoveIt2):
         skip_planning: bool = False,
         skip_planning_fixed_motion_duration: float = 0.5,
         callback_group: Optional[CallbackGroup] = None,
-        follow_joint_trajectory_action_name: str = "gripper_trajectory_controller/follow_joint_trajectory",
+        follow_joint_trajectory_action_name: str = "DEPRECATED",
+        use_move_group_action: bool = False,
     ):
         """
         Construct an instance of `MoveIt2Gripper` interface.
@@ -34,7 +35,7 @@ class MoveIt2Gripper(MoveIt2):
           - `open_gripper_joint_positions` - Configuration of gripper joints when open
           - `closed_gripper_joint_positions` - Configuration of gripper joints when fully closed
           - `gripper_group_name` - Name of the planning group for robot gripper
-          - `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
+          - [DEPRECATED] `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
                                    FollowJointTrajectory action (controller) is employed otherwise
                                    together with a separate planning service client
           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
@@ -45,8 +46,22 @@ class MoveIt2Gripper(MoveIt2):
           - `skip_planning_fixed_motion_duration` - Desired duration for the closing and opening motions when
                                                     `skip_planning` mode is enabled.
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
-          - `follow_joint_trajectory_action_name` - Name of the action server for the controller
+          - [DEPRECATED] `follow_joint_trajectory_action_name` - Name of the action server for the controller
+          - `use_move_group_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
+                               ExecuteTrajectory action is employed otherwise
+                               together with a separate planning service client
         """
+
+        # Check for deprecated parameters
+        if execute_via_moveit:
+            node.get_logger().warn(
+                "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
+            )
+            use_move_group_action = True
+        if follow_joint_trajectory_action_name != "DEPRECATED":
+            node.get_logger().warn(
+                "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
+            )
 
         super().__init__(
             node=node,
@@ -54,10 +69,9 @@ class MoveIt2Gripper(MoveIt2):
             base_link_name="",
             end_effector_name="",
             group_name=gripper_group_name,
-            execute_via_moveit=execute_via_moveit,
             ignore_new_calls_while_executing=ignore_new_calls_while_executing,
             callback_group=callback_group,
-            follow_joint_trajectory_action_name=follow_joint_trajectory_action_name,
+            use_move_group_action=use_move_group_action,
         )
         self.__del_redundant_attributes()
 

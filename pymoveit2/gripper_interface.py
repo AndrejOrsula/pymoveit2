@@ -26,13 +26,25 @@ class GripperInterface(MoveIt2Gripper, GripperCommand):
         skip_planning_fixed_motion_duration: float = 0.5,
         max_effort: float = 0.0,
         callback_group: Optional[CallbackGroup] = None,
-        follow_joint_trajectory_action_name: str = "gripper_trajectory_controller/follow_joint_trajectory",
+        follow_joint_trajectory_action_name: str = "DEPRECATED",
         gripper_command_action_name: str = "gripper_action_controller/gripper_cmd",
+        use_move_group_action: bool = False,
     ):
         """
         Combination of `MoveIt2Gripper` and `GripperCommand` interfaces that automatically
         selects the appropriate interface based on the available actions.
         """
+
+        # Check for deprecated parameters
+        if execute_via_moveit:
+            node.get_logger().warn(
+                "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
+            )
+            use_move_group_action = True
+        if follow_joint_trajectory_action_name != "DEPRECATED":
+            node.get_logger().warn(
+                "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
+            )
 
         MoveIt2Gripper.__init__(
             self=self,
@@ -41,12 +53,11 @@ class GripperInterface(MoveIt2Gripper, GripperCommand):
             open_gripper_joint_positions=open_gripper_joint_positions,
             closed_gripper_joint_positions=closed_gripper_joint_positions,
             gripper_group_name=gripper_group_name,
-            execute_via_moveit=execute_via_moveit,
             ignore_new_calls_while_executing=ignore_new_calls_while_executing,
             skip_planning=skip_planning,
             skip_planning_fixed_motion_duration=skip_planning_fixed_motion_duration,
             callback_group=callback_group,
-            follow_joint_trajectory_action_name=follow_joint_trajectory_action_name,
+            use_move_group_action=use_move_group_action,
         )
 
         GripperCommand.__init__(
@@ -66,7 +77,7 @@ class GripperInterface(MoveIt2Gripper, GripperCommand):
     def __determine_interface(self, timeout_sec=1.0):
         if self.gripper_command_action_client.wait_for_server(timeout_sec=timeout_sec):
             self._interface = GripperCommand
-        elif self.follow_joint_trajectory_action_client.wait_for_server(
+        elif self._execute_trajectory_action_client.wait_for_server(
             timeout_sec=timeout_sec
         ):
             self._interface = MoveIt2Gripper
