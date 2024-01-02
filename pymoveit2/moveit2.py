@@ -847,7 +847,7 @@ class MoveIt2:
         target_link: Optional[str] = None,
         tolerance: Union[float, Tuple[float, float, float]] = 0.001,
         weight: float = 1.0,
-        parameterization: int = 0, # 0: Euler, 1: Rotation Vector
+        parameterization: int = 0,  # 0: Euler, 1: Rotation Vector
     ):
         """
         Set Cartesian orientation goal of `target_link` with respect to `frame_id`.
@@ -986,7 +986,9 @@ class MoveIt2:
             constraint.weight = weight
 
             # Append to other constraints
-            self.__move_action_goal.request.path_constraints.joint_constraints.append(constraint)
+            self.__move_action_goal.request.path_constraints.joint_constraints.append(
+                constraint
+            )
 
     def set_path_position_constraint(
         self,
@@ -1037,7 +1039,9 @@ class MoveIt2:
         constraint.weight = weight
 
         # Append to other constraints
-        self.__move_action_goal.request.path_constraints.position_constraints.append(constraint)
+        self.__move_action_goal.request.path_constraints.position_constraints.append(
+            constraint
+        )
 
     def set_path_orientation_constraint(
         self,
@@ -1046,7 +1050,7 @@ class MoveIt2:
         target_link: Optional[str] = None,
         tolerance: Union[float, Tuple[float, float, float]] = 0.001,
         weight: float = 1.0,
-        parameterization: int = 0, # 0: Euler Angles, 1: Rotation Vector
+        parameterization: int = 0,  # 0: Euler Angles, 1: Rotation Vector
     ):
         """
         Set Cartesian orientation goal of `target_link` with respect to `frame_id`.
@@ -1090,7 +1094,9 @@ class MoveIt2:
         constraint.weight = weight
 
         # Append to other constraints
-        self.__move_action_goal.request.path_constraints.orientation_constraints.append(constraint)
+        self.__move_action_goal.request.path_constraints.orientation_constraints.append(
+            constraint
+        )
 
     def clear_path_constraints(self):
         """
