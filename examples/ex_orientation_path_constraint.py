@@ -24,15 +24,7 @@ def main():
     # Declare parameter for joint positions
     node.declare_parameter(
         "initial_joint_positions",
-        [
-            1.57, 
-            -1.57, 
-            0.0, 
-            -1.57, 
-            0.0, 
-            1.57, 
-            0.7854
-        ],
+        [1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854],
     )
     node.declare_parameter(
         "goal_joint_positions",
@@ -48,7 +40,7 @@ def main():
     )
     node.declare_parameter("use_orientation_constraint", True)
     node.declare_parameter(
-        "orientation_constraint_quaternion", 
+        "orientation_constraint_quaternion",
         [
             0.5,
             -0.5,
@@ -57,7 +49,7 @@ def main():
         ],
     )
     node.declare_parameter(
-        "orientation_constraint_tolerance", 
+        "orientation_constraint_tolerance",
         [
             3.14159,
             0.5,
@@ -92,26 +84,40 @@ def main():
 
     # Get parameters
     initial_joint_positions = (
-        node.get_parameter("initial_joint_positions").get_parameter_value().double_array_value
+        node.get_parameter("initial_joint_positions")
+        .get_parameter_value()
+        .double_array_value
     )
     goal_joint_positions = (
-        node.get_parameter("goal_joint_positions").get_parameter_value().double_array_value
+        node.get_parameter("goal_joint_positions")
+        .get_parameter_value()
+        .double_array_value
     )
     use_orientation_constraint = (
-        node.get_parameter("use_orientation_constraint").get_parameter_value().bool_value
+        node.get_parameter("use_orientation_constraint")
+        .get_parameter_value()
+        .bool_value
     )
     orientation_constraint_quaternion = (
-        node.get_parameter("orientation_constraint_quaternion").get_parameter_value().double_array_value
+        node.get_parameter("orientation_constraint_quaternion")
+        .get_parameter_value()
+        .double_array_value
     )
     orientation_constraint_tolerance = (
-        node.get_parameter("orientation_constraint_tolerance").get_parameter_value().double_array_value
+        node.get_parameter("orientation_constraint_tolerance")
+        .get_parameter_value()
+        .double_array_value
     )
     orientation_constraint_parameterization = (
-        node.get_parameter("orientation_constraint_parameterization").get_parameter_value().integer_value
+        node.get_parameter("orientation_constraint_parameterization")
+        .get_parameter_value()
+        .integer_value
     )
 
     # Move to initial joint configuration
-    node.get_logger().info(f"Moving to {{joint_positions: {list(initial_joint_positions)}}}")
+    node.get_logger().info(
+        f"Moving to {{joint_positions: {list(initial_joint_positions)}}}"
+    )
     moveit2.move_to_configuration(initial_joint_positions)
     moveit2.wait_until_executed()
 
@@ -125,7 +131,9 @@ def main():
         )
 
     # Move to goal joint configuration
-    node.get_logger().info(f"Moving to {{joint_positions: {list(goal_joint_positions)}}}")
+    node.get_logger().info(
+        f"Moving to {{joint_positions: {list(goal_joint_positions)}}}"
+    )
     moveit2.move_to_configuration(goal_joint_positions)
     moveit2.wait_until_executed()
 
