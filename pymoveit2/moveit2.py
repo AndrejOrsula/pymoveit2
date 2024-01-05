@@ -1124,7 +1124,9 @@ class MoveIt2:
         """
         Call compute_fk_async and wait on future
         """
-        future = self.compute_fk_async(**{key: value for key, value in locals().items() if key != 'self'})
+        future = self.compute_fk_async(
+            **{key: value for key, value in locals().items() if key != "self"}
+        )
 
         if future is None:
             return None
@@ -1189,7 +1191,6 @@ class MoveIt2:
 
         return self.__compute_fk_client.call_async(self.__compute_fk_req)
 
-
     def compute_ik(
         self,
         position: Union[Point, Tuple[float, float, float]],
@@ -1201,7 +1202,9 @@ class MoveIt2:
         """
         Call compute_ik_async and wait on future
         """
-        future = self.compute_ik_async(**{key: value for key, value in locals().items() if key != 'self'})
+        future = self.compute_ik_async(
+            **{key: value for key, value in locals().items() if key != "self"}
+        )
 
         if future is None:
             return None
@@ -1219,7 +1222,7 @@ class MoveIt2:
             self._node.get_logger().warn(
                 f"IK computation failed! Error code: {res.error_code.val}."
             )
-        
+
         return None
 
     def compute_ik_async(
