@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Example of moving to a joint configuration.
+Example of moving to a joint configuration with orientation path constraints.
 - ros2 run pymoveit2 ex_orientation_path_constraints.py --ros-args -p use_orientation_constraint:=True
 - ros2 run pymoveit2 ex_orientation_path_constraints.py --ros-args -p use_orientation_constraint:=False
 """
@@ -19,7 +19,7 @@ def main():
     rclpy.init()
 
     # Create node for this example
-    node = Node("ex_joint_goal")
+    node = Node("ex_orientation_path_constraints")
 
     # Declare parameter for joint positions
     node.declare_parameter(
