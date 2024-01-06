@@ -1136,11 +1136,27 @@ class MoveIt2:
         while not future.done():
             rate.sleep()
 
+        return self.get_compute_fk_result(future, fk_link_names=fk_link_names)
+
+    def get_compute_fk_result(
+        self,
+        future: Future,
+        fk_link_names: Optional[List[str]] = None,
+    ) -> Optional[List[PoseStamped]]:
+        """
+        Takes in a future returned by compute_fk_async and returns the poses
+        if the future is done and successful, else None.
+        """
+        if not future.done():
+            self._node.get_logger().warn(
+                "Cannot get FK result because future is not done."
+            )
+            return None
+
         res = future.result()
 
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
-            pose_stamped = res.pose_stamped
-            if isinstance(pose_stamped, List):
+            if fk_link_names is None:
                 return res.pose_stamped[0]
             else:
                 return res.pose_stamped
