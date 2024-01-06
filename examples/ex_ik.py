@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Example of moving to a joint configuration.
-- ros2 run pymoveit2 ex_fk.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]"
-- ros2 run pymoveit2 ex_fk.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]" -p synchronous:=False
+- ros2 run pymoveit2 ex_ik.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]"
+- ros2 run pymoveit2 ex_ik.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p synchronous:=False
 """
 
 from threading import Thread
@@ -19,21 +19,11 @@ def main():
     rclpy.init()
 
     # Create node for this example
-    node = Node("ex_fk")
+    node = Node("ex_ik")
 
-    # Declare parameter for joint positions
-    node.declare_parameter(
-        "joint_positions",
-        [
-            0.0,
-            0.0,
-            0.0,
-            -0.7853981633974483,
-            0.0,
-            1.5707963267948966,
-            0.7853981633974483,
-        ],
-    )
+    # Declare parameters for position and orientation
+    node.declare_parameter("position", [0.5, 0.0, 0.25])
+    node.declare_parameter("quat_xyzw", [1.0, 0.0, 0.0, 0.0])
     node.declare_parameter("synchronous", True)
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
@@ -57,25 +47,24 @@ def main():
     node.create_rate(1.0).sleep()
 
     # Get parameters
-    joint_positions = (
-        node.get_parameter("joint_positions").get_parameter_value().double_array_value
-    )
+    position = node.get_parameter("position").get_parameter_value().double_array_value
+    quat_xyzw = node.get_parameter("quat_xyzw").get_parameter_value().double_array_value
     synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
 
     # Move to joint configuration
     node.get_logger().info(
-        f"Computing FK for {{joint_positions: {list(joint_positions)}}}"
+        f"Computing IK for {{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
     )
     retval = None
     if synchronous:
-        retval = moveit2.compute_fk(joint_positions)
+        retval = moveit2.compute_ik(position, quat_xyzw)
     else:
-        future = moveit2.compute_fk_async(joint_positions)
+        future = moveit2.compute_ik_async(position, quat_xyzw)
         if future is not None:
             rate = node.create_rate(10)
             while not future.done():
                 rate.sleep()
-            retval = moveit2.get_compute_fk_result(future)
+            retval = moveit2.get_compute_ik_result(future)
     if retval is None:
         print("Failed.")
     else:

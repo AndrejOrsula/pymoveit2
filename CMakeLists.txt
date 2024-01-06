@@ -15,6 +15,7 @@ install(PROGRAMS
     ${EXAMPLES_DIR}/ex_collision_primitive.py
     ${EXAMPLES_DIR}/ex_fk.py
     ${EXAMPLES_DIR}/ex_gripper.py
+    ${EXAMPLES_DIR}/ex_ik.py
     ${EXAMPLES_DIR}/ex_joint_goal.py
     ${EXAMPLES_DIR}/ex_orientation_path_constraint.py
     ${EXAMPLES_DIR}/ex_pose_goal.py

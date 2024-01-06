@@ -1120,7 +1120,7 @@ class MoveIt2:
         self,
         joint_state: Optional[Union[JointState, List[float]]] = None,
         fk_link_names: Optional[List[str]] = None,
-    ) -> Optional[List[PoseStamped]]:
+    ) -> Optional[Union[PoseStamped, List[PoseStamped]]]:
         """
         Call compute_fk_async and wait on future
         """
@@ -1142,7 +1142,7 @@ class MoveIt2:
         self,
         future: Future,
         fk_link_names: Optional[List[str]] = None,
-    ) -> Optional[List[PoseStamped]]:
+    ) -> Optional[Union[PoseStamped, List[PoseStamped]]]:
         """
         Takes in a future returned by compute_fk_async and returns the poses
         if the future is done and successful, else None.
@@ -1230,6 +1230,22 @@ class MoveIt2:
         while not future.done():
             rate.sleep()
 
+        return self.get_compute_ik_result(future)
+
+    def get_compute_ik_result(
+        self,
+        future: Future,
+    ) -> Optional[JointState]:
+        """
+        Takes in a future returned by compute_ik_async and returns the joint states
+        if the future is done and successful, else None.
+        """
+        if not future.done():
+            self._node.get_logger().warn(
+                "Cannot get IK result because future is not done."
+            )
+            return None
+
         res = future.result()
 
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
@@ -1238,8 +1254,7 @@ class MoveIt2:
             self._node.get_logger().warn(
                 f"IK computation failed! Error code: {res.error_code.val}."
             )
-
-        return None
+            return None
 
     def compute_ik_async(
         self,
