@@ -1594,7 +1594,7 @@ class MoveIt2:
         move_action_goal.request.allowed_planning_time = 0.5
         move_action_goal.request.max_velocity_scaling_factor = 0.0
         move_action_goal.request.max_acceleration_scaling_factor = 0.0
-        move_action_goal.request.cartesian_speed_end_effector_link = end_effector
+        move_action_goal.request.cartesian_speed_limited_link = end_effector
         move_action_goal.request.max_cartesian_speed = 0.0
 
         # move_action_goal.planning_options.planning_scene_diff = "Ignored"
