@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Example of moving to a joint configuration.
+Example of computing Inverse Kinematics.
 - ros2 run pymoveit2 ex_ik.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]"
 - ros2 run pymoveit2 ex_ik.py --ros-args -p position:="[0.25, 0.0, 1.0]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p synchronous:=False
 """
