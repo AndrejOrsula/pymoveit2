@@ -29,6 +29,8 @@ def main():
     node.declare_parameter("synchronous", True)
     # If non-positive, don't cancel. Only used if synchronous is False
     node.declare_parameter("cancel_after_secs", 0.0)
+    # Planner ID
+    node.declare_parameter("planner_id", "RRTConnectkConfigDefault")
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
@@ -42,6 +44,7 @@ def main():
         group_name=panda.MOVE_GROUP_ARM,
         callback_group=callback_group,
     )
+    moveit2.planner_id = node.get_parameter("planner_id").get_parameter_value().string_value
 
     # Spin the node in background thread(s) and wait a bit for initialization
     executor = rclpy.executors.MultiThreadedExecutor(2)
