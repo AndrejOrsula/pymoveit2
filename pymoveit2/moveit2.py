@@ -479,7 +479,7 @@ class MoveIt2:
         if future is None:
             return None
 
-        # 10ms sleep
+        # 100ms sleep
         rate = self._node.create_rate(10)
         while not future.done():
             rate.sleep()
@@ -1120,8 +1120,57 @@ class MoveIt2:
         self,
         joint_state: Optional[Union[JointState, List[float]]] = None,
         fk_link_names: Optional[List[str]] = None,
-        wait_for_server_timeout_sec: Optional[float] = 1.0,
-    ) -> Optional[PoseStamped]:
+    ) -> Optional[Union[PoseStamped, List[PoseStamped]]]:
+        """
+        Call compute_fk_async and wait on future
+        """
+        future = self.compute_fk_async(
+            **{key: value for key, value in locals().items() if key != "self"}
+        )
+
+        if future is None:
+            return None
+
+        # 100ms sleep
+        rate = self._node.create_rate(10)
+        while not future.done():
+            rate.sleep()
+
+        return self.get_compute_fk_result(future, fk_link_names=fk_link_names)
+
+    def get_compute_fk_result(
+        self,
+        future: Future,
+        fk_link_names: Optional[List[str]] = None,
+    ) -> Optional[Union[PoseStamped, List[PoseStamped]]]:
+        """
+        Takes in a future returned by compute_fk_async and returns the poses
+        if the future is done and successful, else None.
+        """
+        if not future.done():
+            self._node.get_logger().warn(
+                "Cannot get FK result because future is not done."
+            )
+            return None
+
+        res = future.result()
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            if fk_link_names is None:
+                return res.pose_stamped[0]
+            else:
+                return res.pose_stamped
+        else:
+            self._node.get_logger().warn(
+                f"FK computation failed! Error code: {res.error_code.val}."
+            )
+            return None
+
+    def compute_fk_async(
+        self,
+        joint_state: Optional[Union[JointState, List[float]]] = None,
+        fk_link_names: Optional[List[str]] = None,
+    ) -> Optional[Future]:
         """
         Compute forward kinematics for all `fk_link_names` in a given `joint_state`.
           - `fk_link_names` defaults to end-effector
@@ -1150,27 +1199,13 @@ class MoveIt2:
         stamp = self._node.get_clock().now().to_msg()
         self.__compute_fk_req.header.stamp = stamp
 
-        if not self.__compute_fk_client.wait_for_service(
-            timeout_sec=wait_for_server_timeout_sec
-        ):
+        if not self.__compute_fk_client.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self.__compute_fk_client.srv_name}' is not yet available. Better luck next time!"
             )
             return None
 
-        res = self.__compute_fk_client.call(self.__compute_fk_req)
-
-        if MoveItErrorCodes.SUCCESS == res.error_code.val:
-            pose_stamped = res.pose_stamped
-            if isinstance(pose_stamped, List):
-                return res.pose_stamped[0]
-            else:
-                return res.pose_stamped
-        else:
-            self._node.get_logger().warn(
-                f"FK computation failed! Error code: {res.error_code.val}."
-            )
-            return None
+        return self.__compute_fk_client.call_async(self.__compute_fk_req)
 
     def compute_ik(
         self,
@@ -1180,6 +1215,55 @@ class MoveIt2:
         constraints: Optional[Constraints] = None,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
     ) -> Optional[JointState]:
+        """
+        Call compute_ik_async and wait on future
+        """
+        future = self.compute_ik_async(
+            **{key: value for key, value in locals().items() if key != "self"}
+        )
+
+        if future is None:
+            return None
+
+        # 10ms sleep
+        rate = self._node.create_rate(10)
+        while not future.done():
+            rate.sleep()
+
+        return self.get_compute_ik_result(future)
+
+    def get_compute_ik_result(
+        self,
+        future: Future,
+    ) -> Optional[JointState]:
+        """
+        Takes in a future returned by compute_ik_async and returns the joint states
+        if the future is done and successful, else None.
+        """
+        if not future.done():
+            self._node.get_logger().warn(
+                "Cannot get IK result because future is not done."
+            )
+            return None
+
+        res = future.result()
+
+        if MoveItErrorCodes.SUCCESS == res.error_code.val:
+            return res.solution.joint_state
+        else:
+            self._node.get_logger().warn(
+                f"IK computation failed! Error code: {res.error_code.val}."
+            )
+            return None
+
+    def compute_ik_async(
+        self,
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        start_joint_state: Optional[Union[JointState, List[float]]] = None,
+        constraints: Optional[Constraints] = None,
+        wait_for_server_timeout_sec: Optional[float] = 1.0,
+    ) -> Optional[Future]:
         """
         Compute inverse kinematics for the given pose. To indicate beginning of the search space,
         `start_joint_state` can be specified. Furthermore, `constraints` can be imposed on the
@@ -1248,15 +1332,7 @@ class MoveIt2:
             )
             return None
 
-        res = self.__compute_ik_client.call(self.__compute_ik_req)
-
-        if MoveItErrorCodes.SUCCESS == res.error_code.val:
-            return res.solution.joint_state
-        else:
-            self._node.get_logger().warn(
-                f"IK computation failed! Error code: {res.error_code.val}."
-            )
-            return None
+        return self.__compute_ik_client.call_async(self.__compute_ik_req)
 
     def reset_new_joint_state_checker(self):
         """
