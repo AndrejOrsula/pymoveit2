@@ -2072,6 +2072,7 @@ class MoveIt2:
     def planner_id(self, value: str):
         self.__move_action_goal.request.planner_id = value
 
+
 def init_joint_state(
     joint_names: List[str],
     joint_positions: Optional[List[str]] = None,

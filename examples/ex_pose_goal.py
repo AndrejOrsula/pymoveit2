@@ -44,7 +44,9 @@ def main():
         group_name=panda.MOVE_GROUP_ARM,
         callback_group=callback_group,
     )
-    moveit2.planner_id = node.get_parameter("planner_id").get_parameter_value().string_value
+    moveit2.planner_id = (
+        node.get_parameter("planner_id").get_parameter_value().string_value
+    )
 
     # Spin the node in background thread(s) and wait a bit for initialization
     executor = rclpy.executors.MultiThreadedExecutor(2)
