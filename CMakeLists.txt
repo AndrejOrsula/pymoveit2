@@ -11,6 +11,7 @@ ament_python_install_package(pymoveit2)
 # Install examples
 set(EXAMPLES_DIR examples)
 install(PROGRAMS
+    ${EXAMPLES_DIR}/ex_allow_collisions.py
     ${EXAMPLES_DIR}/ex_collision_mesh.py
     ${EXAMPLES_DIR}/ex_collision_primitive.py
     ${EXAMPLES_DIR}/ex_fk.py
