@@ -58,7 +58,7 @@ def main():
     # (Dis)allow collisions
     moveit2.allow_collisions(object_id, allow)
     node.get_logger().info(
-        f"{'Allow' if allow else 'Disallow'}ed collisions between all obejcts and '{object_id}'"
+        f"{'Allow' if allow else 'Disallow'}ed collisions between all objects and '{object_id}'"
     )
 
     rclpy.shutdown()
