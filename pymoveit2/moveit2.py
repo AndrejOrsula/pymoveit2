@@ -7,8 +7,8 @@ from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import ExecuteTrajectory, MoveGroup
 from moveit_msgs.msg import (
-    AttachedCollisionObject,
     AllowedCollisionEntry,
+    AttachedCollisionObject,
     CollisionObject,
     Constraints,
     JointConstraint,
@@ -223,12 +223,18 @@ class MoveIt2:
                 depth=1,
             ),
             callback_group=self._callback_group,
+        )
 
         # Create a service for getting the planning scene
         self._get_planning_scene_service = self._node.create_client(
             srv_type=GetPlanningScene,
             srv_name="get_planning_scene",
-            qos_profile=QoSProfile(    
+            qos_profile=QoSProfile(
+                durability=QoSDurabilityPolicy.VOLATILE,
+                reliability=QoSReliabilityPolicy.RELIABLE,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+            ),
             callback_group=callback_group,
         )
         self.__planning_scene = None
@@ -1738,10 +1744,10 @@ class MoveIt2:
         Takes in the ID of an element in the planning scene. Modifies the allowed
         collision matrix to (dis)allow collisions between that object and all other
         object.
-        
+
         If `allow` is True, a plan will succeed even if the robot collides with that object.
         If `allow` is False, a plan will fail if the robot collides with that object.
-        Returns whether it succesfully updated the allowed collision matrix.
+        Returns whether it successfully updated the allowed collision matrix.
 
         Returns the future of the service call.
         """
@@ -1779,9 +1785,7 @@ class MoveIt2:
             )
             return None
         return self._apply_planning_scene_service.call_async(
-            ApplyPlanningScene.Request(
-                scene=self.__planning_scene
-            )
+            ApplyPlanningScene.Request(scene=self.__planning_scene)
         )
 
     def process_allow_collision_future(self, future: Future) -> bool:
@@ -1797,7 +1801,9 @@ class MoveIt2:
 
         # If it failed, restore the old planning scene
         if not resp.success:
-            self.__planning_scene.allowed_collision_matrix = self.__old_allowed_collision_matrix
+            self.__planning_scene.allowed_collision_matrix = (
+                self.__old_allowed_collision_matrix
+            )
 
         return resp.success
 
