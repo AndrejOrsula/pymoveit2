@@ -1739,6 +1739,15 @@ class MoveIt2:
         self.__cartesian_path_request.start_state = (
             self.__move_action_goal.request.start_state
         )
+
+        self.__cartesian_path_request.max_velocity_scaling_factor = (
+            self.__move_action_goal.request.max_velocity_scaling_factor
+        )
+
+        self.__cartesian_path_request.max_acceleration_scaling_factor = (
+            self.__move_action_goal.request.max_acceleration_scaling_factor
+        )
+
         self.__cartesian_path_request.group_name = (
             self.__move_action_goal.request.group_name
         )
