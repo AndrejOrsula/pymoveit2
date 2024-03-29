@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Example of adding and removing a collision object with a primitive geometry.
+Example of (dis)allowing collisions between the robot object and an object with
+the specified ID.
 - ros2 run pymoveit2 ex_allow_collisions.py --ros-args -p id:="sphere" -p allow:=true
 - ros2 run pymoveit2 ex_allow_collisions.py --ros-args -p id:="sphere" -p allow:=false
 """
