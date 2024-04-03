@@ -344,6 +344,8 @@ class MoveIt2:
         weight_position: float = 1.0,
         cartesian: bool = False,
         weight_orientation: float = 1.0,
+        cartesian_max_step: float = 0.0025,
+        cartesian_fraction_threshold: float = 0.0,
     ):
         """
         Plan and execute motion based on previously set goals. Optional arguments can be
@@ -428,6 +430,8 @@ class MoveIt2:
                     weight_position=weight_position,
                     weight_orientation=weight_orientation,
                     cartesian=cartesian,
+                    max_step=cartesian_max_step,
+                    cartesian_fraction_threshold=cartesian_fraction_threshold,
                 )
             )
 
@@ -500,12 +504,18 @@ class MoveIt2:
         weight_joint_position: float = 1.0,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         cartesian: bool = False,
+        max_step: float = 0.0025,
+        cartesian_fraction_threshold: float = 0.0,
     ) -> Optional[JointTrajectory]:
         """
         Call plan_async and wait on future
         """
         future = self.plan_async(
-            **{key: value for key, value in locals().items() if key != "self"}
+            **{
+                key: value
+                for key, value in locals().items()
+                if key not in ["self", "cartesian_fraction_threshold"]
+            }
         )
 
         if future is None:
@@ -516,7 +526,11 @@ class MoveIt2:
         while not future.done():
             rate.sleep()
 
-        return self.get_trajectory(future, cartesian=cartesian)
+        return self.get_trajectory(
+            future,
+            cartesian=cartesian,
+            cartesian_fraction_threshold=cartesian_fraction_threshold,
+        )
 
     def plan_async(
         self,
