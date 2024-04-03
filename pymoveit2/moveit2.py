@@ -2042,14 +2042,6 @@ class MoveIt2:
         self.__move_action_goal.request.max_acceleration_scaling_factor = value
 
     @property
-    def max_cartesian_speed(self) -> float:
-        return self.__move_action_goal.request.max_cartesian_speed
-
-    @max_cartesian_speed.setter
-    def max_cartesian_speed(self, value: float):
-        self.__move_action_goal.request.max_cartesian_speed = value
-
-    @property
     def num_planning_attempts(self) -> int:
         return self.__move_action_goal.request.num_planning_attempts
 
