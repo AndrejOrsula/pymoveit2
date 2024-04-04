@@ -1855,6 +1855,15 @@ class MoveIt2:
         self.__cartesian_path_request.start_state = (
             self.__move_action_goal.request.start_state
         )
+
+        self.__cartesian_path_request.max_velocity_scaling_factor = (
+            self.__move_action_goal.request.max_velocity_scaling_factor
+        )
+
+        self.__cartesian_path_request.max_acceleration_scaling_factor = (
+            self.__move_action_goal.request.max_acceleration_scaling_factor
+        )
+
         self.__cartesian_path_request.group_name = (
             self.__move_action_goal.request.group_name
         )
@@ -2151,14 +2160,6 @@ class MoveIt2:
     @max_acceleration.setter
     def max_acceleration(self, value: float):
         self.__move_action_goal.request.max_acceleration_scaling_factor = value
-
-    @property
-    def max_cartesian_speed(self) -> float:
-        return self.__move_action_goal.request.max_cartesian_speed
-
-    @max_cartesian_speed.setter
-    def max_cartesian_speed(self, value: float):
-        self.__move_action_goal.request.max_cartesian_speed = value
 
     @property
     def num_planning_attempts(self) -> int:
