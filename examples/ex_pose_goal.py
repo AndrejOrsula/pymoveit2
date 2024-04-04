@@ -25,12 +25,17 @@ def main():
     # Declare parameters for position and orientation
     node.declare_parameter("position", [0.5, 0.0, 0.25])
     node.declare_parameter("quat_xyzw", [1.0, 0.0, 0.0, 0.0])
-    node.declare_parameter("cartesian", False)
     node.declare_parameter("synchronous", True)
     # If non-positive, don't cancel. Only used if synchronous is False
     node.declare_parameter("cancel_after_secs", 0.0)
     # Planner ID
     node.declare_parameter("planner_id", "RRTConnectkConfigDefault")
+    # Declare parameters for cartesian planning
+    node.declare_parameter("cartesian", False)
+    node.declare_parameter("cartesian_max_step", 0.0025)
+    node.declare_parameter("cartesian_fraction_threshold", 0.0)
+    node.declare_parameter("cartesian_jump_threshold", 0.0)
+    node.declare_parameter("cartesian_avoid_collisions", False)
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
@@ -62,17 +67,45 @@ def main():
     # Get parameters
     position = node.get_parameter("position").get_parameter_value().double_array_value
     quat_xyzw = node.get_parameter("quat_xyzw").get_parameter_value().double_array_value
-    cartesian = node.get_parameter("cartesian").get_parameter_value().bool_value
     synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
     cancel_after_secs = (
         node.get_parameter("cancel_after_secs").get_parameter_value().double_value
     )
+    cartesian = node.get_parameter("cartesian").get_parameter_value().bool_value
+    cartesian_max_step = (
+        node.get_parameter("cartesian_max_step").get_parameter_value().double_value
+    )
+    cartesian_fraction_threshold = (
+        node.get_parameter("cartesian_fraction_threshold")
+        .get_parameter_value()
+        .double_value
+    )
+    cartesian_jump_threshold = (
+        node.get_parameter("cartesian_jump_threshold")
+        .get_parameter_value()
+        .double_value
+    )
+    cartesian_avoid_collisions = (
+        node.get_parameter("cartesian_avoid_collisions")
+        .get_parameter_value()
+        .bool_value
+    )
+
+    # Set parameters for cartesian planning
+    moveit2.cartesian_avoid_collisions = cartesian_avoid_collisions
+    moveit2.cartesian_jump_threshold = cartesian_jump_threshold
 
     # Move to pose
     node.get_logger().info(
         f"Moving to {{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
     )
-    moveit2.move_to_pose(position=position, quat_xyzw=quat_xyzw, cartesian=cartesian)
+    moveit2.move_to_pose(
+        position=position,
+        quat_xyzw=quat_xyzw,
+        cartesian=cartesian,
+        cartesian_max_step=cartesian_max_step,
+        cartesian_fraction_threshold=cartesian_fraction_threshold,
+    )
     if synchronous:
         # Note: the same functionality can be achieved by setting
         # `synchronous:=false` and `cancel_after_secs` to a negative value.
