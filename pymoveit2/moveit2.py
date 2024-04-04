@@ -344,6 +344,8 @@ class MoveIt2:
         weight_position: float = 1.0,
         cartesian: bool = False,
         weight_orientation: float = 1.0,
+        cartesian_max_step: float = 0.0025,
+        cartesian_fraction_threshold: float = 0.0,
     ):
         """
         Plan and execute motion based on previously set goals. Optional arguments can be
@@ -428,6 +430,8 @@ class MoveIt2:
                     weight_position=weight_position,
                     weight_orientation=weight_orientation,
                     cartesian=cartesian,
+                    max_step=cartesian_max_step,
+                    cartesian_fraction_threshold=cartesian_fraction_threshold,
                 )
             )
 
@@ -500,12 +504,18 @@ class MoveIt2:
         weight_joint_position: float = 1.0,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         cartesian: bool = False,
+        max_step: float = 0.0025,
+        cartesian_fraction_threshold: float = 0.0,
     ) -> Optional[JointTrajectory]:
         """
         Call plan_async and wait on future
         """
         future = self.plan_async(
-            **{key: value for key, value in locals().items() if key != "self"}
+            **{
+                key: value
+                for key, value in locals().items()
+                if key not in ["self", "cartesian_fraction_threshold"]
+            }
         )
 
         if future is None:
@@ -516,7 +526,11 @@ class MoveIt2:
         while not future.done():
             rate.sleep()
 
-        return self.get_trajectory(future, cartesian=cartesian)
+        return self.get_trajectory(
+            future,
+            cartesian=cartesian,
+            cartesian_fraction_threshold=cartesian_fraction_threshold,
+        )
 
     def plan_async(
         self,
@@ -537,6 +551,7 @@ class MoveIt2:
         weight_joint_position: float = 1.0,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         cartesian: bool = False,
+        max_step: float = 0.0025,
     ) -> Optional[Future]:
         """
         Plan motion based on previously set goals. Optional arguments can be passed in to
@@ -634,9 +649,10 @@ class MoveIt2:
         # Plan trajectory asynchronously by service call
         if cartesian:
             future = self._plan_cartesian_path(
+                max_step=max_step,
                 frame_id=pose_stamped.header.frame_id
                 if pose_stamped is not None
-                else frame_id
+                else frame_id,
             )
         else:
             # Use service
@@ -649,11 +665,17 @@ class MoveIt2:
         return future
 
     def get_trajectory(
-        self, future: Future, cartesian: bool = False
+        self,
+        future: Future,
+        cartesian: bool = False,
+        cartesian_fraction_threshold: float = 0.0,
     ) -> Optional[JointTrajectory]:
         """
         Takes in a future returned by plan_async and returns the trajectory if the future is done
         and planning was successful, else None.
+
+        For cartesian plans, the plan is rejected if the fraction of the path that was completed is
+        less than `cartesian_fraction_threshold`.
         """
         if not future.done():
             self._node.get_logger().warn(
@@ -666,7 +688,14 @@ class MoveIt2:
         # Cartesian
         if cartesian:
             if MoveItErrorCodes.SUCCESS == res.error_code.val:
-                return res.solution.joint_trajectory
+                if res.fraction >= cartesian_fraction_threshold:
+                    return res.solution.joint_trajectory
+                else:
+                    self._node.get_logger().warn(
+                        f"Planning failed! Cartesian planner completed {res.fraction} "
+                        f"of the trajectory, less than the threshold {cartesian_fraction_threshold}."
+                    )
+                    return None
             else:
                 self._node.get_logger().warn(
                     f"Planning failed! Error code: {res.error_code.val}."
@@ -2131,6 +2160,14 @@ class MoveIt2:
         return self.__follow_joint_trajectory_action_client
 
     @property
+    def end_effector_name(self) -> str:
+        return self.__end_effector_name
+
+    @property
+    def base_link_name(self) -> str:
+        return self.__base_link_name
+
+    @property
     def joint_names(self) -> List[str]:
         return self.__joint_names
 
@@ -2176,6 +2213,38 @@ class MoveIt2:
     @allowed_planning_time.setter
     def allowed_planning_time(self, value: float):
         self.__move_action_goal.request.allowed_planning_time = value
+
+    @property
+    def cartesian_avoid_collisions(self) -> bool:
+        return self.__cartesian_path_request.request.avoid_collisions
+
+    @cartesian_avoid_collisions.setter
+    def cartesian_avoid_collisions(self, value: bool):
+        self.__cartesian_path_request.avoid_collisions = value
+
+    @property
+    def cartesian_jump_threshold(self) -> float:
+        return self.__cartesian_path_request.request.jump_threshold
+
+    @cartesian_jump_threshold.setter
+    def cartesian_jump_threshold(self, value: float):
+        self.__cartesian_path_request.jump_threshold = value
+
+    @property
+    def cartesian_prismatic_jump_threshold(self) -> float:
+        return self.__cartesian_path_request.request.prismatic_jump_threshold
+
+    @cartesian_prismatic_jump_threshold.setter
+    def cartesian_prismatic_jump_threshold(self, value: float):
+        self.__cartesian_path_request.prismatic_jump_threshold = value
+
+    @property
+    def cartesian_revolute_jump_threshold(self) -> float:
+        return self.__cartesian_path_request.request.revolute_jump_threshold
+
+    @cartesian_revolute_jump_threshold.setter
+    def cartesian_revolute_jump_threshold(self, value: float):
+        self.__cartesian_path_request.revolute_jump_threshold = value
 
     @property
     def pipeline_id(self) -> int:
