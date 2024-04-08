@@ -4,6 +4,7 @@ Example of adding and removing a collision object with a primitive geometry.
 - ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p shape:="sphere" -p position:="[0.5, 0.0, 0.5]" -p dimensions:="[0.04]"
 - ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p shape:="cylinder" -p position:="[0.2, 0.0, -0.045]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]" -p dimensions:="[0.04, 0.02]"
 - ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p action:="remove" -p shape:="sphere"
+- ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p action:="move" -p shape:="sphere" -p position:="[0.2, 0.0, 0.2]"
 """
 
 from threading import Thread
@@ -67,10 +68,11 @@ def main():
     # Use the name of the primitive shape as the ID
     object_id = shape
 
-    if "add" == action:
+    if action == "add":
         # Add collision primitive
         node.get_logger().info(
-            f"Adding collision primitive of type '{shape}' {{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}, dimensions: {list(dimensions)}}}"
+            f"Adding collision primitive of type '{shape}' "
+            f"{{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}, dimensions: {list(dimensions)}}}"
         )
         if shape == "box":
             moveit2.add_collision_box(
@@ -98,10 +100,21 @@ def main():
             )
         else:
             raise ValueError(f"Unknown shape '{shape}'")
-    else:
+    elif action == "remove":
         # Remove collision primitive
         node.get_logger().info(f"Removing collision primitive with ID '{object_id}'")
         moveit2.remove_collision_object(id=object_id)
+    elif action == "move":
+        # Move collision primitive
+        node.get_logger().info(
+            f"Moving collision primitive with ID '{object_id}' to "
+            f"{{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
+        )
+        moveit2.move_collision(id=object_id, position=position, quat_xyzw=quat_xyzw)
+    else:
+        raise ValueError(
+            f"Unknown action '{action}'. Valid values are 'add', 'remove', 'move'"
+        )
 
     rclpy.shutdown()
     executor_thread.join()

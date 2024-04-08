@@ -3,6 +3,7 @@
 Example of adding and removing a collision object with a mesh geometry.
 Note: Python module `trimesh` is required for this example (`pip install trimesh`).
 - ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p position:="[0.5, 0.0, 0.5]" -p quat_xyzw:="[0.0, 0.0, -0.7071, 0.7071]"
+- ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="move" -p position:="[0.2, 0.0, 0.2]"
 - ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p filepath:="./my_favourity_mesh.stl"
 - ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="remove"
 """
@@ -80,10 +81,11 @@ def main():
     # Determine ID of the collision mesh
     object_id = path.basename(filepath).split(".")[0]
 
-    if "add" == action:
+    if action == "add":
         # Add collision mesh
         node.get_logger().info(
-            f"Adding collision mesh '{filepath}' {{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
+            f"Adding collision mesh '{filepath}' "
+            f"{{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
         )
         moveit2.add_collision_mesh(
             filepath=filepath,
@@ -91,10 +93,21 @@ def main():
             position=position,
             quat_xyzw=quat_xyzw,
         )
-    else:
+    elif action == "remove":
         # Remove collision mesh
         node.get_logger().info(f"Removing collision mesh with ID '{object_id}'")
         moveit2.remove_collision_object(id=object_id)
+    elif action == "move":
+        # Move collision mesh
+        node.get_logger().info(
+            f"Moving collision mesh with ID '{object_id}' to "
+            f"{{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
+        )
+        moveit2.move_collision(id=object_id, position=position, quat_xyzw=quat_xyzw)
+    else:
+        raise ValueError(
+            f"Unknown action '{action}'. Valid values are 'add', 'remove', 'move'"
+        )
 
     rclpy.shutdown()
     executor_thread.join()
