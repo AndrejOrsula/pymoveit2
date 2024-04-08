@@ -1752,6 +1752,44 @@ class MoveIt2:
         )
         self.__attached_collision_object_publisher.publish(msg)
 
+    def move_collision(
+        self,
+        id: str,
+        position: Union[Point, Tuple[float, float, float]],
+        quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        frame_id: Optional[str] = None,
+    ):
+        """
+        Move collision object specified by its `id`.
+        """
+
+        msg = CollisionObject()
+
+        if not isinstance(position, Point):
+            position = Point(
+                x=float(position[0]), y=float(position[1]), z=float(position[2])
+            )
+        if not isinstance(quat_xyzw, Quaternion):
+            quat_xyzw = Quaternion(
+                x=float(quat_xyzw[0]),
+                y=float(quat_xyzw[1]),
+                z=float(quat_xyzw[2]),
+                w=float(quat_xyzw[3]),
+            )
+
+        pose = Pose()
+        pose.position = position
+        pose.orientation = quat_xyzw
+        msg.pose = pose
+        msg.id = id
+        msg.operation = CollisionObject.MOVE
+        msg.header.frame_id = (
+            frame_id if frame_id is not None else self.__base_link_name
+        )
+        msg.header.stamp = self._node.get_clock().now().to_msg()
+
+        self.__collision_object_publisher.publish(msg)
+
     def __update_planning_scene(self) -> bool:
         """
         Gets the current planning scene. Returns whether the service call was
