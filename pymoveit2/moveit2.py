@@ -155,6 +155,9 @@ class MoveIt2:
             callback_group=self._callback_group,
         )
 
+        self.__move_action_client.wait_for_server()
+        self._node.get_logger().info("Move Group Action server is ready.")
+
         # Also create a separate service client for planning
         self._plan_kinematic_path_service = self._node.create_client(
             srv_type=GetMotionPlan,
@@ -1732,6 +1735,7 @@ class MoveIt2:
 
     def _plan_cartesian_path(
         self,
+        targets: Union[Pose, List[Pose]] = None,
         max_step: float = 0.0025,
         frame_id: Optional[str] = None,
     ) -> Optional[Future]:
@@ -2000,6 +2004,14 @@ class MoveIt2:
     @property
     def follow_joint_trajectory_action_client(self) -> str:
         return self.__follow_joint_trajectory_action_client
+
+    def set_end_effector_name(self, eef_name: str):
+        self._end_effector_name = eef_name
+        self.__move_action_goal = self.__init_move_action_goal(
+            frame_id=self.__base_link_name,
+            group_name=self.__group_name,
+            end_effector=self.__end_effector_name
+        )
 
     @property
     def joint_names(self) -> List[str]:
