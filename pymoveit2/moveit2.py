@@ -3,6 +3,7 @@ import threading
 from enum import Enum
 from typing import List, Optional, Tuple, Union
 
+import numpy as np
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import ExecuteTrajectory, MoveGroup
@@ -24,7 +25,6 @@ from moveit_msgs.srv import (
     GetPositionFK,
     GetPositionIK,
 )
-import numpy as np
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -1687,7 +1687,7 @@ class MoveIt2:
         if isinstance(scale, float):
             scale = (scale, scale, scale)
         transform = np.eye(4)
-        transform.fill_diagonal(scale)
+        np.fill_diagonal(transform, scale)
         mesh.apply_transform(transform)
 
         msg.meshes.append(
