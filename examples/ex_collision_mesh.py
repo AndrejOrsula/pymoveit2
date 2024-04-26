@@ -2,7 +2,7 @@
 """
 Example of adding and removing a collision object with a mesh geometry.
 Note: Python module `trimesh` is required for this example (`pip install trimesh`).
-- ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p position:="[0.5, 0.0, 0.5]" -p quat_xyzw:="[0.0, 0.0, -0.7071, 0.7071]"
+- ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p position:="[0.5, 0.0, 0.5]" -p quat_xyzw:="[0.0, 0.0, -0.7071, 0.7071]" -p scale:="[1.0, 1.0, 1.0]"
 - ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="move" -p position:="[0.2, 0.0, 0.2]"
 - ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p filepath:="./my_favourity_mesh.stl"
 - ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="remove"
@@ -40,6 +40,7 @@ def main():
     )
     node.declare_parameter("position", [0.5, 0.0, 0.5])
     node.declare_parameter("quat_xyzw", [0.0, 0.0, -0.7071, 0.7071])
+    node.declare_parameter("scale", [1.0, 1.0, 1.0])
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
@@ -66,10 +67,13 @@ def main():
     action = node.get_parameter("action").get_parameter_value().string_value
     position = node.get_parameter("position").get_parameter_value().double_array_value
     quat_xyzw = node.get_parameter("quat_xyzw").get_parameter_value().double_array_value
+    scale = node.get_parameter("scale").get_parameter_value().double_array_value
 
     # Use the default example mesh if invalid
     if not filepath:
-        node.get_logger().info(f"Using the default example mesh file")
+        node.get_logger().info(
+            f"Using the default example mesh file {DEFAULT_EXAMPLE_MESH}"
+        )
         filepath = DEFAULT_EXAMPLE_MESH
 
     # Make sure the mesh file exists
@@ -92,6 +96,7 @@ def main():
             id=object_id,
             position=position,
             quat_xyzw=quat_xyzw,
+            scale=scale,
         )
     elif action == "remove":
         # Remove collision mesh

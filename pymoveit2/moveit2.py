@@ -3,6 +3,7 @@ import threading
 from enum import Enum
 from typing import List, Optional, Tuple, Union
 
+import numpy as np
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import ExecuteTrajectory, MoveGroup
@@ -1618,12 +1619,14 @@ class MoveIt2:
         ] = None,
         frame_id: Optional[str] = None,
         operation: int = CollisionObject.ADD,
+        scale: Union[float, Tuple[float, float, float]] = 1.0,
     ):
         """
         Add collision object with a mesh geometry specified by `filepath`.
         Note: This function required 'trimesh' Python module to be installed.
         """
 
+        # Load the mesh
         try:
             import trimesh
         except ImportError as err:
@@ -1679,6 +1682,14 @@ class MoveIt2:
         )
 
         mesh = trimesh.load(filepath)
+
+        # Scale the mesh
+        if isinstance(scale, float):
+            scale = (scale, scale, scale)
+        transform = np.eye(4)
+        np.fill_diagonal(transform, scale)
+        mesh.apply_transform(transform)
+
         msg.meshes.append(
             Mesh(
                 triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
