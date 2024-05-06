@@ -1,7 +1,7 @@
 import copy
 import threading
 from enum import Enum
-from typing import List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
 from action_msgs.msg import GoalStatus
@@ -1611,7 +1611,7 @@ class MoveIt2:
 
     def add_collision_mesh(
         self,
-        filepath: str,
+        filepath: Optional[str],
         id: str,
         pose: Optional[Union[PoseStamped, Pose]] = None,
         position: Optional[Union[Point, Tuple[float, float, float]]] = None,
@@ -1621,9 +1621,11 @@ class MoveIt2:
         frame_id: Optional[str] = None,
         operation: int = CollisionObject.ADD,
         scale: Union[float, Tuple[float, float, float]] = 1.0,
+        mesh: Optional[Any] = None,
     ):
         """
-        Add collision object with a mesh geometry specified by `filepath`.
+        Add collision object with a mesh geometry. Either `filepath` must be
+        specified or `mesh` must be provided.
         Note: This function required 'trimesh' Python module to be installed.
         """
 
@@ -1636,10 +1638,17 @@ class MoveIt2:
                 "to add collision objects into the MoveIt 2 planning scene."
             ) from err
 
+        # Check the parameters
         if (pose is None) and (position is None or quat_xyzw is None):
             raise ValueError(
                 "Either `pose` or `position` and `quat_xyzw` must be specified!"
             )
+        if (filepath is None and mesh is None) or (
+            filepath is not None and mesh is not None
+        ):
+            raise ValueError("Exactly one of `filepath` or `mesh` must be specified!")
+        if mesh is not None and not isinstance(mesh, trimesh.Trimesh):
+            raise ValueError("`mesh` must be an instance of `trimesh.Trimesh`!")
 
         if isinstance(pose, PoseStamped):
             pose_stamped = pose
@@ -1682,7 +1691,8 @@ class MoveIt2:
             pose=pose_stamped.pose,
         )
 
-        mesh = trimesh.load(filepath)
+        if filepath is not None:
+            mesh = trimesh.load(filepath)
 
         # Scale the mesh
         if isinstance(scale, float):
