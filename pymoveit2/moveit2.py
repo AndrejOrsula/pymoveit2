@@ -15,6 +15,7 @@ from moveit_msgs.msg import (
     JointConstraint,
     MoveItErrorCodes,
     OrientationConstraint,
+    PlanningScene,
     PositionConstraint,
 )
 from moveit_msgs.srv import (
@@ -1801,7 +1802,7 @@ class MoveIt2:
 
         self.__collision_object_publisher.publish(msg)
 
-    def __update_planning_scene(self) -> bool:
+    def update_planning_scene(self) -> bool:
         """
         Gets the current planning scene. Returns whether the service call was
         successful.
@@ -1830,7 +1831,7 @@ class MoveIt2:
         Returns the future of the service call.
         """
         # Update the planning scene
-        if not self.__update_planning_scene():
+        if not self.update_planning_scene():
             return None
         allowed_collision_matrix = self.__planning_scene.allowed_collision_matrix
         self.__old_allowed_collision_matrix = copy.deepcopy(allowed_collision_matrix)
@@ -1934,13 +1935,15 @@ class MoveIt2:
             self.__move_action_goal.request.start_state
         )
 
-        self.__cartesian_path_request.max_velocity_scaling_factor = (
-            self.__move_action_goal.request.max_velocity_scaling_factor
-        )
-
-        self.__cartesian_path_request.max_acceleration_scaling_factor = (
-            self.__move_action_goal.request.max_acceleration_scaling_factor
-        )
+        # The below attributes were introduced in Iron and do not exist in Humble.
+        if hasattr(__cartesian_path_request, "max_velocity_scaling_factor"):
+            self.__cartesian_path_request.max_velocity_scaling_factor = (
+                self.__move_action_goal.request.max_velocity_scaling_factor
+            )
+        if hasattr(__cartesian_path_request, "max_acceleration_scaling_factor"):
+            self.__cartesian_path_request.max_acceleration_scaling_factor = (
+                self.__move_action_goal.request.max_acceleration_scaling_factor
+            )
 
         self.__cartesian_path_request.group_name = (
             self.__move_action_goal.request.group_name
@@ -2203,6 +2206,10 @@ class MoveIt2:
         # self.__compute_ik_req.ik_request.pose_stamped_vector = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.sec = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.nanosec = "Ignored"
+
+    @property
+    def planning_scene(self) -> Optional[PlanningScene]:
+        return self.__planning_scene
 
     @property
     def follow_joint_trajectory_action_client(self) -> str:
