@@ -1936,11 +1936,11 @@ class MoveIt2:
         )
 
         # The below attributes were introduced in Iron and do not exist in Humble.
-        if hasattr(__cartesian_path_request, "max_velocity_scaling_factor"):
+        if hasattr(self.__cartesian_path_request, "max_velocity_scaling_factor"):
             self.__cartesian_path_request.max_velocity_scaling_factor = (
                 self.__move_action_goal.request.max_velocity_scaling_factor
             )
-        if hasattr(__cartesian_path_request, "max_acceleration_scaling_factor"):
+        if hasattr(self.__cartesian_path_request, "max_acceleration_scaling_factor"):
             self.__cartesian_path_request.max_acceleration_scaling_factor = (
                 self.__move_action_goal.request.max_acceleration_scaling_factor
             )
