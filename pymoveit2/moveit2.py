@@ -360,9 +360,9 @@ class MoveIt2:
             pose_stamped = PoseStamped(
                 header=Header(
                     stamp=self._node.get_clock().now().to_msg(),
-                    frame_id=frame_id
-                    if frame_id is not None
-                    else self.__base_link_name,
+                    frame_id=(
+                        frame_id if frame_id is not None else self.__base_link_name
+                    ),
                 ),
                 pose=pose,
             )
@@ -381,9 +381,9 @@ class MoveIt2:
             pose_stamped = PoseStamped(
                 header=Header(
                     stamp=self._node.get_clock().now().to_msg(),
-                    frame_id=frame_id
-                    if frame_id is not None
-                    else self.__base_link_name,
+                    frame_id=(
+                        frame_id if frame_id is not None else self.__base_link_name
+                    ),
                 ),
                 pose=Pose(position=position, orientation=quat_xyzw),
             )
@@ -571,9 +571,9 @@ class MoveIt2:
                 pose_stamped = PoseStamped(
                     header=Header(
                         stamp=self._node.get_clock().now().to_msg(),
-                        frame_id=frame_id
-                        if frame_id is not None
-                        else self.__base_link_name,
+                        frame_id=(
+                            frame_id if frame_id is not None else self.__base_link_name
+                        ),
                     ),
                     pose=pose,
                 )
@@ -652,9 +652,11 @@ class MoveIt2:
         if cartesian:
             future = self._plan_cartesian_path(
                 max_step=max_step,
-                frame_id=pose_stamped.header.frame_id
-                if pose_stamped is not None
-                else frame_id,
+                frame_id=(
+                    pose_stamped.header.frame_id
+                    if pose_stamped is not None
+                    else frame_id
+                ),
             )
         else:
             # Use service
@@ -807,9 +809,9 @@ class MoveIt2:
             pose_stamped = PoseStamped(
                 header=Header(
                     stamp=self._node.get_clock().now().to_msg(),
-                    frame_id=frame_id
-                    if frame_id is not None
-                    else self.__base_link_name,
+                    frame_id=(
+                        frame_id if frame_id is not None else self.__base_link_name
+                    ),
                 ),
                 pose=pose,
             )
@@ -828,9 +830,9 @@ class MoveIt2:
             pose_stamped = PoseStamped(
                 header=Header(
                     stamp=self._node.get_clock().now().to_msg(),
-                    frame_id=frame_id
-                    if frame_id is not None
-                    else self.__base_link_name,
+                    frame_id=(
+                        frame_id if frame_id is not None else self.__base_link_name
+                    ),
                 ),
                 pose=Pose(position=position, orientation=quat_xyzw),
             )
@@ -1451,9 +1453,9 @@ class MoveIt2:
             pose_stamped = PoseStamped(
                 header=Header(
                     stamp=self._node.get_clock().now().to_msg(),
-                    frame_id=frame_id
-                    if frame_id is not None
-                    else self.__base_link_name,
+                    frame_id=(
+                        frame_id if frame_id is not None else self.__base_link_name
+                    ),
                 ),
                 pose=pose,
             )
@@ -1472,9 +1474,9 @@ class MoveIt2:
             pose_stamped = PoseStamped(
                 header=Header(
                     stamp=self._node.get_clock().now().to_msg(),
-                    frame_id=frame_id
-                    if frame_id is not None
-                    else self.__base_link_name,
+                    frame_id=(
+                        frame_id if frame_id is not None else self.__base_link_name
+                    ),
                 ),
                 pose=Pose(position=position, orientation=quat_xyzw),
             )
@@ -1656,9 +1658,9 @@ class MoveIt2:
             pose_stamped = PoseStamped(
                 header=Header(
                     stamp=self._node.get_clock().now().to_msg(),
-                    frame_id=frame_id
-                    if frame_id is not None
-                    else self.__base_link_name,
+                    frame_id=(
+                        frame_id if frame_id is not None else self.__base_link_name
+                    ),
                 ),
                 pose=pose,
             )
@@ -1677,9 +1679,9 @@ class MoveIt2:
             pose_stamped = PoseStamped(
                 header=Header(
                     stamp=self._node.get_clock().now().to_msg(),
-                    frame_id=frame_id
-                    if frame_id is not None
-                    else self.__base_link_name,
+                    frame_id=(
+                        frame_id if frame_id is not None else self.__base_link_name
+                    ),
                 ),
                 pose=Pose(position=position, orientation=quat_xyzw),
             )
@@ -1908,7 +1910,7 @@ class MoveIt2:
         self.__joint_state_mutex.release()
 
     def _plan_kinematic_path(self) -> Optional[Future]:
-        # Re-use request from move action goal
+        # Reuse request from move action goal
         self.__kinematic_path_request.motion_plan_request = (
             self.__move_action_goal.request
         )
@@ -1940,7 +1942,7 @@ class MoveIt2:
         max_step: float = 0.0025,
         frame_id: Optional[str] = None,
     ) -> Optional[Future]:
-        # Re-use request from move action goal
+        # Reuse request from move action goal
         self.__cartesian_path_request.start_state = (
             self.__move_action_goal.request.start_state
         )
