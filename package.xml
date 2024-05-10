@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="3">
   <name>pymoveit2</name>
-  <version>2.1.0</version>
+  <version>4.0.0</version>
   <description>Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services</description>
   <maintainer email="orsula.andrej@gmail.com">Andrej Orsula</maintainer>
   <author>Andrej Orsula</author>
