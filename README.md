@@ -29,7 +29,7 @@ Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services.
 
 These are the primary dependencies required to use this project.
 
-- ROS 2 [Galactic](https://docs.ros.org/en/galactic/Installation.html), [Humble](https://docs.ros.org/en/humble/Installation.html) or [Rolling](https://docs.ros.org/en/rolling/Installation.html) (tested June 2022)
+- ROS 2 [Galactic](https://docs.ros.org/en/galactic/Installation.html), [Humble](https://docs.ros.org/en/humble/Installation.html) or [Iron](https://docs.ros.org/en/iron/Installation.html)
 - [MoveIt 2](https://moveit.ros.org/install-moveit2/binary) corresponding to the selected ROS 2 distribution
 
 All additional dependencies are installed via [rosdep](https://wiki.ros.org/rosdep) during the building process below.
