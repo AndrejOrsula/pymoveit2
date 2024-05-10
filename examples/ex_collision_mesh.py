@@ -12,6 +12,7 @@ from os import path
 from threading import Thread
 
 import rclpy
+import trimesh
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 
@@ -41,6 +42,7 @@ def main():
     node.declare_parameter("position", [0.5, 0.0, 0.5])
     node.declare_parameter("quat_xyzw", [0.0, 0.0, -0.7071, 0.7071])
     node.declare_parameter("scale", [1.0, 1.0, 1.0])
+    node.declare_parameter("preload_mesh", False)
 
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
@@ -68,6 +70,7 @@ def main():
     position = node.get_parameter("position").get_parameter_value().double_array_value
     quat_xyzw = node.get_parameter("quat_xyzw").get_parameter_value().double_array_value
     scale = node.get_parameter("scale").get_parameter_value().double_array_value
+    preload_mesh = node.get_parameter("preload_mesh").get_parameter_value().bool_value
 
     # Use the default example mesh if invalid
     if not filepath:
@@ -91,12 +94,20 @@ def main():
             f"Adding collision mesh '{filepath}' "
             f"{{position: {list(position)}, quat_xyzw: {list(quat_xyzw)}}}"
         )
+
+        # Load the mesh if specified
+        mesh = None
+        if preload_mesh:
+            mesh = trimesh.load(filepath)
+            filepath = None
+
         moveit2.add_collision_mesh(
             filepath=filepath,
             id=object_id,
             position=position,
             quat_xyzw=quat_xyzw,
             scale=scale,
+            mesh=mesh,
         )
     elif action == "remove":
         # Remove collision mesh
