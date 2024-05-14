@@ -240,6 +240,7 @@ class MoveIt2:
             callback_group=callback_group,
         )
         self.__planning_scene = None
+        self.__old_planning_scene = None
         self.__old_allowed_collision_matrix = None
 
         # Create a service for applying the planning scene
@@ -1699,9 +1700,15 @@ class MoveIt2:
         # Scale the mesh
         if isinstance(scale, float):
             scale = (scale, scale, scale)
-        transform = np.eye(4)
-        np.fill_diagonal(transform, scale)
-        mesh.apply_transform(transform)
+        if not (scale[0] == scale[1] == scale[2] == 1.0):
+            # If the mesh was passed in as a parameter, make a copy of it to
+            # avoid transforming the original.
+            if filepath is not None:
+                mesh = mesh.copy()
+            # Transform the mesh
+            transform = np.eye(4)
+            np.fill_diagonal(transform, scale)
+            mesh.apply_transform(transform)
 
         msg.meshes.append(
             Mesh(
@@ -1895,6 +1902,54 @@ class MoveIt2:
             self.__planning_scene.allowed_collision_matrix = (
                 self.__old_allowed_collision_matrix
             )
+
+        return resp.success
+
+    def clear_all_collision_objects(self) -> Optional[Future]:
+        """
+        Removes all attached and un-attached collision objects from the planning scene.
+
+        Returns a future for the ApplyPlanningScene service call.
+        """
+        # Update the planning scene
+        if not self.update_planning_scene():
+            return None
+        self.__old_planning_scene = copy.deepcopy(self.__planning_scene)
+
+        # Remove all collision objects from the planning scene
+        self.__planning_scene.world.collision_objects = []
+        self.__planning_scene.robot_state.attached_collision_objects = []
+
+        # Apply the new planning scene
+        if not self._apply_planning_scene_service.service_is_ready():
+            self._node.get_logger().warn(
+                f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
+            )
+            return None
+        return self._apply_planning_scene_service.call_async(
+            ApplyPlanningScene.Request(scene=self.__planning_scene)
+        )
+
+    def cancel_clear_all_collision_objects_future(self, future: Future):
+        """
+        Cancel the clear all collision objects service call.
+        """
+        self._apply_planning_scene_service.remove_pending_request(future)
+
+    def process_clear_all_collision_objects_future(self, future: Future) -> bool:
+        """
+        Return whether the clear all collision objects service call is done and has succeeded
+        or not. If it failed, restore the old planning scene.
+        """
+        if not future.done():
+            return False
+
+        # Get response
+        resp = future.result()
+
+        # If it failed, restore the old planning scene
+        if not resp.success:
+            self.__planning_scene = self.__old_planning_scene
 
         return resp.success
 
