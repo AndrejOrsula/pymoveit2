@@ -169,6 +169,15 @@ class MoveIt2Gripper(MoveIt2):
                 joint_positions=self.__closed_gripper_joint_positions
             )
 
+    def move_to_position(self, position: float):
+        """
+        Move the gripper to a specific position.
+        - `position` - Desired position of the gripper
+        """
+
+        joint_positions = [position for _ in self.joint_names]
+        self.move_to_configuration(joint_positions=joint_positions)
+
     def reset_open(self, sync: bool = True):
         """
         Reset into open configuration by sending a dummy joint trajectory.
