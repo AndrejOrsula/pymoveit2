@@ -20,7 +20,7 @@ def joint_names(prefix: str = "left_") -> List[str]:
 
 
 def base_link_name(prefix: str = "left_") -> str:
-    return prefix + "wam1"
+    return prefix + "wam_base"
 
 
 def end_effector_name(prefix: str = "left_") -> str:
