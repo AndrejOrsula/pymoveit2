@@ -107,6 +107,7 @@ class GripperCommand:
         self.__close_gripper_command_goal = self.__init_gripper_command_goal(
             position=closed_gripper_joint_positions, max_effort=max_effort
         )
+        self.__max_effort = max_effort
 
         # Initialise internals for determining whether the gripper is open or closed
         self.__joint_state_mutex = threading.Lock()
@@ -179,6 +180,21 @@ class GripperCommand:
         self.__is_motion_requested = True
 
         self.__send_goal_async_gripper_command(self.__close_gripper_command_goal)
+
+    def move_to_position(self, position: float):
+        """
+        Move the gripper to a specific position.
+        - `position` - Desired position of the gripper.
+        """
+
+        if self.__ignore_new_calls_while_executing and self.__is_executing:
+            return
+        self.__is_motion_requested = True
+
+        gripper_cmd_goal = GripperCommandAction.Goal()
+        gripper_cmd_goal.command.position = position
+        gripper_cmd_goal.command.max_effort = self.__max_effort
+        self.__send_goal_async_gripper_command(gripper_cmd_goal)
 
     def reset_open(self, **kwargs):
         """

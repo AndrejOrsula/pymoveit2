@@ -138,6 +138,23 @@ class GripperInterface(MoveIt2Gripper, GripperCommand):
 
         self._interface.close(self=self, skip_if_noop=skip_if_noop)
 
+    def move_to_position(self, position: float):
+        """
+        Move the gripper to a specific position.
+        - `position` - Desired position of the gripper.
+        """
+
+        if self._interface is None:
+            self.__determine_interface()
+        if self._interface is None:
+            self._node.get_logger().error(
+                "Unable to move the gripper to a position because the appropriate "
+                "interface cannot be determined."
+            )
+            return
+
+        self._interface.move_to_position(self=self, position=position)
+
     def reset_open(self, sync: bool = True):
         """
         Reset into open configuration by sending a dummy joint trajectory.
