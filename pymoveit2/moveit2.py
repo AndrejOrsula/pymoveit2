@@ -109,6 +109,52 @@ class MoveIt2:
                 "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
             )
 
+        self.__collision_object_publisher = self._node.create_publisher(
+            CollisionObject, "/collision_object", 10
+        )
+        self.__attached_collision_object_publisher = self._node.create_publisher(
+            AttachedCollisionObject, "/attached_collision_object", 10
+        )
+
+        self.__cancellation_pub = self._node.create_publisher(
+            String, "/trajectory_execution_event", 1
+        )
+
+        self.__joint_state_mutex = threading.Lock()
+        self.__joint_state = None
+        self.__new_joint_state_available = False
+        self.__move_action_goal = self.__init_move_action_goal(
+            frame_id=base_link_name,
+            group_name=group_name,
+            end_effector=end_effector_name,
+        )
+
+        # Flag to determine whether to execute trajectories via Move Group Action, or rather by calling
+        # the separate ExecuteTrajectory action
+        # Applies to `move_to_pose()` and `move_to_configuration()`
+        self.__use_move_group_action = use_move_group_action
+
+        # Flag that determines whether a new goal can be sent while the previous one is being executed
+        self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
+
+        # Store additional variables for later use
+        self.__joint_names = joint_names
+        self.__base_link_name = base_link_name
+        self.__end_effector_name = end_effector_name
+        self.__group_name = group_name
+
+        # Internal states that monitor the current motion requests and execution
+        self.__is_motion_requested = False
+        self.__is_executing = False
+        self.motion_suceeded = False
+        self.__execution_goal_handle = None
+        self.__last_error_code = None
+        self.__wait_until_executed_rate = self._node.create_rate(1000.0)
+        self.__execution_mutex = threading.Lock()
+
+        # Event that enables waiting until async future is done
+        self.__future_done_event = threading.Event()
+
         # Create subscriber for current joint states
         self._node.create_subscription(
             msg_type=JointState,
@@ -255,52 +301,6 @@ class MoveIt2:
             ),
             callback_group=callback_group,
         )
-
-        self.__collision_object_publisher = self._node.create_publisher(
-            CollisionObject, "/collision_object", 10
-        )
-        self.__attached_collision_object_publisher = self._node.create_publisher(
-            AttachedCollisionObject, "/attached_collision_object", 10
-        )
-
-        self.__cancellation_pub = self._node.create_publisher(
-            String, "/trajectory_execution_event", 1
-        )
-
-        self.__joint_state_mutex = threading.Lock()
-        self.__joint_state = None
-        self.__new_joint_state_available = False
-        self.__move_action_goal = self.__init_move_action_goal(
-            frame_id=base_link_name,
-            group_name=group_name,
-            end_effector=end_effector_name,
-        )
-
-        # Flag to determine whether to execute trajectories via Move Group Action, or rather by calling
-        # the separate ExecuteTrajectory action
-        # Applies to `move_to_pose()` and `move_to_configuration()`
-        self.__use_move_group_action = use_move_group_action
-
-        # Flag that determines whether a new goal can be sent while the previous one is being executed
-        self.__ignore_new_calls_while_executing = ignore_new_calls_while_executing
-
-        # Store additional variables for later use
-        self.__joint_names = joint_names
-        self.__base_link_name = base_link_name
-        self.__end_effector_name = end_effector_name
-        self.__group_name = group_name
-
-        # Internal states that monitor the current motion requests and execution
-        self.__is_motion_requested = False
-        self.__is_executing = False
-        self.motion_suceeded = False
-        self.__execution_goal_handle = None
-        self.__last_error_code = None
-        self.__wait_until_executed_rate = self._node.create_rate(1000.0)
-        self.__execution_mutex = threading.Lock()
-
-        # Event that enables waiting until async future is done
-        self.__future_done_event = threading.Event()
 
     #### Execution Polling Functions
     def query_state(self) -> MoveIt2State:
