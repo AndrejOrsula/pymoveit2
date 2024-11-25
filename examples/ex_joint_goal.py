@@ -15,6 +15,7 @@ from rclpy.node import Node
 from pymoveit2 import MoveIt2, MoveIt2State
 from pymoveit2.robots import panda as robot
 
+
 def main():
     rclpy.init()
 

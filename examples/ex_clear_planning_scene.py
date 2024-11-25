@@ -42,7 +42,6 @@ def main():
     # Create callback group that allows execution of callbacks in parallel without restrictions
     callback_group = ReentrantCallbackGroup()
 
-
     # Create MoveIt 2 interface
     moveit2 = MoveIt2(
         node=node,

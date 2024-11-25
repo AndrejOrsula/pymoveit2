@@ -17,7 +17,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 
 from pymoveit2 import MoveIt2
-from pymoveit2.robots import panda as robot 
+from pymoveit2.robots import panda as robot
 
 DEFAULT_EXAMPLE_MESH = path.join(
     path.dirname(path.realpath(__file__)), "assets", "suzanne.stl"

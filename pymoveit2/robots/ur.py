@@ -29,6 +29,4 @@ def end_effector_name(prefix: str = prefix) -> str:
 
 
 def gripper_joint_names(prefix: str = prefix) -> List[str]:
-    return [
-
-    ]
+    return []
