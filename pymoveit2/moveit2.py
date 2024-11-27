@@ -1703,7 +1703,7 @@ class MoveIt2:
         if not (scale[0] == scale[1] == scale[2] == 1.0):
             # If the mesh was passed in as a parameter, make a copy of it to
             # avoid transforming the original.
-            if filepath is not None:
+            if filepath is None:
                 mesh = mesh.copy()
             # Transform the mesh
             transform = np.eye(4)
