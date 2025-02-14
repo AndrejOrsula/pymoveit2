@@ -725,7 +725,7 @@ class MoveIt2:
                     return None
             else:
                 self._node.get_logger().warn(
-                    f"Planning failed! Error code: {res.error_code.val}."
+                    f"Planning failed! Error code: {get_enum_string(MoveItErrorCodes, res.error_code.val)}"
                 )
                 return None
 
@@ -735,7 +735,7 @@ class MoveIt2:
             return res.trajectory.joint_trajectory
         else:
             self._node.get_logger().warn(
-                f"Planning failed! Error code: {res.error_code.val}."
+                f"Planning failed! Error code: {get_enum_string(MoveItErrorCodes, res.error_code.val)}"
             )
             return None
 
@@ -1340,7 +1340,7 @@ class MoveIt2:
             return res.solution.joint_state
         else:
             self._node.get_logger().warn(
-                f"IK computation failed! Error code: {res.error_code.val}."
+                f"IK computation failed! Error code: {get_enum_string(MoveItErrorCodes, res.error_code.val)}"
             )
             return None
 
@@ -1993,9 +1993,7 @@ class MoveIt2:
         )
 
         stamp = self._node.get_clock().now().to_msg()
-        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = (
-            stamp
-        )
+        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = stamp
         for (
             constraints
         ) in self.__kinematic_path_request.motion_plan_request.goal_constraints:
