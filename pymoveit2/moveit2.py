@@ -40,28 +40,7 @@ from sensor_msgs.msg import JointState
 from shape_msgs.msg import Mesh, MeshTriangle, SolidPrimitive
 from std_msgs.msg import Header, String
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-
-
-def get_enum_string(enum_class, value) -> str:
-    """Converts a ROS2 enum value to its string name.
-
-    Args:
-        enum_class: The ROS2 message class containing the enum constants.
-        value: The integer value of the enum.
-
-    Returns:
-        str: The name of the enum constant, or the value with "UNKNOWN NAME" if not found.
-    """
-    mapping = {}
-    # Iterate over all attributes in the enum class
-    for attr_name in dir(enum_class):
-        # Consider only uppercase attributes (common convention for enums)
-        if attr_name.isupper():
-            attr_value = getattr(enum_class, attr_name)
-            # Check if the attribute is an integer (enum values are typically int)
-            if isinstance(attr_value, int):
-                mapping[attr_value] = attr_name
-    return mapping.get(value, f"{value} :UNKNOWN NAME")
+from pymoveit2.utils import get_enum_string
 
 
 class MoveIt2State(Enum):
@@ -2130,7 +2109,7 @@ class MoveIt2:
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().warn(
-                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {res.result().status}."
+                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {get_enum_string(GoalStatus,res.result().status)}."
             )
             self.motion_suceeded = False
         else:
@@ -2196,7 +2175,7 @@ class MoveIt2:
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().warn(
-                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
+                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {get_enum_string(GoalStatus,res.result().status)}."
             )
             self.motion_suceeded = False
         else:

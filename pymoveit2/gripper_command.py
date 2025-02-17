@@ -13,6 +13,7 @@ from rclpy.qos import (
     QoSReliabilityPolicy,
 )
 from sensor_msgs.msg import JointState
+from pymoveit2.utils import get_enum_string
 
 
 class GripperCommand:
@@ -289,7 +290,7 @@ class GripperCommand:
     def __result_callback_gripper_command(self, res):
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().error(
-                f"Action '{self.__gripper_command_action_client._action_name}' was unsuccessful: {res.result().status}"
+                f"Action '{self.__gripper_command_action_client._action_name}' was unsuccessful: {get_enum_string(GoalStatus, res.result().status)}"
             )
 
         self.__is_executing = False
