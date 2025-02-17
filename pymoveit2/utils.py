@@ -1,4 +1,7 @@
-def get_enum_string(enum_class, value) -> str:
+from typing import Type
+
+
+def enum_to_str(enum_class: Type, value: int) -> str:
     """Converts a ROS2 enum value to its string name.
 
     Args:
