@@ -1972,7 +1972,9 @@ class MoveIt2:
         )
 
         stamp = self._node.get_clock().now().to_msg()
-        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = stamp
+        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = (
+            stamp
+        )
         for (
             constraints
         ) in self.__kinematic_path_request.motion_plan_request.goal_constraints:
