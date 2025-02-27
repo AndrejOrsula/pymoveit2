@@ -9,11 +9,13 @@ MOVE_GROUP_GRIPPER: str = "gripper"
 JACO_PREFIX: str = "j2"
 MICO_PREFIX: str = "m1"
 
+CLOSED_GRIPPER_JOINT_POSITIONS: List[float] = [120.0, 120.0, 120.0]
+OPEN_GRIPPER_JOINT_POSITIONS: List[float] = [0.0, 0.0, 0.0]
 
 def get_prefix(
     version_prefix: str = JACO_PREFIX,
     arm_dof: int = 6,
-    hand_dof: int = 2,
+    hand_dof: int = 3,
     spherical=False,
     assistive=False,
 ) -> str:
