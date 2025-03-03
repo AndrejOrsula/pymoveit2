@@ -529,7 +529,7 @@ class MoveIt2:
         # 100ms sleep
         rate = self._node.create_rate(10)
         while not future.done():
-            rate.sleep()
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.get_trajectory(
             future,
@@ -634,22 +634,15 @@ class MoveIt2:
                 tolerance=tolerance_joint_position,
                 weight=weight_joint_position,
             )
-
         # Define starting state for the plan (default to the current state)
-        if start_joint_state is not None:
-            if isinstance(start_joint_state, JointState):
-                self.__move_action_goal.request.start_state.joint_state = (
-                    start_joint_state
-                )
+        while(start_joint_state is None):
+            self._node._logger.warn(message="Joint states are not avaliable yet!")
+            if(self.__joint_state is not None):
+                start_joint_state = self.__joint_state
+                break
             else:
-                self.__move_action_goal.request.start_state.joint_state = (
-                    init_joint_state(
-                        joint_names=self.__joint_names,
-                        joint_positions=start_joint_state,
-                    )
-                )
-        elif self.joint_state is not None:
-            self.__move_action_goal.request.start_state.joint_state = self.joint_state
+                rclpy.spin_once(self._node, timeout_sec=1.0)
+        self._node._logger.info(message="Joint states are avaliable now")
 
         # Plan trajectory asynchronously by service call
         if cartesian:
@@ -756,7 +749,7 @@ class MoveIt2:
             return False
 
         while self.__is_motion_requested or self.__is_executing:
-            self.__wait_until_executed_rate.sleep()
+            self.__wait_until_executed_rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.motion_suceeded
 
@@ -1202,7 +1195,7 @@ class MoveIt2:
         # 100ms sleep
         rate = self._node.create_rate(10)
         while not future.done():
-            rate.sleep()
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.get_compute_fk_result(future, fk_link_names=fk_link_names)
 
@@ -1266,7 +1259,7 @@ class MoveIt2:
 
         stamp = self._node.get_clock().now().to_msg()
         self.__compute_fk_req.header.stamp = stamp
-
+        self.__compute_fk_client.wait_for_service(timeout_sec=3.0)
         if not self.__compute_fk_client.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self.__compute_fk_client.srv_name}' is not yet available. Better luck next time!"
@@ -1296,7 +1289,7 @@ class MoveIt2:
         # 10ms sleep
         rate = self._node.create_rate(10)
         while not future.done():
-            rate.sleep()
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.get_compute_ik_result(future)
 
@@ -1391,7 +1384,7 @@ class MoveIt2:
 
         stamp = self._node.get_clock().now().to_msg()
         self.__compute_ik_req.ik_request.pose_stamped.header.stamp = stamp
-
+        self.__compute_ik_client.wait_for_service(timeout_sec=3.0)
         if not self.__compute_ik_client.wait_for_service(
             timeout_sec=wait_for_server_timeout_sec
         ):
@@ -1828,7 +1821,7 @@ class MoveIt2:
         Gets the current planning scene. Returns whether the service call was
         successful.
         """
-
+        self._get_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._get_planning_scene_service.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self._get_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
@@ -1879,6 +1872,7 @@ class MoveIt2:
             allowed_collision_matrix.entry_values[j] = allowed_collision_entry
 
         # Apply the new planning scene
+        self._apply_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._apply_planning_scene_service.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
@@ -1923,6 +1917,7 @@ class MoveIt2:
         self.__planning_scene.robot_state.attached_collision_objects = []
 
         # Apply the new planning scene
+        self._apply_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._apply_planning_scene_service.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
@@ -1983,7 +1978,7 @@ class MoveIt2:
                 position_constraint.header.stamp = stamp
             for orientation_constraint in constraints.orientation_constraints:
                 orientation_constraint.header.stamp = stamp
-
+        self._plan_kinematic_path_service.wait_for_service(timeout_sec=3.0)
         if not self._plan_kinematic_path_service.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self._plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
@@ -2054,7 +2049,7 @@ class MoveIt2:
         )
 
         self.__cartesian_path_request.waypoints = [target_pose]
-
+        self._plan_cartesian_path_service.wait_for_service(timeout_sec=3.0)
         if not self._plan_cartesian_path_service.service_is_ready():
             self._node.get_logger().warn(
                 f"Service '{self._plan_cartesian_path_service.srv_name}' is not yet available. Better luck next time!"
