@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
+import rclpy
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import ExecuteTrajectory, MoveGroup
@@ -26,7 +27,6 @@ from moveit_msgs.srv import (
     GetPositionFK,
     GetPositionIK,
 )
-import rclpy
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
