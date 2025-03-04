@@ -635,14 +635,14 @@ class MoveIt2:
                 weight=weight_joint_position,
             )
         # Define starting state for the plan (default to the current state)
-        while(start_joint_state is None):
-            self._node._logger.warn(message="Joint states are not avaliable yet!")
-            if(self.__joint_state is not None):
+        while start_joint_state is None:
+            self._node._logger.warn(message="Joint states are not available yet!")
+            if self.__joint_state is not None:
                 start_joint_state = self.__joint_state
                 break
             else:
                 rclpy.spin_once(self._node, timeout_sec=1.0)
-        self._node._logger.info(message="Joint states are avaliable now")
+        self._node._logger.info(message="Joint states are available now")
 
         # Plan trajectory asynchronously by service call
         if cartesian:
@@ -2107,7 +2107,7 @@ class MoveIt2:
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().warn(
-                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus,res.result().status)}."
+                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
             )
             self.motion_suceeded = False
         else:
@@ -2173,7 +2173,7 @@ class MoveIt2:
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
             self._node.get_logger().warn(
-                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus,res.result().status)}."
+                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
             )
             self.motion_suceeded = False
         else:
