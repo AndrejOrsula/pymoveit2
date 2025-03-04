@@ -26,6 +26,7 @@ from moveit_msgs.srv import (
     GetPositionFK,
     GetPositionIK,
 )
+import rclpy
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
@@ -749,7 +750,7 @@ class MoveIt2:
             return False
 
         while self.__is_motion_requested or self.__is_executing:
-            self.__wait_until_executed_rclpy.spin_once(self._node, timeout_sec=1.0)
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.motion_suceeded
 
