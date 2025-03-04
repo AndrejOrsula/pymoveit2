@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Any, List, Optional, Tuple, Union
 
 import numpy as np
+import rclpy
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import ExecuteTrajectory, MoveGroup
@@ -749,7 +750,7 @@ class MoveIt2:
             return False
 
         while self.__is_motion_requested or self.__is_executing:
-            self.__wait_until_executed_rclpy.spin_once(self._node, timeout_sec=1.0)
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.motion_suceeded
 
