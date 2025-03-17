@@ -2274,6 +2274,16 @@ class MoveIt2:
         # self.__compute_ik_req.ik_request.timeout.sec = "Ignored"
         # self.__compute_ik_req.ik_request.timeout.nanosec = "Ignored"
 
+    def get_planning_scene(self) -> Optional[PlanningScene]:
+        """
+        Get the current planning scene.
+        """
+
+        if not self.update_planning_scene():
+            return None
+        
+        return self.__planning_scene
+    
     @property
     def planning_scene(self) -> Optional[PlanningScene]:
         return self.__planning_scene
