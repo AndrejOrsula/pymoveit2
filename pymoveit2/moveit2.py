@@ -440,6 +440,9 @@ class MoveIt2:
                     cartesian_fraction_threshold=cartesian_fraction_threshold,
                 )
             )
+            self._node.get_logger().info(
+                f"Executed trajectory with points."
+            )
 
     def move_to_configuration(
         self,
@@ -717,7 +720,9 @@ class MoveIt2:
         """
         Execute joint_trajectory by communicating directly with the controller.
         """
-
+        self._node.get_logger().info(
+            f"Executing trajectory with {len(joint_trajectory.points)} points."
+        )
         if self.__ignore_new_calls_while_executing and (
             self.__is_motion_requested or self.__is_executing
         ):
@@ -737,6 +742,10 @@ class MoveIt2:
             return
 
         self._send_goal_async_execute_trajectory(goal=execute_trajectory_goal)
+
+        self._node.get_logger().info(
+            f"Trajectory sent for execution"
+        )
 
     def wait_until_executed(self) -> bool:
         """
@@ -2126,12 +2135,18 @@ class MoveIt2:
         wait_until_response: bool = False,
     ):
         self.__execution_mutex.acquire()
-
+        self._node.get_logger().info(
+            f"Sending goal to action server '{self._execute_trajectory_action_client._action_name}'"
+        )
         if not self._execute_trajectory_action_client.server_is_ready():
             self._node.get_logger().warn(
                 f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
             )
             return
+
+        self._node.get_logger().info(
+            f"Action server '{self._execute_trajectory_action_client._action_name}' is ready."
+        )
 
         self.__last_error_code = None
         self.__is_motion_requested = True
@@ -2145,9 +2160,18 @@ class MoveIt2:
         self.__send_goal_future_execute_trajectory.add_done_callback(
             self.__response_callback_execute_trajectory
         )
+        self._node.get_logger().info(
+            f"Goal1 sent to action server '{self._execute_trajectory_action_client._action_name}'"
+        )
         self.__execution_mutex.release()
+        self._node.get_logger().info(
+            f"self.__execution_mutex.release()"
+        )
 
     def __response_callback_execute_trajectory(self, response):
+        self._node.get_logger().info(
+            f"Response received from action server '{self._execute_trajectory_action_client._action_name}'"
+        )
         self.__execution_mutex.acquire()
         goal_handle = response.result()
         if not goal_handle.accepted:
