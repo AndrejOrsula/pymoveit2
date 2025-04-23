@@ -529,7 +529,7 @@ class MoveIt2:
 
         if future is None:
             return None
-
+        
         # 100ms sleep
         rate = self._node.create_rate(10)
         while not future.done():
