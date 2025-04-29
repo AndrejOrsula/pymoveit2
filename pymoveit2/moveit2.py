@@ -720,9 +720,11 @@ class MoveIt2:
         """
         Execute joint_trajectory by communicating directly with the controller.
         """
-        self._node.get_logger().info(
-            f"Executing trajectory with {len(joint_trajectory.points)} points."
-        )
+        if joint_trajectory is not None and len(joint_trajectory.points) > 0 :
+            self._node.get_logger().info(
+                f"Executing trajectory with {len(joint_trajectory.points)} points."
+            )
+
         if self.__ignore_new_calls_while_executing and (
             self.__is_motion_requested or self.__is_executing
         ):
