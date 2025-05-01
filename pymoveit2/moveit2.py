@@ -440,9 +440,6 @@ class MoveIt2:
                     cartesian_fraction_threshold=cartesian_fraction_threshold,
                 )
             )
-            self._node.get_logger().info(
-                f"Executed trajectory with points."
-            )
 
     def move_to_configuration(
         self,
