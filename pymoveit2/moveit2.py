@@ -526,12 +526,11 @@ class MoveIt2:
 
         if future is None:
             return None
-        
+
         # 100ms sleep
         rate = self._node.create_rate(10)
         while not future.done():
-            rclpy.spin_once(self._node, executor=self._node.executor,timeout_sec=1.0)
-
+            rclpy.spin_once(self._node, executor=self._node.executor, timeout_sec=1.0)
 
         return self.get_trajectory(
             future,
@@ -643,7 +642,9 @@ class MoveIt2:
                 start_joint_state = self.__joint_state
                 break
             else:
-                rclpy.spin_once(self._node, executor=self._node.executor,timeout_sec=1.0)
+                rclpy.spin_once(
+                    self._node, executor=self._node.executor, timeout_sec=1.0
+                )
 
         self._node._logger.info(message="Joint states are available now")
 
@@ -752,7 +753,7 @@ class MoveIt2:
             return False
 
         while self.__is_motion_requested or self.__is_executing:
-            rclpy.spin_once(self._node, executor=self._node.executor,timeout_sec=1.0)
+            rclpy.spin_once(self._node, executor=self._node.executor, timeout_sec=1.0)
 
         return self.motion_suceeded
 
@@ -1198,7 +1199,7 @@ class MoveIt2:
         # 100ms sleep
         rate = self._node.create_rate(10)
         while not future.done():
-            rclpy.spin_once(self._node, executor=self._node.executor,timeout_sec=1.0)
+            rclpy.spin_once(self._node, executor=self._node.executor, timeout_sec=1.0)
 
         return self.get_compute_fk_result(future, fk_link_names=fk_link_names)
 
@@ -1292,7 +1293,7 @@ class MoveIt2:
         # 10ms sleep
         rate = self._node.create_rate(10)
         while not future.done():
-            rclpy.spin_once(self._node, executor=self._node.executor,timeout_sec=1.0)
+            rclpy.spin_once(self._node, executor=self._node.executor, timeout_sec=1.0)
 
         return self.get_compute_ik_result(future)
 
@@ -2128,7 +2129,7 @@ class MoveIt2:
         wait_until_response: bool = False,
     ):
         self.__execution_mutex.acquire()
-        
+
         if not self._execute_trajectory_action_client.server_is_ready():
             self._node.get_logger().warn(
                 f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
