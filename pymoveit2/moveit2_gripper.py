@@ -178,25 +178,21 @@ class MoveIt2Gripper(MoveIt2):
         joint_positions = [position for _ in self.joint_names]
         self.move_to_configuration(joint_positions=joint_positions)
 
-    def reset_open(self, sync: bool = True):
+    def reset_open(self):
         """
         Reset into open configuration by sending a dummy joint trajectory.
         This is useful for simulated robots that allow instantaneous reset of joints.
         """
 
-        self.reset_controller(
-            joint_state=self.__open_gripper_joint_positions, sync=sync
-        )
+        self.reset_controller(joint_state=self.__open_gripper_joint_positions)
 
-    def reset_closed(self, sync: bool = True):
+    def reset_closed(self):
         """
         Reset into closed configuration by sending a dummy joint trajectory.
         This is useful for simulated robots that allow instantaneous reset of joints.
         """
 
-        self.reset_controller(
-            joint_state=self.__closed_gripper_joint_positions, sync=sync
-        )
+        self.reset_controller(joint_state=self.__closed_gripper_joint_positions)
 
     def __open_without_planning(self):
         self._send_goal_async_follow_joint_trajectory(
