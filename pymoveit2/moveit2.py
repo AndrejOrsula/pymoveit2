@@ -152,11 +152,7 @@ class MoveIt2:
         self.motion_suceeded = False
         self.__execution_goal_handle = None
         self.__last_error_code = None
-        self.__wait_until_executed_rate = self._node.create_rate(1000.0)
         self.__execution_mutex = threading.Lock()
-
-        # Event that enables waiting until async future is done
-        self.__future_done_event = threading.Event()
 
         # Create subscriber for current joint states
         self._node.create_subscription(
@@ -527,10 +523,8 @@ class MoveIt2:
         if future is None:
             return None
 
-        # 100ms sleep
-        rate = self._node.create_rate(10)
         while not future.done():
-            rclpy.spin_once(self._node, executor=self._node.executor, timeout_sec=1.0)
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.get_trajectory(
             future,
@@ -642,10 +636,7 @@ class MoveIt2:
                 start_joint_state = self.__joint_state
                 break
             else:
-                rclpy.spin_once(
-                    self._node, executor=self._node.executor, timeout_sec=1.0
-                )
-
+                rclpy.spin_once(self._node, timeout_sec=1.0)
         self._node._logger.info(message="Joint states are available now")
 
         # Plan trajectory asynchronously by service call
@@ -753,12 +744,13 @@ class MoveIt2:
             return False
 
         while self.__is_motion_requested or self.__is_executing:
-            rclpy.spin_once(self._node, executor=self._node.executor, timeout_sec=1.0)
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.motion_suceeded
 
     def reset_controller(
-        self, joint_state: Union[JointState, List[float]], sync: bool = True
+        self,
+        joint_state: Union[JointState, List[float]],
     ):
         """
         Reset controller to a given `joint_state` by sending a dummy joint trajectory.
@@ -775,10 +767,7 @@ class MoveIt2:
             joint_trajectory=joint_trajectory
         )
 
-        self._send_goal_async_execute_trajectory(
-            goal=execute_trajectory_goal,
-            wait_until_response=sync,
-        )
+        self._send_goal_async_execute_trajectory(goal=execute_trajectory_goal)
 
     def set_pose_goal(
         self,
@@ -1196,10 +1185,8 @@ class MoveIt2:
         if future is None:
             return None
 
-        # 100ms sleep
-        rate = self._node.create_rate(10)
         while not future.done():
-            rclpy.spin_once(self._node, executor=self._node.executor, timeout_sec=1.0)
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.get_compute_fk_result(future, fk_link_names=fk_link_names)
 
@@ -1290,10 +1277,8 @@ class MoveIt2:
         if future is None:
             return None
 
-        # 10ms sleep
-        rate = self._node.create_rate(10)
         while not future.done():
-            rclpy.spin_once(self._node, executor=self._node.executor, timeout_sec=1.0)
+            rclpy.spin_once(self._node, timeout_sec=1.0)
 
         return self.get_compute_ik_result(future)
 
@@ -2126,7 +2111,6 @@ class MoveIt2:
     def _send_goal_async_execute_trajectory(
         self,
         goal: ExecuteTrajectory,
-        wait_until_response: bool = False,
     ):
         self.__execution_mutex.acquire()
 
@@ -2169,9 +2153,6 @@ class MoveIt2:
             self.__result_callback_execute_trajectory
         )
         self.__execution_mutex.release()
-
-    def __response_callback_with_event_set_execute_trajectory(self, response):
-        self.__future_done_event.set()
 
     def __result_callback_execute_trajectory(self, res):
         self.__execution_mutex.acquire()
