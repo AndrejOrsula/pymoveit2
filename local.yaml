@@ -1,0 +1,3 @@
+pymoveit2:
+  ubuntu:
+  - ros-humble-pymoveit2
