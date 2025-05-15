@@ -1,0 +1,1516 @@
+sbuild (Debian sbuild) 0.85.10ubuntu0.1 (15 December 2024) on pkrvmberfyhpb9w.h0zle2lkrq1evn1mioojdfzlua.dx.internal.cloudapp.net
+
++==================================================================================+
+| ros-rolling-pymoveit2 0-2025.05.15.22.13 (amd64) Thu, 15 May 2025 22:13:17 +0000 |
++==================================================================================+
+
+Package: ros-rolling-pymoveit2
+Version: 0-2025.05.15.22.13
+Source Version: 0-2025.05.15.22.13
+Distribution: noble
+Machine Architecture: amd64
+Host Architecture: amd64
+Build Architecture: amd64
+Build Type: binary
+
+Unpacking /home/runner/.cache/sbuild/noble-amd64.tar to /tmp/tmp.sbuild.nXyPugEazj...
+I: NOTICE: Log filtering will replace 'sbuild-unshare-dummy-location' with '<<CHROOT>>'
+I: NOTICE: Log filtering will replace 'build/package//resolver-QLCM36' with '<<RESOLVERDIR>>'
+
++------------------------------------------------------------------------------+
+| Update chroot                                Thu, 15 May 2025 22:13:22 +0000 |
++------------------------------------------------------------------------------+
+
+Get:1 file:/build/package//resolver-z6ohzw/apt_archive ./ InRelease
+Ign:1 file:/build/package//resolver-z6ohzw/apt_archive ./ InRelease
+Get:2 file:/build/package//resolver-z6ohzw/apt_archive ./ Release [597 B]
+Get:2 file:/build/package//resolver-z6ohzw/apt_archive ./ Release [597 B]
+Get:3 file:/build/package//resolver-z6ohzw/apt_archive ./ Release.gpg
+Ign:3 file:/build/package//resolver-z6ohzw/apt_archive ./ Release.gpg
+Get:4 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:5 http://packages.ros.org/ros2/ubuntu noble InRelease [4676 B]
+Get:6 http://packages.ros.org/ros2/ubuntu noble/main amd64 Packages [1087 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:8 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [838 kB]
+Get:9 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [838 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1401 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [15.0 MB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1063 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1090 kB]
+Fetched 21.9 MB in 4s (5690 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Calculating upgrade...
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+
++------------------------------------------------------------------------------+
+| Fetch source files                           Thu, 15 May 2025 22:13:27 +0000 |
++------------------------------------------------------------------------------+
+
+
+Local sources
+-------------
+
+/home/runner/work/pymoveit2/ros-rolling-pymoveit2_0-2025.05.15.22.13.dsc exists in /home/runner/work/pymoveit2; copying to chroot
+I: NOTICE: Log filtering will replace 'build/package//package' with '<<PKGBUILDDIR>>'
+I: NOTICE: Log filtering will replace 'build/package/' with '<<BUILDDIR>>'
+
++------------------------------------------------------------------------------+
+| Install package build dependencies           Thu, 15 May 2025 22:13:27 +0000 |
++------------------------------------------------------------------------------+
+
+
+Setup apt archive
+-----------------
+
+Merged Build-Depends: debhelper (>= 9.0.0), ros-rolling-ament-cmake, ros-rolling-ament-cmake-python, build-essential, fakeroot, dumb-init
+Filtered Build-Depends: debhelper (>= 9.0.0), ros-rolling-ament-cmake, ros-rolling-ament-cmake-python, build-essential, fakeroot, dumb-init
+dpkg-deb: building package 'sbuild-build-depends-main-dummy' in '/<<RESOLVERDIR>>/apt_archive/sbuild-build-depends-main-dummy.deb'.
+Ign:1 copy:/<<RESOLVERDIR>>/apt_archive ./ InRelease
+Get:2 copy:/<<RESOLVERDIR>>/apt_archive ./ Release [609 B]
+Ign:3 copy:/<<RESOLVERDIR>>/apt_archive ./ Release.gpg
+Get:4 copy:/<<RESOLVERDIR>>/apt_archive ./ Sources [682 B]
+Get:5 copy:/<<RESOLVERDIR>>/apt_archive ./ Packages [714 B]
+Fetched 2005 B in 0s (0 B/s)
+Reading package lists...
+Get:1 file:/<<BUILDDIR>>/resolver-z6ohzw/apt_archive ./ InRelease
+Ign:1 file:/<<BUILDDIR>>/resolver-z6ohzw/apt_archive ./ InRelease
+Get:2 file:/<<BUILDDIR>>/resolver-z6ohzw/apt_archive ./ Release [597 B]
+Get:2 file:/<<BUILDDIR>>/resolver-z6ohzw/apt_archive ./ Release [597 B]
+Get:3 file:/<<BUILDDIR>>/resolver-z6ohzw/apt_archive ./ Release.gpg
+Ign:3 file:/<<BUILDDIR>>/resolver-z6ohzw/apt_archive ./ Release.gpg
+Reading package lists...
+Hit:1 http://packages.ros.org/ros2/ubuntu noble InRelease
+Reading package lists...
+Reading package lists...
+
+Install main build dependencies (apt-based resolver)
+----------------------------------------------------
+
+Installing build dependencies
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  autoconf automake autopoint autotools-dev bsdextrautils cmake cmake-data
+  debhelper debugedit dh-autoreconf dh-strip-nondeterminism docutils-common
+  dumb-init dwz fakeroot file gettext gettext-base groff-base intltool-debian
+  libarchive-zip-perl libarchive13t64 libbrotli1 libcom-err2 libcurl4t64
+  libdebhelper-perl libdw1t64 libelf1t64 libexpat1 libfakeroot
+  libfile-stripnondeterminism-perl libgssapi-krb5-2 libicu74 libjsoncpp25
+  libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap2 libmagic-mgc
+  libmagic1t64 libncursesw6 libnghttp2-14 libpipeline1 libproc2-0 libpsl5t64
+  libpython3-stdlib libpython3.12-minimal libpython3.12-stdlib libreadline8t64
+  librhash0 librtmp1 libsasl2-2 libsasl2-modules-db libsqlite3-0 libssh-4
+  libsub-override-perl libtool libuchardet0 libuv1t64 libxml2 m4 man-db
+  media-types netbase po-debconf procps python3 python3-catkin-pkg-modules
+  python3-dateutil python3-docutils python3-importlib-metadata python3-minimal
+  python3-more-itertools python3-pkg-resources python3-pyparsing python3-roman
+  python3-setuptools python3-six python3-zipp python3.12 python3.12-minimal
+  readline-common ros-rolling-ament-cmake ros-rolling-ament-cmake-core
+  ros-rolling-ament-cmake-export-definitions
+  ros-rolling-ament-cmake-export-dependencies
+  ros-rolling-ament-cmake-export-include-directories
+  ros-rolling-ament-cmake-export-interfaces
+  ros-rolling-ament-cmake-export-libraries
+  ros-rolling-ament-cmake-export-link-flags
+  ros-rolling-ament-cmake-export-targets ros-rolling-ament-cmake-gen-version-h
+  ros-rolling-ament-cmake-include-directories
+  ros-rolling-ament-cmake-libraries ros-rolling-ament-cmake-python
+  ros-rolling-ament-cmake-target-dependencies ros-rolling-ament-cmake-test
+  ros-rolling-ament-cmake-version ros-rolling-ament-package
+  ros-rolling-ros-workspace sensible-utils sgml-base tzdata xml-core
+Suggested packages:
+  autoconf-archive gnu-standards autoconf-doc cmake-doc cmake-format
+  elpa-cmake-mode ninja-build dh-make gettext-doc libasprintf-dev
+  libgettextpo-dev groff lrzip krb5-doc krb5-user libtool-doc gfortran
+  | fortran95-compiler gcj-jdk m4-doc apparmor less www-browser
+  libmail-box-perl python3-doc python3-tk python3-venv docutils-doc
+  fonts-linuxlibertine | ttf-linux-libertine texlive-lang-french
+  texlive-latex-base texlive-latex-recommended python-pyparsing-doc
+  python-setuptools-doc python3.12-venv python3.12-doc binfmt-support
+  readline-doc sgml-base-doc
+Recommended packages:
+  curl | wget | lynx libarchive-cpio-perl krb5-locales libldap-common libgpm2
+  publicsuffix libsasl2-modules libltdl-dev libmail-sendmail-perl psmisc
+  libpaper-utils python3-pil python3-pygments
+The following NEW packages will be installed:
+  autoconf automake autopoint autotools-dev bsdextrautils cmake cmake-data
+  debhelper debugedit dh-autoreconf dh-strip-nondeterminism docutils-common
+  dumb-init dwz fakeroot file gettext gettext-base groff-base intltool-debian
+  libarchive-zip-perl libarchive13t64 libbrotli1 libcom-err2 libcurl4t64
+  libdebhelper-perl libdw1t64 libelf1t64 libexpat1 libfakeroot
+  libfile-stripnondeterminism-perl libgssapi-krb5-2 libicu74 libjsoncpp25
+  libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap2 libmagic-mgc
+  libmagic1t64 libncursesw6 libnghttp2-14 libpipeline1 libproc2-0 libpsl5t64
+  libpython3-stdlib libpython3.12-minimal libpython3.12-stdlib libreadline8t64
+  librhash0 librtmp1 libsasl2-2 libsasl2-modules-db libsqlite3-0 libssh-4
+  libsub-override-perl libtool libuchardet0 libuv1t64 libxml2 m4 man-db
+  media-types netbase po-debconf procps python3 python3-catkin-pkg-modules
+  python3-dateutil python3-docutils python3-importlib-metadata python3-minimal
+  python3-more-itertools python3-pkg-resources python3-pyparsing python3-roman
+  python3-setuptools python3-six python3-zipp python3.12 python3.12-minimal
+  readline-common ros-rolling-ament-cmake ros-rolling-ament-cmake-core
+  ros-rolling-ament-cmake-export-definitions
+  ros-rolling-ament-cmake-export-dependencies
+  ros-rolling-ament-cmake-export-include-directories
+  ros-rolling-ament-cmake-export-interfaces
+  ros-rolling-ament-cmake-export-libraries
+  ros-rolling-ament-cmake-export-link-flags
+  ros-rolling-ament-cmake-export-targets ros-rolling-ament-cmake-gen-version-h
+  ros-rolling-ament-cmake-include-directories
+  ros-rolling-ament-cmake-libraries ros-rolling-ament-cmake-python
+  ros-rolling-ament-cmake-target-dependencies ros-rolling-ament-cmake-test
+  ros-rolling-ament-cmake-version ros-rolling-ament-package
+  ros-rolling-ros-workspace sbuild-build-depends-main-dummy sensible-utils
+  sgml-base tzdata xml-core
+0 upgraded, 106 newly installed, 0 to remove and 0 not upgraded.
+Need to get 44.9 MB of archives.
+After this operation, 163 MB of additional disk space will be used.
+Get:1 copy:/<<RESOLVERDIR>>/apt_archive ./ sbuild-build-depends-main-dummy 0.invalid.0 [692 B]
+Get:2 http://packages.ros.org/ros2/ubuntu noble/main amd64 python3-catkin-pkg-modules all 1.0.0-1 [43.2 kB]
+Get:3 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-package amd64 0.17.1-1noble.20240617.152927 [25.4 kB]
+Get:4 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-core amd64 2.7.2-2noble.20241213.192210 [27.1 kB]
+Get:5 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ros-workspace amd64 1.0.3-6noble.20241213.192716 [15.0 kB]
+Get:6 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-export-definitions amd64 2.7.2-2noble.20241213.223058 [7236 B]
+Get:7 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-libraries amd64 2.7.2-2noble.20241213.223646 [7126 B]
+Get:8 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-export-dependencies amd64 2.7.2-2noble.20241213.223730 [8630 B]
+Get:9 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-export-include-directories amd64 2.7.2-2noble.20241213.223343 [7564 B]
+Get:10 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-export-libraries amd64 2.7.2-2noble.20241213.194512 [9576 B]
+Get:11 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-export-interfaces amd64 2.7.2-2noble.20241213.194551 [7976 B]
+Get:12 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-export-link-flags amd64 2.7.2-2noble.20241213.223409 [7178 B]
+Get:13 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-export-targets amd64 2.7.2-2noble.20241213.194559 [8224 B]
+Get:14 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-gen-version-h amd64 2.7.2-2noble.20241213.223435 [9584 B]
+Get:15 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-python amd64 2.7.2-2noble.20241213.223903 [10.2 kB]
+Get:16 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-include-directories amd64 2.7.2-2noble.20241213.223604 [7338 B]
+Get:17 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-target-dependencies amd64 2.7.2-2noble.20241213.223735 [9500 B]
+Get:18 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-test amd64 2.7.2-2noble.20241213.223931 [15.5 kB]
+Get:19 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake-version amd64 2.7.2-2noble.20241213.224339 [7506 B]
+Get:20 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-rolling-ament-cmake amd64 2.7.2-2noble.20241213.224408 [7468 B]
+Get:21 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12-minimal amd64 3.12.3-1ubuntu0.5 [835 kB]
+Get:22 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libexpat1 amd64 2.6.1-2ubuntu0.3 [88.0 kB]
+Get:23 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3.12-minimal amd64 3.12.3-1ubuntu0.5 [2342 kB]
+Get:24 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3-minimal amd64 3.12.3-0ubuntu2 [27.4 kB]
+Get:25 http://archive.ubuntu.com/ubuntu noble/main amd64 media-types all 10.1.0 [27.5 kB]
+Get:26 http://archive.ubuntu.com/ubuntu noble/main amd64 netbase all 6.4 [13.1 kB]
+Get:27 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 tzdata all 2025b-0ubuntu0.24.04 [276 kB]
+Get:28 http://archive.ubuntu.com/ubuntu noble/main amd64 libncursesw6 amd64 6.4+20240113-1ubuntu2 [148 kB]
+Get:29 http://archive.ubuntu.com/ubuntu noble/main amd64 readline-common all 8.2-4build1 [56.5 kB]
+Get:30 http://archive.ubuntu.com/ubuntu noble/main amd64 libreadline8t64 amd64 8.2-4build1 [153 kB]
+Get:31 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libsqlite3-0 amd64 3.45.1-1ubuntu2.1 [701 kB]
+Get:32 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12-stdlib amd64 3.12.3-1ubuntu0.5 [2069 kB]
+Get:33 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3.12 amd64 3.12.3-1ubuntu0.5 [651 kB]
+Get:34 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3-stdlib amd64 3.12.3-0ubuntu2 [10.0 kB]
+Get:35 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3 amd64 3.12.3-0ubuntu2 [23.0 kB]
+Get:36 http://archive.ubuntu.com/ubuntu noble/main amd64 sgml-base all 1.31 [11.4 kB]
+Get:37 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcom-err2 amd64 1.47.0-2.4~exp1ubuntu4.1 [23.0 kB]
+Get:38 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libproc2-0 amd64 2:4.0.4-4ubuntu3.2 [59.5 kB]
+Get:39 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 procps amd64 2:4.0.4-4ubuntu3.2 [707 kB]
+Get:40 http://archive.ubuntu.com/ubuntu noble/main amd64 sensible-utils all 0.0.22 [22.5 kB]
+Get:41 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libelf1t64 amd64 0.190-1.1ubuntu0.1 [57.8 kB]
+Get:42 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libkrb5support0 amd64 1.20.1-6ubuntu2.5 [34.1 kB]
+Get:43 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libk5crypto3 amd64 1.20.1-6ubuntu2.5 [82.0 kB]
+Get:44 http://archive.ubuntu.com/ubuntu noble/main amd64 libkeyutils1 amd64 1.6.3-3build1 [9490 B]
+Get:45 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libkrb5-3 amd64 1.20.1-6ubuntu2.5 [347 kB]
+Get:46 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgssapi-krb5-2 amd64 1.20.1-6ubuntu2.5 [143 kB]
+Get:47 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libicu74 amd64 74.2-1ubuntu3.1 [10.9 MB]
+Get:48 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libxml2 amd64 2.9.14+dfsg-1.3ubuntu3.3 [762 kB]
+Get:49 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3-pkg-resources all 68.1.2-2ubuntu1.1 [168 kB]
+Get:50 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 bsdextrautils amd64 2.39.3-9ubuntu6.2 [73.9 kB]
+Get:51 http://archive.ubuntu.com/ubuntu noble/main amd64 libmagic-mgc amd64 1:5.45-3build1 [307 kB]
+Get:52 http://archive.ubuntu.com/ubuntu noble/main amd64 libmagic1t64 amd64 1:5.45-3build1 [87.2 kB]
+Get:53 http://archive.ubuntu.com/ubuntu noble/main amd64 file amd64 1:5.45-3build1 [22.0 kB]
+Get:54 http://archive.ubuntu.com/ubuntu noble/main amd64 gettext-base amd64 0.21-14ubuntu2 [38.4 kB]
+Get:55 http://archive.ubuntu.com/ubuntu noble/main amd64 libuchardet0 amd64 0.0.8-1build1 [75.3 kB]
+Get:56 http://archive.ubuntu.com/ubuntu noble/main amd64 groff-base amd64 1.23.0-3build2 [1020 kB]
+Get:57 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libnghttp2-14 amd64 1.59.0-1ubuntu0.2 [74.3 kB]
+Get:58 http://archive.ubuntu.com/ubuntu noble/main amd64 libpipeline1 amd64 1.5.7-2 [23.6 kB]
+Get:59 http://archive.ubuntu.com/ubuntu noble/main amd64 libpsl5t64 amd64 0.21.2-1.1build1 [57.1 kB]
+Get:60 http://archive.ubuntu.com/ubuntu noble/main amd64 libuv1t64 amd64 1.48.0-1.1build1 [97.3 kB]
+Get:61 http://archive.ubuntu.com/ubuntu noble/main amd64 man-db amd64 2.12.0-4build2 [1237 kB]
+Get:62 http://archive.ubuntu.com/ubuntu noble/main amd64 m4 amd64 1.4.19-4build1 [244 kB]
+Get:63 http://archive.ubuntu.com/ubuntu noble/main amd64 autoconf all 2.71-3 [339 kB]
+Get:64 http://archive.ubuntu.com/ubuntu noble/main amd64 autotools-dev all 20220109.1 [44.9 kB]
+Get:65 http://archive.ubuntu.com/ubuntu noble/main amd64 automake all 1:1.16.5-1.3ubuntu1 [558 kB]
+Get:66 http://archive.ubuntu.com/ubuntu noble/main amd64 autopoint all 0.21-14ubuntu2 [422 kB]
+Get:67 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libarchive13t64 amd64 3.7.2-2ubuntu0.4 [382 kB]
+Get:68 http://archive.ubuntu.com/ubuntu noble/main amd64 libbrotli1 amd64 1.1.0-2build2 [331 kB]
+Get:69 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg1-5ubuntu3.1 [20.4 kB]
+Get:70 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libsasl2-2 amd64 2.1.28+dfsg1-5ubuntu3.1 [53.2 kB]
+Get:71 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libldap2 amd64 2.6.7+dfsg-1~exp1ubuntu8.2 [196 kB]
+Get:72 http://archive.ubuntu.com/ubuntu noble/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2build7 [56.3 kB]
+Get:73 http://archive.ubuntu.com/ubuntu noble/main amd64 libssh-4 amd64 0.10.6-2build2 [188 kB]
+Get:74 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcurl4t64 amd64 8.5.0-2ubuntu10.6 [341 kB]
+Get:75 http://archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1 [82.8 kB]
+Get:76 http://archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1 [129 kB]
+Get:77 http://archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7 [2155 kB]
+Get:78 http://archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7 [11.2 MB]
+Get:79 http://archive.ubuntu.com/ubuntu noble/main amd64 libdebhelper-perl all 13.14.1ubuntu5 [89.8 kB]
+Get:80 http://archive.ubuntu.com/ubuntu noble/main amd64 libtool all 2.4.7-7build1 [166 kB]
+Get:81 http://archive.ubuntu.com/ubuntu noble/main amd64 dh-autoreconf all 20 [16.1 kB]
+Get:82 http://archive.ubuntu.com/ubuntu noble/main amd64 libarchive-zip-perl all 1.68-1 [90.2 kB]
+Get:83 http://archive.ubuntu.com/ubuntu noble/main amd64 libsub-override-perl all 0.10-1 [10.0 kB]
+Get:84 http://archive.ubuntu.com/ubuntu noble/main amd64 libfile-stripnondeterminism-perl all 1.13.1-1 [18.1 kB]
+Get:85 http://archive.ubuntu.com/ubuntu noble/main amd64 dh-strip-nondeterminism all 1.13.1-1 [5362 B]
+Get:86 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libdw1t64 amd64 0.190-1.1ubuntu0.1 [261 kB]
+Get:87 http://archive.ubuntu.com/ubuntu noble/main amd64 debugedit amd64 1:5.0-5build2 [46.1 kB]
+Get:88 http://archive.ubuntu.com/ubuntu noble/main amd64 dwz amd64 0.15-1build6 [115 kB]
+Get:89 http://archive.ubuntu.com/ubuntu noble/main amd64 gettext amd64 0.21-14ubuntu2 [864 kB]
+Get:90 http://archive.ubuntu.com/ubuntu noble/main amd64 intltool-debian all 0.35.0+20060710.6 [23.2 kB]
+Get:91 http://archive.ubuntu.com/ubuntu noble/main amd64 po-debconf all 1.0.21+nmu1 [233 kB]
+Get:92 http://archive.ubuntu.com/ubuntu noble/main amd64 debhelper all 13.14.1ubuntu5 [869 kB]
+Get:93 http://archive.ubuntu.com/ubuntu noble/main amd64 xml-core all 0.19 [20.3 kB]
+Get:94 http://archive.ubuntu.com/ubuntu noble/main amd64 docutils-common all 0.20.1+dfsg-3 [132 kB]
+Get:95 http://archive.ubuntu.com/ubuntu noble/main amd64 libfakeroot amd64 1.33-1 [32.4 kB]
+Get:96 http://archive.ubuntu.com/ubuntu noble/main amd64 fakeroot amd64 1.33-1 [67.2 kB]
+Get:97 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-six all 1.16.0-4 [12.4 kB]
+Get:98 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-dateutil all 2.8.2-3ubuntu1 [79.4 kB]
+Get:99 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-roman all 3.3-3 [9632 B]
+Get:100 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-docutils all 0.20.1+dfsg-3 [393 kB]
+Get:101 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-pyparsing all 3.1.1-1 [86.2 kB]
+Get:102 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-more-itertools all 10.2.0-1 [52.9 kB]
+Get:103 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3-zipp all 1.0.0-6ubuntu0.1 [6774 B]
+Get:104 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-importlib-metadata all 4.12.0-1 [17.8 kB]
+Get:105 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3-setuptools all 68.1.2-2ubuntu1.1 [396 kB]
+Get:106 http://archive.ubuntu.com/ubuntu noble/universe amd64 dumb-init amd64 1.2.5-3 [13.6 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 44.9 MB in 4s (10.4 MB/s)
+Selecting previously unselected package libpython3.12-minimal:amd64.
+(Reading database ... 10052 files and directories currently installed.)
+Preparing to unpack .../libpython3.12-minimal_3.12.3-1ubuntu0.5_amd64.deb ...
+Unpacking libpython3.12-minimal:amd64 (3.12.3-1ubuntu0.5) ...
+Selecting previously unselected package libexpat1:amd64.
+Preparing to unpack .../libexpat1_2.6.1-2ubuntu0.3_amd64.deb ...
+Unpacking libexpat1:amd64 (2.6.1-2ubuntu0.3) ...
+Selecting previously unselected package python3.12-minimal.
+Preparing to unpack .../python3.12-minimal_3.12.3-1ubuntu0.5_amd64.deb ...
+Unpacking python3.12-minimal (3.12.3-1ubuntu0.5) ...
+Setting up libpython3.12-minimal:amd64 (3.12.3-1ubuntu0.5) ...
+Setting up libexpat1:amd64 (2.6.1-2ubuntu0.3) ...
+Setting up python3.12-minimal (3.12.3-1ubuntu0.5) ...
+Selecting previously unselected package python3-minimal.
+(Reading database ... 10371 files and directories currently installed.)
+Preparing to unpack .../00-python3-minimal_3.12.3-0ubuntu2_amd64.deb ...
+Unpacking python3-minimal (3.12.3-0ubuntu2) ...
+Selecting previously unselected package media-types.
+Preparing to unpack .../01-media-types_10.1.0_all.deb ...
+Unpacking media-types (10.1.0) ...
+Selecting previously unselected package netbase.
+Preparing to unpack .../02-netbase_6.4_all.deb ...
+Unpacking netbase (6.4) ...
+Selecting previously unselected package tzdata.
+Preparing to unpack .../03-tzdata_2025b-0ubuntu0.24.04_all.deb ...
+Unpacking tzdata (2025b-0ubuntu0.24.04) ...
+Selecting previously unselected package libncursesw6:amd64.
+Preparing to unpack .../04-libncursesw6_6.4+20240113-1ubuntu2_amd64.deb ...
+Unpacking libncursesw6:amd64 (6.4+20240113-1ubuntu2) ...
+Selecting previously unselected package readline-common.
+Preparing to unpack .../05-readline-common_8.2-4build1_all.deb ...
+Unpacking readline-common (8.2-4build1) ...
+Selecting previously unselected package libreadline8t64:amd64.
+Preparing to unpack .../06-libreadline8t64_8.2-4build1_amd64.deb ...
+Adding 'diversion of /lib/x86_64-linux-gnu/libhistory.so.8 to /lib/x86_64-linux-gnu/libhistory.so.8.usr-is-merged by libreadline8t64'
+Adding 'diversion of /lib/x86_64-linux-gnu/libhistory.so.8.2 to /lib/x86_64-linux-gnu/libhistory.so.8.2.usr-is-merged by libreadline8t64'
+Adding 'diversion of /lib/x86_64-linux-gnu/libreadline.so.8 to /lib/x86_64-linux-gnu/libreadline.so.8.usr-is-merged by libreadline8t64'
+Adding 'diversion of /lib/x86_64-linux-gnu/libreadline.so.8.2 to /lib/x86_64-linux-gnu/libreadline.so.8.2.usr-is-merged by libreadline8t64'
+Unpacking libreadline8t64:amd64 (8.2-4build1) ...
+Selecting previously unselected package libsqlite3-0:amd64.
+Preparing to unpack .../07-libsqlite3-0_3.45.1-1ubuntu2.1_amd64.deb ...
+Unpacking libsqlite3-0:amd64 (3.45.1-1ubuntu2.1) ...
+Selecting previously unselected package libpython3.12-stdlib:amd64.
+Preparing to unpack .../08-libpython3.12-stdlib_3.12.3-1ubuntu0.5_amd64.deb ...
+Unpacking libpython3.12-stdlib:amd64 (3.12.3-1ubuntu0.5) ...
+Selecting previously unselected package python3.12.
+Preparing to unpack .../09-python3.12_3.12.3-1ubuntu0.5_amd64.deb ...
+Unpacking python3.12 (3.12.3-1ubuntu0.5) ...
+Selecting previously unselected package libpython3-stdlib:amd64.
+Preparing to unpack .../10-libpython3-stdlib_3.12.3-0ubuntu2_amd64.deb ...
+Unpacking libpython3-stdlib:amd64 (3.12.3-0ubuntu2) ...
+Setting up python3-minimal (3.12.3-0ubuntu2) ...
+Selecting previously unselected package python3.
+(Reading database ... 11386 files and directories currently installed.)
+Preparing to unpack .../00-python3_3.12.3-0ubuntu2_amd64.deb ...
+Unpacking python3 (3.12.3-0ubuntu2) ...
+Selecting previously unselected package sgml-base.
+Preparing to unpack .../01-sgml-base_1.31_all.deb ...
+Unpacking sgml-base (1.31) ...
+Selecting previously unselected package libcom-err2:amd64.
+Preparing to unpack .../02-libcom-err2_1.47.0-2.4~exp1ubuntu4.1_amd64.deb ...
+Unpacking libcom-err2:amd64 (1.47.0-2.4~exp1ubuntu4.1) ...
+Selecting previously unselected package libproc2-0:amd64.
+Preparing to unpack .../03-libproc2-0_2%3a4.0.4-4ubuntu3.2_amd64.deb ...
+Unpacking libproc2-0:amd64 (2:4.0.4-4ubuntu3.2) ...
+Selecting previously unselected package procps.
+Preparing to unpack .../04-procps_2%3a4.0.4-4ubuntu3.2_amd64.deb ...
+Unpacking procps (2:4.0.4-4ubuntu3.2) ...
+Selecting previously unselected package sensible-utils.
+Preparing to unpack .../05-sensible-utils_0.0.22_all.deb ...
+Unpacking sensible-utils (0.0.22) ...
+Selecting previously unselected package libelf1t64:amd64.
+Preparing to unpack .../06-libelf1t64_0.190-1.1ubuntu0.1_amd64.deb ...
+Unpacking libelf1t64:amd64 (0.190-1.1ubuntu0.1) ...
+Selecting previously unselected package libkrb5support0:amd64.
+Preparing to unpack .../07-libkrb5support0_1.20.1-6ubuntu2.5_amd64.deb ...
+Unpacking libkrb5support0:amd64 (1.20.1-6ubuntu2.5) ...
+Selecting previously unselected package libk5crypto3:amd64.
+Preparing to unpack .../08-libk5crypto3_1.20.1-6ubuntu2.5_amd64.deb ...
+Unpacking libk5crypto3:amd64 (1.20.1-6ubuntu2.5) ...
+Selecting previously unselected package libkeyutils1:amd64.
+Preparing to unpack .../09-libkeyutils1_1.6.3-3build1_amd64.deb ...
+Unpacking libkeyutils1:amd64 (1.6.3-3build1) ...
+Selecting previously unselected package libkrb5-3:amd64.
+Preparing to unpack .../10-libkrb5-3_1.20.1-6ubuntu2.5_amd64.deb ...
+Unpacking libkrb5-3:amd64 (1.20.1-6ubuntu2.5) ...
+Selecting previously unselected package libgssapi-krb5-2:amd64.
+Preparing to unpack .../11-libgssapi-krb5-2_1.20.1-6ubuntu2.5_amd64.deb ...
+Unpacking libgssapi-krb5-2:amd64 (1.20.1-6ubuntu2.5) ...
+Selecting previously unselected package libicu74:amd64.
+Preparing to unpack .../12-libicu74_74.2-1ubuntu3.1_amd64.deb ...
+Unpacking libicu74:amd64 (74.2-1ubuntu3.1) ...
+Selecting previously unselected package libxml2:amd64.
+Preparing to unpack .../13-libxml2_2.9.14+dfsg-1.3ubuntu3.3_amd64.deb ...
+Unpacking libxml2:amd64 (2.9.14+dfsg-1.3ubuntu3.3) ...
+Selecting previously unselected package python3-pkg-resources.
+Preparing to unpack .../14-python3-pkg-resources_68.1.2-2ubuntu1.1_all.deb ...
+Unpacking python3-pkg-resources (68.1.2-2ubuntu1.1) ...
+Selecting previously unselected package bsdextrautils.
+Preparing to unpack .../15-bsdextrautils_2.39.3-9ubuntu6.2_amd64.deb ...
+Unpacking bsdextrautils (2.39.3-9ubuntu6.2) ...
+Selecting previously unselected package libmagic-mgc.
+Preparing to unpack .../16-libmagic-mgc_1%3a5.45-3build1_amd64.deb ...
+Unpacking libmagic-mgc (1:5.45-3build1) ...
+Selecting previously unselected package libmagic1t64:amd64.
+Preparing to unpack .../17-libmagic1t64_1%3a5.45-3build1_amd64.deb ...
+Unpacking libmagic1t64:amd64 (1:5.45-3build1) ...
+Selecting previously unselected package file.
+Preparing to unpack .../18-file_1%3a5.45-3build1_amd64.deb ...
+Unpacking file (1:5.45-3build1) ...
+Selecting previously unselected package gettext-base.
+Preparing to unpack .../19-gettext-base_0.21-14ubuntu2_amd64.deb ...
+Unpacking gettext-base (0.21-14ubuntu2) ...
+Selecting previously unselected package libuchardet0:amd64.
+Preparing to unpack .../20-libuchardet0_0.0.8-1build1_amd64.deb ...
+Unpacking libuchardet0:amd64 (0.0.8-1build1) ...
+Selecting previously unselected package groff-base.
+Preparing to unpack .../21-groff-base_1.23.0-3build2_amd64.deb ...
+Unpacking groff-base (1.23.0-3build2) ...
+Selecting previously unselected package libnghttp2-14:amd64.
+Preparing to unpack .../22-libnghttp2-14_1.59.0-1ubuntu0.2_amd64.deb ...
+Unpacking libnghttp2-14:amd64 (1.59.0-1ubuntu0.2) ...
+Selecting previously unselected package libpipeline1:amd64.
+Preparing to unpack .../23-libpipeline1_1.5.7-2_amd64.deb ...
+Unpacking libpipeline1:amd64 (1.5.7-2) ...
+Selecting previously unselected package libpsl5t64:amd64.
+Preparing to unpack .../24-libpsl5t64_0.21.2-1.1build1_amd64.deb ...
+Unpacking libpsl5t64:amd64 (0.21.2-1.1build1) ...
+Selecting previously unselected package libuv1t64:amd64.
+Preparing to unpack .../25-libuv1t64_1.48.0-1.1build1_amd64.deb ...
+Unpacking libuv1t64:amd64 (1.48.0-1.1build1) ...
+Selecting previously unselected package man-db.
+Preparing to unpack .../26-man-db_2.12.0-4build2_amd64.deb ...
+Unpacking man-db (2.12.0-4build2) ...
+Selecting previously unselected package m4.
+Preparing to unpack .../27-m4_1.4.19-4build1_amd64.deb ...
+Unpacking m4 (1.4.19-4build1) ...
+Selecting previously unselected package autoconf.
+Preparing to unpack .../28-autoconf_2.71-3_all.deb ...
+Unpacking autoconf (2.71-3) ...
+Selecting previously unselected package autotools-dev.
+Preparing to unpack .../29-autotools-dev_20220109.1_all.deb ...
+Unpacking autotools-dev (20220109.1) ...
+Selecting previously unselected package automake.
+Preparing to unpack .../30-automake_1%3a1.16.5-1.3ubuntu1_all.deb ...
+Unpacking automake (1:1.16.5-1.3ubuntu1) ...
+Selecting previously unselected package autopoint.
+Preparing to unpack .../31-autopoint_0.21-14ubuntu2_all.deb ...
+Unpacking autopoint (0.21-14ubuntu2) ...
+Selecting previously unselected package libarchive13t64:amd64.
+Preparing to unpack .../32-libarchive13t64_3.7.2-2ubuntu0.4_amd64.deb ...
+Unpacking libarchive13t64:amd64 (3.7.2-2ubuntu0.4) ...
+Selecting previously unselected package libbrotli1:amd64.
+Preparing to unpack .../33-libbrotli1_1.1.0-2build2_amd64.deb ...
+Unpacking libbrotli1:amd64 (1.1.0-2build2) ...
+Selecting previously unselected package libsasl2-modules-db:amd64.
+Preparing to unpack .../34-libsasl2-modules-db_2.1.28+dfsg1-5ubuntu3.1_amd64.deb ...
+Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg1-5ubuntu3.1) ...
+Selecting previously unselected package libsasl2-2:amd64.
+Preparing to unpack .../35-libsasl2-2_2.1.28+dfsg1-5ubuntu3.1_amd64.deb ...
+Unpacking libsasl2-2:amd64 (2.1.28+dfsg1-5ubuntu3.1) ...
+Selecting previously unselected package libldap2:amd64.
+Preparing to unpack .../36-libldap2_2.6.7+dfsg-1~exp1ubuntu8.2_amd64.deb ...
+Unpacking libldap2:amd64 (2.6.7+dfsg-1~exp1ubuntu8.2) ...
+Selecting previously unselected package librtmp1:amd64.
+Preparing to unpack .../37-librtmp1_2.4+20151223.gitfa8646d.1-2build7_amd64.deb ...
+Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2build7) ...
+Selecting previously unselected package libssh-4:amd64.
+Preparing to unpack .../38-libssh-4_0.10.6-2build2_amd64.deb ...
+Unpacking libssh-4:amd64 (0.10.6-2build2) ...
+Selecting previously unselected package libcurl4t64:amd64.
+Preparing to unpack .../39-libcurl4t64_8.5.0-2ubuntu10.6_amd64.deb ...
+Unpacking libcurl4t64:amd64 (8.5.0-2ubuntu10.6) ...
+Selecting previously unselected package libjsoncpp25:amd64.
+Preparing to unpack .../40-libjsoncpp25_1.9.5-6build1_amd64.deb ...
+Unpacking libjsoncpp25:amd64 (1.9.5-6build1) ...
+Selecting previously unselected package librhash0:amd64.
+Preparing to unpack .../41-librhash0_1.4.3-3build1_amd64.deb ...
+Unpacking librhash0:amd64 (1.4.3-3build1) ...
+Selecting previously unselected package cmake-data.
+Preparing to unpack .../42-cmake-data_3.28.3-1build7_all.deb ...
+Unpacking cmake-data (3.28.3-1build7) ...
+Selecting previously unselected package cmake.
+Preparing to unpack .../43-cmake_3.28.3-1build7_amd64.deb ...
+Unpacking cmake (3.28.3-1build7) ...
+Selecting previously unselected package libdebhelper-perl.
+Preparing to unpack .../44-libdebhelper-perl_13.14.1ubuntu5_all.deb ...
+Unpacking libdebhelper-perl (13.14.1ubuntu5) ...
+Selecting previously unselected package libtool.
+Preparing to unpack .../45-libtool_2.4.7-7build1_all.deb ...
+Unpacking libtool (2.4.7-7build1) ...
+Selecting previously unselected package dh-autoreconf.
+Preparing to unpack .../46-dh-autoreconf_20_all.deb ...
+Unpacking dh-autoreconf (20) ...
+Selecting previously unselected package libarchive-zip-perl.
+Preparing to unpack .../47-libarchive-zip-perl_1.68-1_all.deb ...
+Unpacking libarchive-zip-perl (1.68-1) ...
+Selecting previously unselected package libsub-override-perl.
+Preparing to unpack .../48-libsub-override-perl_0.10-1_all.deb ...
+Unpacking libsub-override-perl (0.10-1) ...
+Selecting previously unselected package libfile-stripnondeterminism-perl.
+Preparing to unpack .../49-libfile-stripnondeterminism-perl_1.13.1-1_all.deb ...
+Unpacking libfile-stripnondeterminism-perl (1.13.1-1) ...
+Selecting previously unselected package dh-strip-nondeterminism.
+Preparing to unpack .../50-dh-strip-nondeterminism_1.13.1-1_all.deb ...
+Unpacking dh-strip-nondeterminism (1.13.1-1) ...
+Selecting previously unselected package libdw1t64:amd64.
+Preparing to unpack .../51-libdw1t64_0.190-1.1ubuntu0.1_amd64.deb ...
+Unpacking libdw1t64:amd64 (0.190-1.1ubuntu0.1) ...
+Selecting previously unselected package debugedit.
+Preparing to unpack .../52-debugedit_1%3a5.0-5build2_amd64.deb ...
+Unpacking debugedit (1:5.0-5build2) ...
+Selecting previously unselected package dwz.
+Preparing to unpack .../53-dwz_0.15-1build6_amd64.deb ...
+Unpacking dwz (0.15-1build6) ...
+Selecting previously unselected package gettext.
+Preparing to unpack .../54-gettext_0.21-14ubuntu2_amd64.deb ...
+Unpacking gettext (0.21-14ubuntu2) ...
+Selecting previously unselected package intltool-debian.
+Preparing to unpack .../55-intltool-debian_0.35.0+20060710.6_all.deb ...
+Unpacking intltool-debian (0.35.0+20060710.6) ...
+Selecting previously unselected package po-debconf.
+Preparing to unpack .../56-po-debconf_1.0.21+nmu1_all.deb ...
+Unpacking po-debconf (1.0.21+nmu1) ...
+Selecting previously unselected package debhelper.
+Preparing to unpack .../57-debhelper_13.14.1ubuntu5_all.deb ...
+Unpacking debhelper (13.14.1ubuntu5) ...
+Selecting previously unselected package xml-core.
+Preparing to unpack .../58-xml-core_0.19_all.deb ...
+Unpacking xml-core (0.19) ...
+Selecting previously unselected package docutils-common.
+Preparing to unpack .../59-docutils-common_0.20.1+dfsg-3_all.deb ...
+Unpacking docutils-common (0.20.1+dfsg-3) ...
+Selecting previously unselected package libfakeroot:amd64.
+Preparing to unpack .../60-libfakeroot_1.33-1_amd64.deb ...
+Unpacking libfakeroot:amd64 (1.33-1) ...
+Selecting previously unselected package fakeroot.
+Preparing to unpack .../61-fakeroot_1.33-1_amd64.deb ...
+Unpacking fakeroot (1.33-1) ...
+Selecting previously unselected package python3-six.
+Preparing to unpack .../62-python3-six_1.16.0-4_all.deb ...
+Unpacking python3-six (1.16.0-4) ...
+Selecting previously unselected package python3-dateutil.
+Preparing to unpack .../63-python3-dateutil_2.8.2-3ubuntu1_all.deb ...
+Unpacking python3-dateutil (2.8.2-3ubuntu1) ...
+Selecting previously unselected package python3-roman.
+Preparing to unpack .../64-python3-roman_3.3-3_all.deb ...
+Unpacking python3-roman (3.3-3) ...
+Selecting previously unselected package python3-docutils.
+Preparing to unpack .../65-python3-docutils_0.20.1+dfsg-3_all.deb ...
+Unpacking python3-docutils (0.20.1+dfsg-3) ...
+Selecting previously unselected package python3-pyparsing.
+Preparing to unpack .../66-python3-pyparsing_3.1.1-1_all.deb ...
+Unpacking python3-pyparsing (3.1.1-1) ...
+Selecting previously unselected package python3-catkin-pkg-modules.
+Preparing to unpack .../67-python3-catkin-pkg-modules_1.0.0-1_all.deb ...
+Unpacking python3-catkin-pkg-modules (1.0.0-1) ...
+Selecting previously unselected package python3-more-itertools.
+Preparing to unpack .../68-python3-more-itertools_10.2.0-1_all.deb ...
+Unpacking python3-more-itertools (10.2.0-1) ...
+Selecting previously unselected package python3-zipp.
+Preparing to unpack .../69-python3-zipp_1.0.0-6ubuntu0.1_all.deb ...
+Unpacking python3-zipp (1.0.0-6ubuntu0.1) ...
+Selecting previously unselected package python3-importlib-metadata.
+Preparing to unpack .../70-python3-importlib-metadata_4.12.0-1_all.deb ...
+Unpacking python3-importlib-metadata (4.12.0-1) ...
+Selecting previously unselected package python3-setuptools.
+Preparing to unpack .../71-python3-setuptools_68.1.2-2ubuntu1.1_all.deb ...
+Unpacking python3-setuptools (68.1.2-2ubuntu1.1) ...
+Selecting previously unselected package ros-rolling-ament-package.
+Preparing to unpack .../72-ros-rolling-ament-package_0.17.1-1noble.20240617.152927_amd64.deb ...
+Unpacking ros-rolling-ament-package (0.17.1-1noble.20240617.152927) ...
+Selecting previously unselected package ros-rolling-ament-cmake-core.
+Preparing to unpack .../73-ros-rolling-ament-cmake-core_2.7.2-2noble.20241213.192210_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-core (2.7.2-2noble.20241213.192210) ...
+Selecting previously unselected package ros-rolling-ros-workspace.
+Preparing to unpack .../74-ros-rolling-ros-workspace_1.0.3-6noble.20241213.192716_amd64.deb ...
+Unpacking ros-rolling-ros-workspace (1.0.3-6noble.20241213.192716) ...
+Selecting previously unselected package ros-rolling-ament-cmake-export-definitions.
+Preparing to unpack .../75-ros-rolling-ament-cmake-export-definitions_2.7.2-2noble.20241213.223058_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-export-definitions (2.7.2-2noble.20241213.223058) ...
+Selecting previously unselected package ros-rolling-ament-cmake-libraries.
+Preparing to unpack .../76-ros-rolling-ament-cmake-libraries_2.7.2-2noble.20241213.223646_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-libraries (2.7.2-2noble.20241213.223646) ...
+Selecting previously unselected package ros-rolling-ament-cmake-export-dependencies.
+Preparing to unpack .../77-ros-rolling-ament-cmake-export-dependencies_2.7.2-2noble.20241213.223730_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-export-dependencies (2.7.2-2noble.20241213.223730) ...
+Selecting previously unselected package ros-rolling-ament-cmake-export-include-directories.
+Preparing to unpack .../78-ros-rolling-ament-cmake-export-include-directories_2.7.2-2noble.20241213.223343_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-export-include-directories (2.7.2-2noble.20241213.223343) ...
+Selecting previously unselected package ros-rolling-ament-cmake-export-libraries.
+Preparing to unpack .../79-ros-rolling-ament-cmake-export-libraries_2.7.2-2noble.20241213.194512_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-export-libraries (2.7.2-2noble.20241213.194512) ...
+Selecting previously unselected package ros-rolling-ament-cmake-export-interfaces.
+Preparing to unpack .../80-ros-rolling-ament-cmake-export-interfaces_2.7.2-2noble.20241213.194551_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-export-interfaces (2.7.2-2noble.20241213.194551) ...
+Selecting previously unselected package ros-rolling-ament-cmake-export-link-flags.
+Preparing to unpack .../81-ros-rolling-ament-cmake-export-link-flags_2.7.2-2noble.20241213.223409_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-export-link-flags (2.7.2-2noble.20241213.223409) ...
+Selecting previously unselected package ros-rolling-ament-cmake-export-targets.
+Preparing to unpack .../82-ros-rolling-ament-cmake-export-targets_2.7.2-2noble.20241213.194559_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-export-targets (2.7.2-2noble.20241213.194559) ...
+Selecting previously unselected package ros-rolling-ament-cmake-gen-version-h.
+Preparing to unpack .../83-ros-rolling-ament-cmake-gen-version-h_2.7.2-2noble.20241213.223435_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-gen-version-h (2.7.2-2noble.20241213.223435) ...
+Selecting previously unselected package ros-rolling-ament-cmake-python.
+Preparing to unpack .../84-ros-rolling-ament-cmake-python_2.7.2-2noble.20241213.223903_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-python (2.7.2-2noble.20241213.223903) ...
+Selecting previously unselected package ros-rolling-ament-cmake-include-directories.
+Preparing to unpack .../85-ros-rolling-ament-cmake-include-directories_2.7.2-2noble.20241213.223604_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-include-directories (2.7.2-2noble.20241213.223604) ...
+Selecting previously unselected package ros-rolling-ament-cmake-target-dependencies.
+Preparing to unpack .../86-ros-rolling-ament-cmake-target-dependencies_2.7.2-2noble.20241213.223735_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-target-dependencies (2.7.2-2noble.20241213.223735) ...
+Selecting previously unselected package ros-rolling-ament-cmake-test.
+Preparing to unpack .../87-ros-rolling-ament-cmake-test_2.7.2-2noble.20241213.223931_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-test (2.7.2-2noble.20241213.223931) ...
+Selecting previously unselected package ros-rolling-ament-cmake-version.
+Preparing to unpack .../88-ros-rolling-ament-cmake-version_2.7.2-2noble.20241213.224339_amd64.deb ...
+Unpacking ros-rolling-ament-cmake-version (2.7.2-2noble.20241213.224339) ...
+Selecting previously unselected package ros-rolling-ament-cmake.
+Preparing to unpack .../89-ros-rolling-ament-cmake_2.7.2-2noble.20241213.224408_amd64.deb ...
+Unpacking ros-rolling-ament-cmake (2.7.2-2noble.20241213.224408) ...
+Selecting previously unselected package dumb-init.
+Preparing to unpack .../90-dumb-init_1.2.5-3_amd64.deb ...
+Unpacking dumb-init (1.2.5-3) ...
+Selecting previously unselected package sbuild-build-depends-main-dummy.
+Preparing to unpack .../91-sbuild-build-depends-main-dummy_0.invalid.0_amd64.deb ...
+Unpacking sbuild-build-depends-main-dummy (0.invalid.0) ...
+Setting up media-types (10.1.0) ...
+Setting up dumb-init (1.2.5-3) ...
+Setting up libpipeline1:amd64 (1.5.7-2) ...
+Setting up libkeyutils1:amd64 (1.6.3-3build1) ...
+Setting up bsdextrautils (2.39.3-9ubuntu6.2) ...
+Setting up ros-rolling-ros-workspace (1.0.3-6noble.20241213.192716) ...
+Setting up libmagic-mgc (1:5.45-3build1) ...
+Setting up libarchive-zip-perl (1.68-1) ...
+Setting up libdebhelper-perl (13.14.1ubuntu5) ...
+Setting up libbrotli1:amd64 (1.1.0-2build2) ...
+Setting up libsqlite3-0:amd64 (3.45.1-1ubuntu2.1) ...
+Setting up libuv1t64:amd64 (1.48.0-1.1build1) ...
+Setting up libmagic1t64:amd64 (1:5.45-3build1) ...
+Setting up libpsl5t64:amd64 (0.21.2-1.1build1) ...
+Setting up libnghttp2-14:amd64 (1.59.0-1ubuntu0.2) ...
+Setting up gettext-base (0.21-14ubuntu2) ...
+Setting up m4 (1.4.19-4build1) ...
+Setting up libcom-err2:amd64 (1.47.0-2.4~exp1ubuntu4.1) ...
+Setting up file (1:5.45-3build1) ...
+Setting up libfakeroot:amd64 (1.33-1) ...
+Setting up libelf1t64:amd64 (0.190-1.1ubuntu0.1) ...
+Setting up libkrb5support0:amd64 (1.20.1-6ubuntu2.5) ...
+Setting up libdw1t64:amd64 (0.190-1.1ubuntu0.1) ...
+Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg1-5ubuntu3.1) ...
+Setting up tzdata (2025b-0ubuntu0.24.04) ...
+
+Current default time zone: 'Etc/UTC'
+Local time is now:      Thu May 15 22:13:40 UTC 2025.
+Universal Time is now:  Thu May 15 22:13:40 UTC 2025.
+Run 'dpkg-reconfigure tzdata' if you wish to change it.
+
+Setting up fakeroot (1.33-1) ...
+update-alternatives: using /usr/bin/fakeroot-sysv to provide /usr/bin/fakeroot (fakeroot) in auto mode
+Setting up autotools-dev (20220109.1) ...
+Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2build7) ...
+Setting up libproc2-0:amd64 (2:4.0.4-4ubuntu3.2) ...
+Setting up autopoint (0.21-14ubuntu2) ...
+Setting up libjsoncpp25:amd64 (1.9.5-6build1) ...
+Setting up libncursesw6:amd64 (6.4+20240113-1ubuntu2) ...
+Setting up libk5crypto3:amd64 (1.20.1-6ubuntu2.5) ...
+Setting up libsasl2-2:amd64 (2.1.28+dfsg1-5ubuntu3.1) ...
+Setting up autoconf (2.71-3) ...
+Setting up libicu74:amd64 (74.2-1ubuntu3.1) ...
+Setting up dwz (0.15-1build6) ...
+Setting up sensible-utils (0.0.22) ...
+Setting up librhash0:amd64 (1.4.3-3build1) ...
+Setting up libuchardet0:amd64 (0.0.8-1build1) ...
+Setting up procps (2:4.0.4-4ubuntu3.2) ...
+Setting up debugedit (1:5.0-5build2) ...
+Setting up libsub-override-perl (0.10-1) ...
+Setting up netbase (6.4) ...
+Setting up sgml-base (1.31) ...
+Setting up cmake-data (3.28.3-1build7) ...
+Setting up libkrb5-3:amd64 (1.20.1-6ubuntu2.5) ...
+Setting up readline-common (8.2-4build1) ...
+Setting up libxml2:amd64 (2.9.14+dfsg-1.3ubuntu3.3) ...
+Setting up libldap2:amd64 (2.6.7+dfsg-1~exp1ubuntu8.2) ...
+Setting up automake (1:1.16.5-1.3ubuntu1) ...
+update-alternatives: using /usr/bin/automake-1.16 to provide /usr/bin/automake (automake) in auto mode
+Setting up libfile-stripnondeterminism-perl (1.13.1-1) ...
+Setting up gettext (0.21-14ubuntu2) ...
+Setting up libtool (2.4.7-7build1) ...
+Setting up intltool-debian (0.35.0+20060710.6) ...
+Setting up dh-autoreconf (20) ...
+Setting up libgssapi-krb5-2:amd64 (1.20.1-6ubuntu2.5) ...
+Setting up libssh-4:amd64 (0.10.6-2build2) ...
+Setting up libreadline8t64:amd64 (8.2-4build1) ...
+Setting up dh-strip-nondeterminism (1.13.1-1) ...
+Setting up groff-base (1.23.0-3build2) ...
+Setting up xml-core (0.19) ...
+Setting up libarchive13t64:amd64 (3.7.2-2ubuntu0.4) ...
+Setting up libpython3.12-stdlib:amd64 (3.12.3-1ubuntu0.5) ...
+Setting up libcurl4t64:amd64 (8.5.0-2ubuntu10.6) ...
+Setting up po-debconf (1.0.21+nmu1) ...
+Setting up python3.12 (3.12.3-1ubuntu0.5) ...
+Setting up man-db (2.12.0-4build2) ...
+Not building database; man-db/auto-update is not 'true'.
+Setting up cmake (3.28.3-1build7) ...
+Setting up libpython3-stdlib:amd64 (3.12.3-0ubuntu2) ...
+Setting up debhelper (13.14.1ubuntu5) ...
+Setting up python3 (3.12.3-0ubuntu2) ...
+Setting up python3-six (1.16.0-4) ...
+Setting up python3-roman (3.3-3) ...
+Setting up python3-pyparsing (3.1.1-1) ...
+Setting up python3-dateutil (2.8.2-3ubuntu1) ...
+Setting up python3-pkg-resources (68.1.2-2ubuntu1.1) ...
+Setting up python3-more-itertools (10.2.0-1) ...
+Setting up python3-setuptools (68.1.2-2ubuntu1.1) ...
+Setting up python3-zipp (1.0.0-6ubuntu0.1) ...
+Setting up python3-importlib-metadata (4.12.0-1) ...
+Setting up ros-rolling-ament-package (0.17.1-1noble.20240617.152927) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.4) ...
+Processing triggers for sgml-base (1.31) ...
+Setting up docutils-common (0.20.1+dfsg-3) ...
+Processing triggers for sgml-base (1.31) ...
+Setting up python3-docutils (0.20.1+dfsg-3) ...
+Setting up python3-catkin-pkg-modules (1.0.0-1) ...
+/usr/lib/python3/dist-packages/catkin_pkg/cli/prepare_release.py:234: SyntaxWarning: invalid escape sequence '\.'
+  if args.version and not re.match('^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$', args.version):
+Setting up ros-rolling-ament-cmake-core (2.7.2-2noble.20241213.192210) ...
+Setting up ros-rolling-ament-cmake-libraries (2.7.2-2noble.20241213.223646) ...
+Setting up ros-rolling-ament-cmake-export-definitions (2.7.2-2noble.20241213.223058) ...
+Setting up ros-rolling-ament-cmake-test (2.7.2-2noble.20241213.223931) ...
+Setting up ros-rolling-ament-cmake-python (2.7.2-2noble.20241213.223903) ...
+Setting up ros-rolling-ament-cmake-gen-version-h (2.7.2-2noble.20241213.223435) ...
+Setting up ros-rolling-ament-cmake-export-dependencies (2.7.2-2noble.20241213.223730) ...
+Setting up ros-rolling-ament-cmake-include-directories (2.7.2-2noble.20241213.223604) ...
+Setting up ros-rolling-ament-cmake-version (2.7.2-2noble.20241213.224339) ...
+Setting up ros-rolling-ament-cmake-export-libraries (2.7.2-2noble.20241213.194512) ...
+Setting up ros-rolling-ament-cmake-export-targets (2.7.2-2noble.20241213.194559) ...
+Setting up ros-rolling-ament-cmake-export-include-directories (2.7.2-2noble.20241213.223343) ...
+Setting up ros-rolling-ament-cmake-export-link-flags (2.7.2-2noble.20241213.223409) ...
+Setting up ros-rolling-ament-cmake-export-interfaces (2.7.2-2noble.20241213.194551) ...
+Setting up ros-rolling-ament-cmake-target-dependencies (2.7.2-2noble.20241213.223735) ...
+Setting up ros-rolling-ament-cmake (2.7.2-2noble.20241213.224408) ...
+Setting up sbuild-build-depends-main-dummy (0.invalid.0) ...
+
++------------------------------------------------------------------------------+
+| Check architectures                          Thu, 15 May 2025 22:13:43 +0000 |
++------------------------------------------------------------------------------+
+
+Arch check ok (amd64 included in any)
+
++------------------------------------------------------------------------------+
+| Build environment                            Thu, 15 May 2025 22:13:43 +0000 |
++------------------------------------------------------------------------------+
+
+Kernel: Linux 6.11.0-1012-azure #12~24.04.1-Ubuntu SMP Mon Mar 10 19:00:39 UTC 2025 amd64 (x86_64)
+Toolchain package versions: binutils_2.42-4ubuntu2.5 dpkg-dev_1.22.6ubuntu6.1 g++-13_13.3.0-6ubuntu2~24.04 gcc-13_13.3.0-6ubuntu2~24.04 libc6-dev_2.39-0ubuntu8.4 libstdc++-13-dev_13.3.0-6ubuntu2~24.04 libstdc++6_14.2.0-4ubuntu2~24.04 linux-libc-dev_6.8.0-60.63
+Package versions: apt_2.7.14build2 autoconf_2.71-3 automake_1:1.16.5-1.3ubuntu1 autopoint_0.21-14ubuntu2 autotools-dev_20220109.1 base-files_13ubuntu10.2 base-passwd_3.6.3build1 bash_5.2.21-2ubuntu4 binutils_2.42-4ubuntu2.5 binutils-common_2.42-4ubuntu2.5 binutils-x86-64-linux-gnu_2.42-4ubuntu2.5 bsdextrautils_2.39.3-9ubuntu6.2 bsdutils_1:2.39.3-9ubuntu6.2 build-essential_12.10ubuntu1 bzip2_1.0.8-5.1build0.1 ca-certificates_20240203 ccache_4.9.1-1 cmake_3.28.3-1build7 cmake-data_3.28.3-1build7 coreutils_9.4-3ubuntu6 cpp_4:13.2.0-7ubuntu1 cpp-13_13.3.0-6ubuntu2~24.04 cpp-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04 cpp-x86-64-linux-gnu_4:13.2.0-7ubuntu1 dash_0.5.12-6ubuntu5 debconf_1.5.86ubuntu1 debhelper_13.14.1ubuntu5 debianutils_5.17build1 debugedit_1:5.0-5build2 dh-autoreconf_20 dh-strip-nondeterminism_1.13.1-1 diffutils_1:3.10-1build1 docutils-common_0.20.1+dfsg-3 dpkg_1.22.6ubuntu6.1 dpkg-dev_1.22.6ubuntu6.1 dumb-init_1.2.5-3 dwz_0.15-1build6 fakeroot_1.33-1 file_1:5.45-3build1 findutils_4.9.0-5build1 g++_4:13.2.0-7ubuntu1 g++-13_13.3.0-6ubuntu2~24.04 g++-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04 g++-x86-64-linux-gnu_4:13.2.0-7ubuntu1 gcc_4:13.2.0-7ubuntu1 gcc-13_13.3.0-6ubuntu2~24.04 gcc-13-base_13.3.0-6ubuntu2~24.04 gcc-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04 gcc-14-base_14.2.0-4ubuntu2~24.04 gcc-x86-64-linux-gnu_4:13.2.0-7ubuntu1 gettext_0.21-14ubuntu2 gettext-base_0.21-14ubuntu2 gpgv_2.4.4-2ubuntu17.2 grep_3.11-4build1 groff-base_1.23.0-3build2 gzip_1.12-1ubuntu3 hostname_3.23+nmu2ubuntu2 init-system-helpers_1.66ubuntu1 intltool-debian_0.35.0+20060710.6 libacl1_2.3.2-1build1.1 libapt-pkg6.0t64_2.7.14build2 libarchive-zip-perl_1.68-1 libarchive13t64_3.7.2-2ubuntu0.4 libasan8_14.2.0-4ubuntu2~24.04 libassuan0_2.5.6-1build1 libatomic1_14.2.0-4ubuntu2~24.04 libattr1_1:2.5.2-1build1.1 libaudit-common_1:3.1.2-2.1build1.1 libaudit1_1:3.1.2-2.1build1.1 libbinutils_2.42-4ubuntu2.5 libblkid1_2.39.3-9ubuntu6.2 libbrotli1_1.1.0-2build2 libbz2-1.0_1.0.8-5.1build0.1 libc-bin_2.39-0ubuntu8.4 libc-dev-bin_2.39-0ubuntu8.4 libc6_2.39-0ubuntu8.4 libc6-dev_2.39-0ubuntu8.4 libcap-ng0_0.8.4-2build2 libcap2_1:2.66-5ubuntu2.2 libcc1-0_14.2.0-4ubuntu2~24.04 libcom-err2_1.47.0-2.4~exp1ubuntu4.1 libcrypt-dev_1:4.4.36-4build1 libcrypt1_1:4.4.36-4build1 libctf-nobfd0_2.42-4ubuntu2.5 libctf0_2.42-4ubuntu2.5 libcurl4t64_8.5.0-2ubuntu10.6 libdb5.3t64_5.3.28+dfsg2-7 libdebconfclient0_0.271ubuntu3 libdebhelper-perl_13.14.1ubuntu5 libdpkg-perl_1.22.6ubuntu6.1 libdw1t64_0.190-1.1ubuntu0.1 libelf1t64_0.190-1.1ubuntu0.1 libexpat1_2.6.1-2ubuntu0.3 libfakeroot_1.33-1 libffi8_3.4.6-1build1 libfile-stripnondeterminism-perl_1.13.1-1 libgcc-13-dev_13.3.0-6ubuntu2~24.04 libgcc-s1_14.2.0-4ubuntu2~24.04 libgcrypt20_1.10.3-2build1 libgdbm-compat4t64_1.23-5.1build1 libgdbm6t64_1.23-5.1build1 libgmp10_2:6.3.0+dfsg-2ubuntu6.1 libgnutls30t64_3.8.3-1.1ubuntu3.3 libgomp1_14.2.0-4ubuntu2~24.04 libgpg-error0_1.47-3build2.1 libgprofng0_2.42-4ubuntu2.5 libgssapi-krb5-2_1.20.1-6ubuntu2.5 libhiredis1.1.0_1.2.0-6ubuntu3 libhogweed6t64_3.9.1-2.2build1.1 libhwasan0_14.2.0-4ubuntu2~24.04 libicu74_74.2-1ubuntu3.1 libidn2-0_2.3.7-2build1.1 libisl23_0.26-3build1.1 libitm1_14.2.0-4ubuntu2~24.04 libjansson4_2.14-2build2 libjsoncpp25_1.9.5-6build1 libk5crypto3_1.20.1-6ubuntu2.5 libkeyutils1_1.6.3-3build1 libkrb5-3_1.20.1-6ubuntu2.5 libkrb5support0_1.20.1-6ubuntu2.5 libldap2_2.6.7+dfsg-1~exp1ubuntu8.2 liblsan0_14.2.0-4ubuntu2~24.04 liblz4-1_1.9.4-1build1.1 liblzma5_5.6.1+really5.4.5-1ubuntu0.2 libmagic-mgc_1:5.45-3build1 libmagic1t64_1:5.45-3build1 libmd0_1.1.0-2build1.1 libmount1_2.39.3-9ubuntu6.2 libmpc3_1.3.1-1build1.1 libmpfr6_4.2.1-1build1.1 libncursesw6_6.4+20240113-1ubuntu2 libnettle8t64_3.9.1-2.2build1.1 libnghttp2-14_1.59.0-1ubuntu0.2 libnpth0t64_1.6-3.1build1 libp11-kit0_0.25.3-4ubuntu2.1 libpam-modules_1.5.3-5ubuntu5.1 libpam-modules-bin_1.5.3-5ubuntu5.1 libpam-runtime_1.5.3-5ubuntu5.1 libpam0g_1.5.3-5ubuntu5.1 libpcre2-8-0_10.42-4ubuntu2.1 libperl5.38t64_5.38.2-3.2ubuntu0.1 libpipeline1_1.5.7-2 libproc2-0_2:4.0.4-4ubuntu3.2 libpsl5t64_0.21.2-1.1build1 libpython3-stdlib_3.12.3-0ubuntu2 libpython3.12-minimal_3.12.3-1ubuntu0.5 libpython3.12-stdlib_3.12.3-1ubuntu0.5 libquadmath0_14.2.0-4ubuntu2~24.04 libreadline8t64_8.2-4build1 librhash0_1.4.3-3build1 librtmp1_2.4+20151223.gitfa8646d.1-2build7 libsasl2-2_2.1.28+dfsg1-5ubuntu3.1 libsasl2-modules-db_2.1.28+dfsg1-5ubuntu3.1 libseccomp2_2.5.5-1ubuntu3.1 libselinux1_3.5-2ubuntu2.1 libsframe1_2.42-4ubuntu2.5 libsmartcols1_2.39.3-9ubuntu6.2 libsqlite3-0_3.45.1-1ubuntu2.1 libssh-4_0.10.6-2build2 libssl3t64_3.0.13-0ubuntu3.5 libstdc++-13-dev_13.3.0-6ubuntu2~24.04 libstdc++6_14.2.0-4ubuntu2~24.04 libsub-override-perl_0.10-1 libsystemd0_255.4-1ubuntu8.6 libtasn1-6_4.19.0-3ubuntu0.24.04.1 libtinfo6_6.4+20240113-1ubuntu2 libtool_2.4.7-7build1 libtsan2_14.2.0-4ubuntu2~24.04 libubsan1_14.2.0-4ubuntu2~24.04 libuchardet0_0.0.8-1build1 libudev1_255.4-1ubuntu8.6 libunistring5_1.1-2build1.1 libuuid1_2.39.3-9ubuntu6.2 libuv1t64_1.48.0-1.1build1 libxml2_2.9.14+dfsg-1.3ubuntu3.3 libxxhash0_0.8.2-2build1 libzstd1_1.5.5+dfsg2-2build1.1 linux-libc-dev_6.8.0-60.63 login_1:4.13+dfsg1-4ubuntu3.2 lto-disabled-list_47 m4_1.4.19-4build1 make_4.3-4.1build2 man-db_2.12.0-4build2 mawk_1.3.4.20240123-1build1 media-types_10.1.0 ncurses-base_6.4+20240113-1ubuntu2 ncurses-bin_6.4+20240113-1ubuntu2 netbase_6.4 openssl_3.0.13-0ubuntu3.5 patch_2.7.6-7build3 perl_5.38.2-3.2ubuntu0.1 perl-base_5.38.2-3.2ubuntu0.1 perl-modules-5.38_5.38.2-3.2ubuntu0.1 po-debconf_1.0.21+nmu1 procps_2:4.0.4-4ubuntu3.2 python3_3.12.3-0ubuntu2 python3-catkin-pkg-modules_1.0.0-1 python3-dateutil_2.8.2-3ubuntu1 python3-docutils_0.20.1+dfsg-3 python3-importlib-metadata_4.12.0-1 python3-minimal_3.12.3-0ubuntu2 python3-more-itertools_10.2.0-1 python3-pkg-resources_68.1.2-2ubuntu1.1 python3-pyparsing_3.1.1-1 python3-roman_3.3-3 python3-setuptools_68.1.2-2ubuntu1.1 python3-six_1.16.0-4 python3-zipp_1.0.0-6ubuntu0.1 python3.12_3.12.3-1ubuntu0.5 python3.12-minimal_3.12.3-1ubuntu0.5 readline-common_8.2-4build1 ros-rolling-ament-cmake_2.7.2-2noble.20241213.224408 ros-rolling-ament-cmake-core_2.7.2-2noble.20241213.192210 ros-rolling-ament-cmake-export-definitions_2.7.2-2noble.20241213.223058 ros-rolling-ament-cmake-export-dependencies_2.7.2-2noble.20241213.223730 ros-rolling-ament-cmake-export-include-directories_2.7.2-2noble.20241213.223343 ros-rolling-ament-cmake-export-interfaces_2.7.2-2noble.20241213.194551 ros-rolling-ament-cmake-export-libraries_2.7.2-2noble.20241213.194512 ros-rolling-ament-cmake-export-link-flags_2.7.2-2noble.20241213.223409 ros-rolling-ament-cmake-export-targets_2.7.2-2noble.20241213.194559 ros-rolling-ament-cmake-gen-version-h_2.7.2-2noble.20241213.223435 ros-rolling-ament-cmake-include-directories_2.7.2-2noble.20241213.223604 ros-rolling-ament-cmake-libraries_2.7.2-2noble.20241213.223646 ros-rolling-ament-cmake-python_2.7.2-2noble.20241213.223903 ros-rolling-ament-cmake-target-dependencies_2.7.2-2noble.20241213.223735 ros-rolling-ament-cmake-test_2.7.2-2noble.20241213.223931 ros-rolling-ament-cmake-version_2.7.2-2noble.20241213.224339 ros-rolling-ament-package_0.17.1-1noble.20240617.152927 ros-rolling-ros-workspace_1.0.3-6noble.20241213.192716 rpcsvc-proto_1.4.2-0ubuntu7 sbuild-build-depends-main-dummy_0.invalid.0 sed_4.9-2build1 sensible-utils_0.0.22 sgml-base_1.31 sysvinit-utils_3.08-6ubuntu3 tar_1.35+dfsg-3build1 tzdata_2025b-0ubuntu0.24.04 ubuntu-keyring_2023.11.28.1 util-linux_2.39.3-9ubuntu6.2 xml-core_0.19 xz-utils_5.6.1+really5.4.5-1ubuntu0.2 zlib1g_1:1.3.dfsg-3.1ubuntu2.1
+
++------------------------------------------------------------------------------+
+| Build                                        Thu, 15 May 2025 22:13:43 +0000 |
++------------------------------------------------------------------------------+
+
+
+Unpack source
+-------------
+
+Format: 1.0
+Source: ros-rolling-pymoveit2
+Binary: ros-rolling-pymoveit2
+Architecture: any
+Version: 0-2025.05.15.22.13
+Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9.0.0), ros-rolling-ament-cmake, ros-rolling-ament-cmake-python
+Package-List:
+ ros-rolling-pymoveit2 deb misc optional arch=any
+Checksums-Sha1:
+ 68d0f11fec401beddadb8cef47071c2a2b1b23b1 1176723 ros-rolling-pymoveit2_0-2025.05.15.22.13.tar.gz
+Checksums-Sha256:
+ 578cae0cdd6cdf6d45867a87c07897fe99965edb10633aaa2fba9e1d35a249be 1176723 ros-rolling-pymoveit2_0-2025.05.15.22.13.tar.gz
+Files:
+ 627c0601ccc7634176849c825cd408df 1176723 ros-rolling-pymoveit2_0-2025.05.15.22.13.tar.gz
+
+dpkg-source: warning: extracting unsigned source package (ros-rolling-pymoveit2_0-2025.05.15.22.13.dsc)
+dpkg-source: info: extracting ros-rolling-pymoveit2 in /<<BUILDDIR>>package
+dpkg-source: info: unpacking ros-rolling-pymoveit2_0-2025.05.15.22.13.tar.gz
+
+Check disk space
+----------------
+
+Sufficient free space for build
+
+User Environment
+----------------
+
+APT_CONFIG=/var/lib/sbuild/apt.conf
+CCACHE_DIR=/build/ccache
+DEB_BUILD_OPTIONS=nocheck
+HOME=/sbuild-nonexistent
+LANG=C.UTF-8
+LC_ALL=C.UTF-8
+LOGNAME=runner
+OLDPWD=/
+PATH=/usr/lib/ccache:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+PWD=/<<BUILDDIR>>package
+SHELL=/bin/sh
+USER=runner
+
+dpkg-buildpackage
+-----------------
+
+Command: dpkg-buildpackage --sanitize-env -us -uc -b -rfakeroot
+dpkg-buildpackage: info: source package ros-rolling-pymoveit2
+dpkg-buildpackage: info: source version 0-2025.05.15.22.13
+dpkg-buildpackage: info: source distribution noble
+dpkg-buildpackage: info: source changed by Andrej Orsula <orsula.andrej@gmail.com>
+ dpkg-source --before-build .
+dpkg-buildpackage: info: host architecture amd64
+dpkg-source: info: using options from package/debian/source/options: --auto-commit
+ fakeroot debian/rules clean
+dh clean -v --buildsystem=cmake --builddirectory=.obj-x86_64-linux-gnu
+   dh_auto_clean -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_autoreconf_clean -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_clean -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	rm -f debian/debhelper-build-stamp
+	rm -rf debian/.debhelper/
+	rm -f -- debian/ros-rolling-pymoveit2.substvars debian/files
+	rm -fr -- debian/ros-rolling-pymoveit2/ debian/tmp/
+	find .  \( \( \
+		\( -path .\*/.git -o -path .\*/.svn -o -path .\*/.bzr -o -path .\*/.hg -o -path .\*/CVS -o -path .\*/.pc -o -path .\*/_darcs \) -prune -o -type f -a \
+	        \( -name '#*#' -o -name '.*~' -o -name '*~' -o -name DEADJOE \
+		 -o -name '*.orig' -o -name '*.rej' -o -name '*.bak' \
+		 -o -name '.*.orig' -o -name .*.rej -o -name '.SUMS' \
+		 -o -name TAGS -o \( -path '*/.deps/*' -a -name '*.P' \) \
+		\) -exec rm -f {} + \) -o \
+		\( -type d -a \( -name autom4te.cache -o -name __pycache__ \) -prune -exec rm -rf {} + \) \)
+ debian/rules build
+dh build -v --buildsystem=cmake --builddirectory=.obj-x86_64-linux-gnu
+   dh_update_autotools_config -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_autoreconf -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   debian/rules override_dh_auto_configure
+make[1]: Entering directory '/<<BUILDDIR>>package'
+# In case we're installing to a non-standard location, look for a setup.sh
+# in the install tree and source it.  It will set things like
+# CMAKE_PREFIX_PATH, PKG_CONFIG_PATH, and PYTHONPATH.
+if [ -f "/opt/ros/rolling/setup.sh" ]; then . "/opt/ros/rolling/setup.sh"; fi && \
+dh_auto_configure -- \
+	-DCMAKE_INSTALL_PREFIX="/opt/ros/rolling" \
+	-DAMENT_PREFIX_PATH="/opt/ros/rolling" \
+	-DCMAKE_PREFIX_PATH="/opt/ros/rolling" \
+	-DBUILD_TESTING=OFF
+	cd .obj-x86_64-linux-gnu && DEB_PYTHON_INSTALL_LAYOUT=deb cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=None -DCMAKE_INSTALL_SYSCONFDIR=/etc -DCMAKE_INSTALL_LOCALSTATEDIR=/var -DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON -DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON -DFETCHCONTENT_FULLY_DISCONNECTED=ON -DCMAKE_INSTALL_RUNSTATEDIR=/run "-GUnix Makefiles" -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_INSTALL_LIBDIR=lib/x86_64-linux-gnu -DBUILD_TESTING:BOOL=OFF -DCMAKE_INSTALL_PREFIX=/opt/ros/rolling -DAMENT_PREFIX_PATH=/opt/ros/rolling -DCMAKE_PREFIX_PATH=/opt/ros/rolling -DBUILD_TESTING=OFF ..
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/lib/ccache/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 2.7.2 (/opt/ros/rolling/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+-- Configuring done (0.8s)
+-- Generating done (0.0s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    AMENT_PREFIX_PATH
+    CMAKE_EXPORT_NO_PACKAGE_REGISTRY
+    CMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY
+    CMAKE_INSTALL_LIBDIR
+    CMAKE_INSTALL_LOCALSTATEDIR
+    CMAKE_INSTALL_RUNSTATEDIR
+    CMAKE_INSTALL_SYSCONFDIR
+    FETCHCONTENT_FULLY_DISCONNECTED
+
+
+-- Build files have been written to: /<<BUILDDIR>>package/.obj-x86_64-linux-gnu
+make[1]: Leaving directory '/<<BUILDDIR>>package'
+	rm -f debian/ros-rolling-pymoveit2.debhelper.log
+   debian/rules override_dh_auto_build
+make[1]: Entering directory '/<<BUILDDIR>>package'
+# In case we're installing to a non-standard location, look for a setup.sh
+# in the install tree and source it.  It will set things like
+# CMAKE_PREFIX_PATH, PKG_CONFIG_PATH, and PYTHONPATH.
+if [ -f "/opt/ros/rolling/setup.sh" ]; then . "/opt/ros/rolling/setup.sh"; fi && \
+dh_auto_build
+	cd .obj-x86_64-linux-gnu && make -j4 "INSTALL=install --strip-program=true" VERBOSE=1
+make[2]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+/usr/bin/cmake -S/<<BUILDDIR>>package -B/<<BUILDDIR>>package/.obj-x86_64-linux-gnu --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/CMakeFiles /<<BUILDDIR>>package/.obj-x86_64-linux-gnu//CMakeFiles/progress.marks
+make  -f CMakeFiles/Makefile2 all
+make[3]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make  -f CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/build.make CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/depend
+make[4]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+cd /<<BUILDDIR>>package/.obj-x86_64-linux-gnu && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /<<BUILDDIR>>package /<<BUILDDIR>>package /<<BUILDDIR>>package/.obj-x86_64-linux-gnu /<<BUILDDIR>>package/.obj-x86_64-linux-gnu /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/DependInfo.cmake "--color="
+make[4]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make  -f CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/build.make CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/build
+make[4]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+/usr/bin/cmake -E copy_directory /<<BUILDDIR>>package/pymoveit2 /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/ament_cmake_python/pymoveit2/pymoveit2
+make[4]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+Built target ament_cmake_python_copy_pymoveit2
+make  -f CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/build.make CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/depend
+make[4]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+cd /<<BUILDDIR>>package/.obj-x86_64-linux-gnu && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /<<BUILDDIR>>package /<<BUILDDIR>>package /<<BUILDDIR>>package/.obj-x86_64-linux-gnu /<<BUILDDIR>>package/.obj-x86_64-linux-gnu /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/DependInfo.cmake "--color="
+make[4]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make  -f CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/build.make CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/build
+make[4]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+cd /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/ament_cmake_python/pymoveit2 && /usr/bin/python3 setup.py egg_info
+running egg_info
+creating pymoveit2.egg-info
+writing pymoveit2.egg-info/PKG-INFO
+writing dependency_links to pymoveit2.egg-info/dependency_links.txt
+writing top-level names to pymoveit2.egg-info/top_level.txt
+writing manifest file 'pymoveit2.egg-info/SOURCES.txt'
+reading manifest file 'pymoveit2.egg-info/SOURCES.txt'
+writing manifest file 'pymoveit2.egg-info/SOURCES.txt'
+make[4]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+Built target ament_cmake_python_build_pymoveit2_egg
+make[3]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+/usr/bin/cmake -E cmake_progress_start /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/CMakeFiles 0
+make[2]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make[1]: Leaving directory '/<<BUILDDIR>>package'
+	rm -f debian/ros-rolling-pymoveit2.debhelper.log
+   debian/rules override_dh_auto_test
+make[1]: Entering directory '/<<BUILDDIR>>package'
+# In case we're installing to a non-standard location, look for a setup.sh
+# in the install tree and source it.  It will set things like
+# CMAKE_PREFIX_PATH, PKG_CONFIG_PATH, and PYTHONPATH.
+echo -- Running tests. Even if one of them fails the build is not canceled.
+-- Running tests. Even if one of them fails the build is not canceled.
+if [ -f "/opt/ros/rolling/setup.sh" ]; then . "/opt/ros/rolling/setup.sh"; fi && \
+dh_auto_test || true
+make[1]: Leaving directory '/<<BUILDDIR>>package'
+   create-stamp debian/debhelper-build-stamp
+ fakeroot debian/rules binary
+dh binary -v --buildsystem=cmake --builddirectory=.obj-x86_64-linux-gnu
+   dh_testroot -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_prep -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	rm -f -- debian/ros-rolling-pymoveit2.substvars
+	rm -fr -- debian/.debhelper/generated/ros-rolling-pymoveit2/ debian/ros-rolling-pymoveit2/ debian/tmp/
+   debian/rules override_dh_auto_install
+make[1]: Entering directory '/<<BUILDDIR>>package'
+# In case we're installing to a non-standard location, look for a setup.sh
+# in the install tree and source it.  It will set things like
+# CMAKE_PREFIX_PATH, PKG_CONFIG_PATH, and PYTHONPATH.
+if [ -f "/opt/ros/rolling/setup.sh" ]; then . "/opt/ros/rolling/setup.sh"; fi && \
+dh_auto_install
+	install -m0755 -d /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2
+	cd .obj-x86_64-linux-gnu && make -j4 install DESTDIR=/<<BUILDDIR>>package/debian/ros-rolling-pymoveit2 AM_UPDATE_INFO_DIR=no "INSTALL=install --strip-program=true"
+make[2]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+/usr/bin/cmake -S/<<BUILDDIR>>package -B/<<BUILDDIR>>package/.obj-x86_64-linux-gnu --check-build-system CMakeFiles/Makefile.cmake 0
+/usr/bin/cmake -E cmake_progress_start /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/CMakeFiles /<<BUILDDIR>>package/.obj-x86_64-linux-gnu//CMakeFiles/progress.marks
+make  -f CMakeFiles/Makefile2 all
+make[3]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make  -f CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/build.make CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/depend
+make[4]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+cd /<<BUILDDIR>>package/.obj-x86_64-linux-gnu && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /<<BUILDDIR>>package /<<BUILDDIR>>package /<<BUILDDIR>>package/.obj-x86_64-linux-gnu /<<BUILDDIR>>package/.obj-x86_64-linux-gnu /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/DependInfo.cmake "--color="
+make[4]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make  -f CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/build.make CMakeFiles/ament_cmake_python_copy_pymoveit2.dir/build
+make[4]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+/usr/bin/cmake -E copy_directory /<<BUILDDIR>>package/pymoveit2 /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/ament_cmake_python/pymoveit2/pymoveit2
+make[4]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+Built target ament_cmake_python_copy_pymoveit2
+make  -f CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/build.make CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/depend
+make[4]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+cd /<<BUILDDIR>>package/.obj-x86_64-linux-gnu && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /<<BUILDDIR>>package /<<BUILDDIR>>package /<<BUILDDIR>>package/.obj-x86_64-linux-gnu /<<BUILDDIR>>package/.obj-x86_64-linux-gnu /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/DependInfo.cmake "--color="
+make[4]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make  -f CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/build.make CMakeFiles/ament_cmake_python_build_pymoveit2_egg.dir/build
+make[4]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+cd /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/ament_cmake_python/pymoveit2 && /usr/bin/python3 setup.py egg_info
+running egg_info
+writing pymoveit2.egg-info/PKG-INFO
+writing dependency_links to pymoveit2.egg-info/dependency_links.txt
+writing top-level names to pymoveit2.egg-info/top_level.txt
+reading manifest file 'pymoveit2.egg-info/SOURCES.txt'
+writing manifest file 'pymoveit2.egg-info/SOURCES.txt'
+make[4]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+Built target ament_cmake_python_build_pymoveit2_egg
+make[3]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+/usr/bin/cmake -E cmake_progress_start /<<BUILDDIR>>package/.obj-x86_64-linux-gnu/CMakeFiles 0
+make  -f CMakeFiles/Makefile2 preinstall
+make[3]: Entering directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make[3]: Nothing to be done for 'preinstall'.
+make[3]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+Install the project...
+/usr/bin/cmake -P cmake_install.cmake
+-- Install configuration: "None"
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/environment/pythonpath.sh
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/environment/pythonpath.dsv
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/top_level.txt
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/SOURCES.txt
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/PKG-INFO
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/dependency_links.txt
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/moveit2.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/moveit2_servo.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/gripper_command.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/lbr.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/crane_x7.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/panda.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/phantomx_pincher.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/ur.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/kinova.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/__init__.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/utils.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/moveit2_gripper.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/__init__.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/gripper_interface.py
+Listing '/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2'...
+Can't list '/opt/ros/rolling/lib/python3.12/site-packages/pymoveit2'
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_allow_collisions.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_clear_planning_scene.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_collision_mesh.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_collision_primitive.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_fk.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_gripper.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_ik.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_joint_goal.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_orientation_path_constraint.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_pose_goal.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/lib/pymoveit2/ex_servo.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/ament_index/resource_index/package_run_dependencies/pymoveit2
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/ament_index/resource_index/parent_prefix_path/pymoveit2
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/environment/ament_prefix_path.sh
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/environment/ament_prefix_path.dsv
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/environment/path.sh
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/environment/path.dsv
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/local_setup.bash
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/local_setup.sh
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/local_setup.zsh
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/local_setup.dsv
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/package.dsv
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/ament_index/resource_index/packages/pymoveit2
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/cmake/pymoveit2Config.cmake
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/cmake/pymoveit2Config-version.cmake
+-- Installing: /<<BUILDDIR>>package/debian/ros-rolling-pymoveit2/opt/ros/rolling/share/pymoveit2/package.xml
+make[2]: Leaving directory '/<<BUILDDIR>>package/.obj-x86_64-linux-gnu'
+make[1]: Leaving directory '/<<BUILDDIR>>package'
+   dh_installdocs -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	install -m0755 -d debian/ros-rolling-pymoveit2/usr/share/doc/ros-rolling-pymoveit2
+	install -p -m0644 debian/copyright debian/ros-rolling-pymoveit2/usr/share/doc/ros-rolling-pymoveit2/copyright
+   dh_installchangelogs -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	install -m0755 -d debian/ros-rolling-pymoveit2/usr/share/doc/ros-rolling-pymoveit2
+	install -p -m0644 debian/.debhelper/generated/ros-rolling-pymoveit2/dh_installchangelogs.dch.trimmed debian/ros-rolling-pymoveit2/usr/share/doc/ros-rolling-pymoveit2/changelog.Debian
+   dh_installinit -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_perl -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_link -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_strip_nondeterminism -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_compress -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	cd debian/ros-rolling-pymoveit2
+	chmod a-x usr/share/doc/ros-rolling-pymoveit2/changelog.Debian
+	gzip -9nf usr/share/doc/ros-rolling-pymoveit2/changelog.Debian
+	cd '/<<BUILDDIR>>package'
+   dh_fixperms -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	find debian/ros-rolling-pymoveit2 -true -print0 2>/dev/null | xargs -0r chown --no-dereference 0:0
+	find debian/ros-rolling-pymoveit2 ! -type l -a -true -a -true -print0 2>/dev/null | xargs -0r chmod go=rX,u+rw,a-s
+	find debian/ros-rolling-pymoveit2/usr/share/doc -type f -a -true -a ! -regex 'debian/ros-rolling-pymoveit2/usr/share/doc/[^/]*/examples/.*' -print0 2>/dev/null | xargs -0r chmod 0644
+	find debian/ros-rolling-pymoveit2/usr/share/doc -type d -a -true -a -true -print0 2>/dev/null | xargs -0r chmod 0755
+	find debian/ros-rolling-pymoveit2 -type f \( -name '*.so.*' -o -name '*.so' -o -name '*.la' -o -name '*.a' -o -name '*.js' -o -name '*.css' -o -name '*.scss' -o -name '*.sass' -o -name '*.jpeg' -o -name '*.jpg' -o -name '*.png' -o -name '*.gif' -o -name '*.cmxs' -o -name '*.node' \) -a -true -a -true -print0 2>/dev/null | xargs -0r chmod 0644
+   dh_missing -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_strip -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+   dh_makeshlibs -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	rm -f debian/ros-rolling-pymoveit2/DEBIAN/shlibs
+	rm -f debian/ros-rolling-pymoveit2.debhelper.log
+   debian/rules override_dh_shlibdeps
+make[1]: Entering directory '/<<BUILDDIR>>package'
+# In case we're installing to a non-standard location, look for a setup.sh
+# in the install tree and source it.  It will set things like
+# CMAKE_PREFIX_PATH, PKG_CONFIG_PATH, and PYTHONPATH.
+if [ -f "/opt/ros/rolling/setup.sh" ]; then . "/opt/ros/rolling/setup.sh"; fi && \
+dh_shlibdeps -l/<<BUILDDIR>>package/debian/ros-rolling-pymoveit2//opt/ros/rolling/lib/:/<<BUILDDIR>>package/debian/ros-rolling-pymoveit2//opt/ros/rolling/opt/pymoveit2/lib/
+make[1]: Leaving directory '/<<BUILDDIR>>package'
+   dh_installdeb -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	install -m0755 -d debian/ros-rolling-pymoveit2/DEBIAN
+   dh_gencontrol -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	install -m0755 -d debian/ros-rolling-pymoveit2/DEBIAN
+	echo misc:Depends= >> debian/ros-rolling-pymoveit2.substvars
+	echo misc:Pre-Depends= >> debian/ros-rolling-pymoveit2.substvars
+	dpkg-gencontrol -pros-rolling-pymoveit2 -ldebian/changelog -Tdebian/ros-rolling-pymoveit2.substvars -Pdebian/ros-rolling-pymoveit2
+dpkg-gencontrol: warning: Depends field of package ros-rolling-pymoveit2: substitution variable ${shlibs:Depends} used, but is not defined
+	chmod 0644 -- debian/ros-rolling-pymoveit2/DEBIAN/control
+	chown 0:0 -- debian/ros-rolling-pymoveit2/DEBIAN/control
+   dh_md5sums -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	install -m0755 -d debian/ros-rolling-pymoveit2/DEBIAN
+	cd debian/ros-rolling-pymoveit2 >/dev/null && xargs -r0 md5sum | perl -pe 'if (s@^\\@@) { s/\\\\/\\/g; }' > DEBIAN/md5sums
+	chmod 0644 -- debian/ros-rolling-pymoveit2/DEBIAN/md5sums
+	chown 0:0 -- debian/ros-rolling-pymoveit2/DEBIAN/md5sums
+   dh_builddeb -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
+	dpkg-deb --build debian/ros-rolling-pymoveit2 ..
+dpkg-deb: building package 'ros-rolling-pymoveit2' in '../ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb'.
+ dpkg-genbuildinfo --build=binary -O../ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.buildinfo
+ dpkg-genchanges --build=binary -O../ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.changes
+dpkg-genchanges: info: binary-only upload (no source code included)
+ dpkg-source --after-build .
+dpkg-source: info: using options from package/debian/source/options: --auto-commit
+dpkg-buildpackage: info: binary-only upload (no source included)
+--------------------------------------------------------------------------------
+Build finished at 2025-05-15T22:13:49Z
+
+Finished
+--------
+
+I: Built successfully
+
++------------------------------------------------------------------------------+
+| Changes                                      Thu, 15 May 2025 22:13:49 +0000 |
++------------------------------------------------------------------------------+
+
+
+ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.changes:
+-------------------------------------------------------
+
+Format: 1.8
+Date: Thu, 15 May 2025 22:13:16 -0000
+Source: ros-rolling-pymoveit2
+Binary: ros-rolling-pymoveit2
+Built-For-Profiles: noudeb
+Architecture: amd64
+Version: 0-2025.05.15.22.13
+Distribution: noble
+Urgency: high
+Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
+Changed-By: Andrej Orsula <orsula.andrej@gmail.com>
+Description:
+ ros-rolling-pymoveit2 - Basic Python interface for MoveIt 2 built on top of ROS 2 actions
+Changes:
+ ros-rolling-pymoveit2 (0-2025.05.15.22.13) noble; urgency=high
+ .
+   * Autogenerated, no changelog for this version found in CHANGELOG.rst.
+Checksums-Sha1:
+ de26dc53dbd2d2625739790bc980cb0d4a3c2c48 9396 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.buildinfo
+ 021ebcffa993bc4ebf0440c56d59e7dde414494d 26976 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+Checksums-Sha256:
+ 3a50767247d57060434be53ac2e033df0dedf61e6a4ac7fae11d5e3fd79401df 9396 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.buildinfo
+ ec7f8ab7f56ba906505bdb6276a3efb16b6907b1938a663cc3279f6be8349c39 26976 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+Files:
+ e74d648c09ab258ecc4ab0aa57b7f7bc 9396 misc optional ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.buildinfo
+ 422b2e9cbe8c83d58d56a6c571aca30a 26976 misc optional ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+
++------------------------------------------------------------------------------+
+| Buildinfo                                    Thu, 15 May 2025 22:13:50 +0000 |
++------------------------------------------------------------------------------+
+
+Format: 1.0
+Source: ros-rolling-pymoveit2
+Binary: ros-rolling-pymoveit2
+Architecture: amd64
+Version: 0-2025.05.15.22.13
+Checksums-Md5:
+ 422b2e9cbe8c83d58d56a6c571aca30a 26976 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+Checksums-Sha1:
+ 021ebcffa993bc4ebf0440c56d59e7dde414494d 26976 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+Checksums-Sha256:
+ ec7f8ab7f56ba906505bdb6276a3efb16b6907b1938a663cc3279f6be8349c39 26976 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+Build-Origin: Ubuntu
+Build-Architecture: amd64
+Build-Date: Thu, 15 May 2025 22:13:49 +0000
+Build-Path: /<<BUILDDIR>>package
+Build-Tainted-By:
+ merged-usr-via-aliased-dirs
+Installed-Build-Depends:
+ autoconf (= 2.71-3),
+ automake (= 1:1.16.5-1.3ubuntu1),
+ autopoint (= 0.21-14ubuntu2),
+ autotools-dev (= 20220109.1),
+ base-files (= 13ubuntu10.2),
+ base-passwd (= 3.6.3build1),
+ bash (= 5.2.21-2ubuntu4),
+ binutils (= 2.42-4ubuntu2.5),
+ binutils-common (= 2.42-4ubuntu2.5),
+ binutils-x86-64-linux-gnu (= 2.42-4ubuntu2.5),
+ bsdextrautils (= 2.39.3-9ubuntu6.2),
+ bsdutils (= 1:2.39.3-9ubuntu6.2),
+ build-essential (= 12.10ubuntu1),
+ bzip2 (= 1.0.8-5.1build0.1),
+ cmake (= 3.28.3-1build7),
+ cmake-data (= 3.28.3-1build7),
+ coreutils (= 9.4-3ubuntu6),
+ cpp (= 4:13.2.0-7ubuntu1),
+ cpp-13 (= 13.3.0-6ubuntu2~24.04),
+ cpp-13-x86-64-linux-gnu (= 13.3.0-6ubuntu2~24.04),
+ cpp-x86-64-linux-gnu (= 4:13.2.0-7ubuntu1),
+ dash (= 0.5.12-6ubuntu5),
+ debconf (= 1.5.86ubuntu1),
+ debhelper (= 13.14.1ubuntu5),
+ debianutils (= 5.17build1),
+ debugedit (= 1:5.0-5build2),
+ dh-autoreconf (= 20),
+ dh-strip-nondeterminism (= 1.13.1-1),
+ diffutils (= 1:3.10-1build1),
+ docutils-common (= 0.20.1+dfsg-3),
+ dpkg (= 1.22.6ubuntu6.1),
+ dpkg-dev (= 1.22.6ubuntu6.1),
+ dwz (= 0.15-1build6),
+ file (= 1:5.45-3build1),
+ findutils (= 4.9.0-5build1),
+ g++ (= 4:13.2.0-7ubuntu1),
+ g++-13 (= 13.3.0-6ubuntu2~24.04),
+ g++-13-x86-64-linux-gnu (= 13.3.0-6ubuntu2~24.04),
+ g++-x86-64-linux-gnu (= 4:13.2.0-7ubuntu1),
+ gcc (= 4:13.2.0-7ubuntu1),
+ gcc-13 (= 13.3.0-6ubuntu2~24.04),
+ gcc-13-base (= 13.3.0-6ubuntu2~24.04),
+ gcc-13-x86-64-linux-gnu (= 13.3.0-6ubuntu2~24.04),
+ gcc-14-base (= 14.2.0-4ubuntu2~24.04),
+ gcc-x86-64-linux-gnu (= 4:13.2.0-7ubuntu1),
+ gettext (= 0.21-14ubuntu2),
+ gettext-base (= 0.21-14ubuntu2),
+ grep (= 3.11-4build1),
+ groff-base (= 1.23.0-3build2),
+ gzip (= 1.12-1ubuntu3),
+ hostname (= 3.23+nmu2ubuntu2),
+ init-system-helpers (= 1.66ubuntu1),
+ intltool-debian (= 0.35.0+20060710.6),
+ libacl1 (= 2.3.2-1build1.1),
+ libarchive-zip-perl (= 1.68-1),
+ libarchive13t64 (= 3.7.2-2ubuntu0.4),
+ libasan8 (= 14.2.0-4ubuntu2~24.04),
+ libatomic1 (= 14.2.0-4ubuntu2~24.04),
+ libattr1 (= 1:2.5.2-1build1.1),
+ libaudit-common (= 1:3.1.2-2.1build1.1),
+ libaudit1 (= 1:3.1.2-2.1build1.1),
+ libbinutils (= 2.42-4ubuntu2.5),
+ libblkid1 (= 2.39.3-9ubuntu6.2),
+ libbrotli1 (= 1.1.0-2build2),
+ libbz2-1.0 (= 1.0.8-5.1build0.1),
+ libc-bin (= 2.39-0ubuntu8.4),
+ libc-dev-bin (= 2.39-0ubuntu8.4),
+ libc6 (= 2.39-0ubuntu8.4),
+ libc6-dev (= 2.39-0ubuntu8.4),
+ libcap-ng0 (= 0.8.4-2build2),
+ libcap2 (= 1:2.66-5ubuntu2.2),
+ libcc1-0 (= 14.2.0-4ubuntu2~24.04),
+ libcom-err2 (= 1.47.0-2.4~exp1ubuntu4.1),
+ libcrypt-dev (= 1:4.4.36-4build1),
+ libcrypt1 (= 1:4.4.36-4build1),
+ libctf-nobfd0 (= 2.42-4ubuntu2.5),
+ libctf0 (= 2.42-4ubuntu2.5),
+ libcurl4t64 (= 8.5.0-2ubuntu10.6),
+ libdb5.3t64 (= 5.3.28+dfsg2-7),
+ libdebconfclient0 (= 0.271ubuntu3),
+ libdebhelper-perl (= 13.14.1ubuntu5),
+ libdpkg-perl (= 1.22.6ubuntu6.1),
+ libdw1t64 (= 0.190-1.1ubuntu0.1),
+ libelf1t64 (= 0.190-1.1ubuntu0.1),
+ libexpat1 (= 2.6.1-2ubuntu0.3),
+ libffi8 (= 3.4.6-1build1),
+ libfile-stripnondeterminism-perl (= 1.13.1-1),
+ libgcc-13-dev (= 13.3.0-6ubuntu2~24.04),
+ libgcc-s1 (= 14.2.0-4ubuntu2~24.04),
+ libgcrypt20 (= 1.10.3-2build1),
+ libgdbm-compat4t64 (= 1.23-5.1build1),
+ libgdbm6t64 (= 1.23-5.1build1),
+ libgmp10 (= 2:6.3.0+dfsg-2ubuntu6.1),
+ libgnutls30t64 (= 3.8.3-1.1ubuntu3.3),
+ libgomp1 (= 14.2.0-4ubuntu2~24.04),
+ libgpg-error0 (= 1.47-3build2.1),
+ libgprofng0 (= 2.42-4ubuntu2.5),
+ libgssapi-krb5-2 (= 1.20.1-6ubuntu2.5),
+ libhogweed6t64 (= 3.9.1-2.2build1.1),
+ libhwasan0 (= 14.2.0-4ubuntu2~24.04),
+ libicu74 (= 74.2-1ubuntu3.1),
+ libidn2-0 (= 2.3.7-2build1.1),
+ libisl23 (= 0.26-3build1.1),
+ libitm1 (= 14.2.0-4ubuntu2~24.04),
+ libjansson4 (= 2.14-2build2),
+ libjsoncpp25 (= 1.9.5-6build1),
+ libk5crypto3 (= 1.20.1-6ubuntu2.5),
+ libkeyutils1 (= 1.6.3-3build1),
+ libkrb5-3 (= 1.20.1-6ubuntu2.5),
+ libkrb5support0 (= 1.20.1-6ubuntu2.5),
+ libldap2 (= 2.6.7+dfsg-1~exp1ubuntu8.2),
+ liblsan0 (= 14.2.0-4ubuntu2~24.04),
+ liblz4-1 (= 1.9.4-1build1.1),
+ liblzma5 (= 5.6.1+really5.4.5-1ubuntu0.2),
+ libmagic-mgc (= 1:5.45-3build1),
+ libmagic1t64 (= 1:5.45-3build1),
+ libmd0 (= 1.1.0-2build1.1),
+ libmount1 (= 2.39.3-9ubuntu6.2),
+ libmpc3 (= 1.3.1-1build1.1),
+ libmpfr6 (= 4.2.1-1build1.1),
+ libncursesw6 (= 6.4+20240113-1ubuntu2),
+ libnettle8t64 (= 3.9.1-2.2build1.1),
+ libnghttp2-14 (= 1.59.0-1ubuntu0.2),
+ libp11-kit0 (= 0.25.3-4ubuntu2.1),
+ libpam-modules (= 1.5.3-5ubuntu5.1),
+ libpam-modules-bin (= 1.5.3-5ubuntu5.1),
+ libpam-runtime (= 1.5.3-5ubuntu5.1),
+ libpam0g (= 1.5.3-5ubuntu5.1),
+ libpcre2-8-0 (= 10.42-4ubuntu2.1),
+ libperl5.38t64 (= 5.38.2-3.2ubuntu0.1),
+ libpipeline1 (= 1.5.7-2),
+ libproc2-0 (= 2:4.0.4-4ubuntu3.2),
+ libpsl5t64 (= 0.21.2-1.1build1),
+ libpython3-stdlib (= 3.12.3-0ubuntu2),
+ libpython3.12-minimal (= 3.12.3-1ubuntu0.5),
+ libpython3.12-stdlib (= 3.12.3-1ubuntu0.5),
+ libquadmath0 (= 14.2.0-4ubuntu2~24.04),
+ libreadline8t64 (= 8.2-4build1),
+ librhash0 (= 1.4.3-3build1),
+ librtmp1 (= 2.4+20151223.gitfa8646d.1-2build7),
+ libsasl2-2 (= 2.1.28+dfsg1-5ubuntu3.1),
+ libsasl2-modules-db (= 2.1.28+dfsg1-5ubuntu3.1),
+ libseccomp2 (= 2.5.5-1ubuntu3.1),
+ libselinux1 (= 3.5-2ubuntu2.1),
+ libsframe1 (= 2.42-4ubuntu2.5),
+ libsmartcols1 (= 2.39.3-9ubuntu6.2),
+ libsqlite3-0 (= 3.45.1-1ubuntu2.1),
+ libssh-4 (= 0.10.6-2build2),
+ libssl3t64 (= 3.0.13-0ubuntu3.5),
+ libstdc++-13-dev (= 13.3.0-6ubuntu2~24.04),
+ libstdc++6 (= 14.2.0-4ubuntu2~24.04),
+ libsub-override-perl (= 0.10-1),
+ libsystemd0 (= 255.4-1ubuntu8.6),
+ libtasn1-6 (= 4.19.0-3ubuntu0.24.04.1),
+ libtinfo6 (= 6.4+20240113-1ubuntu2),
+ libtool (= 2.4.7-7build1),
+ libtsan2 (= 14.2.0-4ubuntu2~24.04),
+ libubsan1 (= 14.2.0-4ubuntu2~24.04),
+ libuchardet0 (= 0.0.8-1build1),
+ libudev1 (= 255.4-1ubuntu8.6),
+ libunistring5 (= 1.1-2build1.1),
+ libuuid1 (= 2.39.3-9ubuntu6.2),
+ libuv1t64 (= 1.48.0-1.1build1),
+ libxml2 (= 2.9.14+dfsg-1.3ubuntu3.3),
+ libzstd1 (= 1.5.5+dfsg2-2build1.1),
+ linux-libc-dev (= 6.8.0-60.63),
+ login (= 1:4.13+dfsg1-4ubuntu3.2),
+ lto-disabled-list (= 47),
+ m4 (= 1.4.19-4build1),
+ make (= 4.3-4.1build2),
+ man-db (= 2.12.0-4build2),
+ mawk (= 1.3.4.20240123-1build1),
+ media-types (= 10.1.0),
+ ncurses-base (= 6.4+20240113-1ubuntu2),
+ ncurses-bin (= 6.4+20240113-1ubuntu2),
+ netbase (= 6.4),
+ patch (= 2.7.6-7build3),
+ perl (= 5.38.2-3.2ubuntu0.1),
+ perl-base (= 5.38.2-3.2ubuntu0.1),
+ perl-modules-5.38 (= 5.38.2-3.2ubuntu0.1),
+ po-debconf (= 1.0.21+nmu1),
+ procps (= 2:4.0.4-4ubuntu3.2),
+ python3 (= 3.12.3-0ubuntu2),
+ python3-catkin-pkg-modules (= 1.0.0-1),
+ python3-dateutil (= 2.8.2-3ubuntu1),
+ python3-docutils (= 0.20.1+dfsg-3),
+ python3-importlib-metadata (= 4.12.0-1),
+ python3-minimal (= 3.12.3-0ubuntu2),
+ python3-more-itertools (= 10.2.0-1),
+ python3-pkg-resources (= 68.1.2-2ubuntu1.1),
+ python3-pyparsing (= 3.1.1-1),
+ python3-roman (= 3.3-3),
+ python3-setuptools (= 68.1.2-2ubuntu1.1),
+ python3-six (= 1.16.0-4),
+ python3-zipp (= 1.0.0-6ubuntu0.1),
+ python3.12 (= 3.12.3-1ubuntu0.5),
+ python3.12-minimal (= 3.12.3-1ubuntu0.5),
+ readline-common (= 8.2-4build1),
+ ros-rolling-ament-cmake (= 2.7.2-2noble.20241213.224408),
+ ros-rolling-ament-cmake-core (= 2.7.2-2noble.20241213.192210),
+ ros-rolling-ament-cmake-export-definitions (= 2.7.2-2noble.20241213.223058),
+ ros-rolling-ament-cmake-export-dependencies (= 2.7.2-2noble.20241213.223730),
+ ros-rolling-ament-cmake-export-include-directories (= 2.7.2-2noble.20241213.223343),
+ ros-rolling-ament-cmake-export-interfaces (= 2.7.2-2noble.20241213.194551),
+ ros-rolling-ament-cmake-export-libraries (= 2.7.2-2noble.20241213.194512),
+ ros-rolling-ament-cmake-export-link-flags (= 2.7.2-2noble.20241213.223409),
+ ros-rolling-ament-cmake-export-targets (= 2.7.2-2noble.20241213.194559),
+ ros-rolling-ament-cmake-gen-version-h (= 2.7.2-2noble.20241213.223435),
+ ros-rolling-ament-cmake-include-directories (= 2.7.2-2noble.20241213.223604),
+ ros-rolling-ament-cmake-libraries (= 2.7.2-2noble.20241213.223646),
+ ros-rolling-ament-cmake-python (= 2.7.2-2noble.20241213.223903),
+ ros-rolling-ament-cmake-target-dependencies (= 2.7.2-2noble.20241213.223735),
+ ros-rolling-ament-cmake-test (= 2.7.2-2noble.20241213.223931),
+ ros-rolling-ament-cmake-version (= 2.7.2-2noble.20241213.224339),
+ ros-rolling-ament-package (= 0.17.1-1noble.20240617.152927),
+ ros-rolling-ros-workspace (= 1.0.3-6noble.20241213.192716),
+ rpcsvc-proto (= 1.4.2-0ubuntu7),
+ sed (= 4.9-2build1),
+ sensible-utils (= 0.0.22),
+ sgml-base (= 1.31),
+ sysvinit-utils (= 3.08-6ubuntu3),
+ tar (= 1.35+dfsg-3build1),
+ tzdata (= 2025b-0ubuntu0.24.04),
+ util-linux (= 2.39.3-9ubuntu6.2),
+ xml-core (= 0.19),
+ xz-utils (= 5.6.1+really5.4.5-1ubuntu0.2),
+ zlib1g (= 1:1.3.dfsg-3.1ubuntu2.1)
+Environment:
+ DEB_BUILD_OPTIONS="nocheck parallel=4"
+ DEB_BUILD_PROFILES="noudeb"
+ LANG="C.UTF-8"
+ LC_ALL="C.UTF-8"
+ LC_COLLATE="C.UTF-8"
+ SOURCE_DATE_EPOCH="1747347196"
+
+
++------------------------------------------------------------------------------+
+| Package contents                             Thu, 15 May 2025 22:13:50 +0000 |
++------------------------------------------------------------------------------+
+
+
+ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+--------------------------------------------------
+
+ new Debian package, version 2.0.
+ size 26976 bytes: control archive=1900 bytes.
+     506 bytes,     9 lines      control
+    4630 bytes,    48 lines      md5sums
+ Package: ros-rolling-pymoveit2
+ Version: 0-2025.05.15.22.13
+ Architecture: amd64
+ Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
+ Installed-Size: 238
+ Depends: ros-rolling-action-msgs, ros-rolling-control-msgs, ros-rolling-geometry-msgs, ros-rolling-moveit-msgs, ros-rolling-rclpy, ros-rolling-sensor-msgs, ros-rolling-shape-msgs, ros-rolling-std-srvs, ros-rolling-trajectory-msgs
+ Section: misc
+ Priority: optional
+ Description: Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services
+
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/lib/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/lib/pymoveit2/
+-rwxr-xr-x root/root      2007 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_allow_collisions.py
+-rwxr-xr-x root/root      3152 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_clear_planning_scene.py
+-rwxr-xr-x root/root      4573 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_collision_mesh.py
+-rwxr-xr-x root/root      4558 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_collision_primitive.py
+-rwxr-xr-x root/root      2635 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_fk.py
+-rwxr-xr-x root/root      2428 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_gripper.py
+-rwxr-xr-x root/root      2604 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_ik.py
+-rwxr-xr-x root/root      4177 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_joint_goal.py
+-rwxr-xr-x root/root      4445 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_orientation_path_constraint.py
+-rwxr-xr-x root/root      5531 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_pose_goal.py
+-rwxr-xr-x root/root      1310 2025-05-15 22:12 ./opt/ros/rolling/lib/pymoveit2/ex_servo.py
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/site-packages/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/
+-rw-r--r-- root/root        53 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/PKG-INFO
+-rw-r--r-- root/root       513 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/SOURCES.txt
+-rw-r--r-- root/root         1 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/dependency_links.txt
+-rw-r--r-- root/root        10 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2-4.0.0-py3.12.egg-info/top_level.txt
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/
+-rw-r--r-- root/root       240 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/__init__.py
+-rw-r--r-- root/root     13758 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/gripper_command.py
+-rw-r--r-- root/root      8102 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/gripper_interface.py
+-rw-r--r-- root/root     91449 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/moveit2.py
+-rw-r--r-- root/root     10143 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/moveit2_gripper.py
+-rw-r--r-- root/root      8525 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/moveit2_servo.py
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/
+-rw-r--r-- root/root        20 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/__init__.py
+-rw-r--r-- root/root      1008 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/crane_x7.py
+-rw-r--r-- root/root      1134 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/kinova.py
+-rw-r--r-- root/root       301 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/lbr.py
+-rw-r--r-- root/root       787 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/panda.py
+-rw-r--r-- root/root       847 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/phantomx_pincher.py
+-rw-r--r-- root/root       760 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/robots/ur.py
+-rw-r--r-- root/root       879 2025-05-15 22:12 ./opt/ros/rolling/lib/python3.12/site-packages/pymoveit2/utils.py
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/ament_index/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/ament_index/resource_index/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/ament_index/resource_index/package_run_dependencies/
+-rw-r--r-- root/root       104 2025-05-15 22:13 ./opt/ros/rolling/share/ament_index/resource_index/package_run_dependencies/pymoveit2
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/ament_index/resource_index/packages/
+-rw-r--r-- root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/ament_index/resource_index/packages/pymoveit2
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/ament_index/resource_index/parent_prefix_path/
+-rw-r--r-- root/root         8 2025-05-15 22:13 ./opt/ros/rolling/share/ament_index/resource_index/parent_prefix_path/pymoveit2
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/cmake/
+-rw-r--r-- root/root       432 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/cmake/pymoveit2Config-version.cmake
+-rw-r--r-- root/root      1239 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/cmake/pymoveit2Config.cmake
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/environment/
+-rw-r--r-- root/root        41 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/environment/ament_prefix_path.dsv
+-rw-r--r-- root/root       160 2024-11-19 19:01 ./opt/ros/rolling/share/pymoveit2/environment/ament_prefix_path.sh
+-rw-r--r-- root/root        41 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/environment/path.dsv
+-rw-r--r-- root/root       185 2024-11-19 19:01 ./opt/ros/rolling/share/pymoveit2/environment/path.sh
+-rw-r--r-- root/root        62 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/environment/pythonpath.dsv
+-rw-r--r-- root/root       166 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/environment/pythonpath.sh
+-rw-r--r-- root/root      1594 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/local_setup.bash
+-rw-r--r-- root/root       148 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/local_setup.dsv
+-rw-r--r-- root/root      5093 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/local_setup.sh
+-rw-r--r-- root/root      1957 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/local_setup.zsh
+-rw-r--r-- root/root       156 2025-05-15 22:13 ./opt/ros/rolling/share/pymoveit2/package.dsv
+-rw-r--r-- root/root       945 2025-05-15 22:12 ./opt/ros/rolling/share/pymoveit2/package.xml
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./usr/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./usr/share/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./usr/share/doc/
+drwxr-xr-x root/root         0 2025-05-15 22:13 ./usr/share/doc/ros-rolling-pymoveit2/
+-rw-r--r-- root/root       198 2025-05-15 22:13 ./usr/share/doc/ros-rolling-pymoveit2/changelog.Debian.gz
+-rw-r--r-- root/root       278 2025-05-15 22:13 ./usr/share/doc/ros-rolling-pymoveit2/copyright
+
+
++------------------------------------------------------------------------------+
+| Post Build                                   Thu, 15 May 2025 22:13:50 +0000 |
++------------------------------------------------------------------------------+
+
+
++------------------------------------------------------------------------------+
+| Cleanup                                      Thu, 15 May 2025 22:13:50 +0000 |
++------------------------------------------------------------------------------+
+
+Purging /<<BUILDDIR>>
+Not cleaning session: cloned chroot in use
+
++------------------------------------------------------------------------------+
+| Summary                                      Thu, 15 May 2025 22:13:52 +0000 |
++------------------------------------------------------------------------------+
+
+Build Architecture: amd64
+Build Type: binary
+Build-Space: 5176
+Build-Time: 5
+Distribution: noble
+Host Architecture: amd64
+Install-Time: 16
+Job: /home/runner/work/pymoveit2/ros-rolling-pymoveit2_0-2025.05.15.22.13.dsc
+Machine Architecture: amd64
+Package: ros-rolling-pymoveit2
+Package-Time: 32
+Source-Version: 0-2025.05.15.22.13
+Space: 5176
+Status: successful
+Version: 0-2025.05.15.22.13
+--------------------------------------------------------------------------------
+Finished at 2025-05-15T22:13:49Z
+Build needed 00:00:32, 5176k disk space
