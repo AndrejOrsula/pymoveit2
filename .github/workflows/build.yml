@@ -1,0 +1,31 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build_testing:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        ros_distro:
+          - humble
+          - jazzy
+          - rolling
+    steps:
+      - name: Build for ROS ${{ matrix.ros_distro }}
+        uses: jspricke/ros-deb-builder-action@main
+        with:
+          DEB_DISTRO: ${{ (matrix.ros_distro == 'humble' && 'jammy') || 'noble' }}
+          ROS_DISTRO: ${{ matrix.ros_distro }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
