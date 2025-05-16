@@ -28,7 +28,7 @@ jobs:
         with:
           ROS_DISTRO: ${{ matrix.ros }}
           DEB_DISTRO: ${{ matrix.deb }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Runner Codename
         run: |
