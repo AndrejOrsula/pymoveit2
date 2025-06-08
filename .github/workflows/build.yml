@@ -1,0 +1,48 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build_testing:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {deb: jammy, ros: humble}
+          - {deb: noble, ros: jazzy}
+          - {deb: noble, ros: rolling}
+    steps:
+      - name: Build for ROS ${{ matrix.ros_distro }}
+        uses: jspricke/ros-deb-builder-action@main
+        with:
+          ROS_DISTRO: ${{ matrix.ros }}
+          DEB_DISTRO: ${{ matrix.deb }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Runner Codename
+        run: |
+          echo "CODENAME=$(lsb_release -cs)" >> $GITHUB_ENV
+
+      - name: Remove Conflicting Debian Packages
+        if: ${{ matrix.deb == env.CODENAME }}
+        run: |
+          sudo apt -y autoremove --purge python3-catkin-pkg python3-rospkg python3-rosdistro vcstool
+
+      - uses: ros-tooling/setup-ros@v0.7
+        if: ${{ matrix.deb == env.CODENAME }}
+
+      - name: Install pymoveit2 Debian Packages
+        if: ${{ matrix.deb == env.CODENAME }}
+        run: |
+          sudo apt -y install ./apt_repo/ros-*-pymoveit2_*.deb
