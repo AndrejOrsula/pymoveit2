@@ -2,16 +2,16 @@ Format: 1.0
 Source: ros-rolling-pymoveit2
 Binary: ros-rolling-pymoveit2
 Architecture: amd64
-Version: 0-2025.05.15.22.13
+Version: 0-2025.06.08.10.35
 Checksums-Md5:
- 422b2e9cbe8c83d58d56a6c571aca30a 26976 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+ de9177da578012d99240f3b7d5ceb2d0 26980 ros-rolling-pymoveit2_0-2025.06.08.10.35_amd64.deb
 Checksums-Sha1:
- 021ebcffa993bc4ebf0440c56d59e7dde414494d 26976 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+ 9eac0d1ff5cdc9eccddc60c57ba2c3e14b4a89c0 26980 ros-rolling-pymoveit2_0-2025.06.08.10.35_amd64.deb
 Checksums-Sha256:
- ec7f8ab7f56ba906505bdb6276a3efb16b6907b1938a663cc3279f6be8349c39 26976 ros-rolling-pymoveit2_0-2025.05.15.22.13_amd64.deb
+ ce55dad095a7bc61be87f2f95861b71603cbc4588f325b0c6e99b83289182da5 26980 ros-rolling-pymoveit2_0-2025.06.08.10.35_amd64.deb
 Build-Origin: Ubuntu
 Build-Architecture: amd64
-Build-Date: Thu, 15 May 2025 22:13:49 +0000
+Build-Date: Sun, 08 Jun 2025 10:35:50 +0000
 Build-Path: /build/package/package
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -113,7 +113,7 @@ Installed-Build-Depends:
  libgomp1 (= 14.2.0-4ubuntu2~24.04),
  libgpg-error0 (= 1.47-3build2.1),
  libgprofng0 (= 2.42-4ubuntu2.5),
- libgssapi-krb5-2 (= 1.20.1-6ubuntu2.5),
+ libgssapi-krb5-2 (= 1.20.1-6ubuntu2.6),
  libhogweed6t64 (= 3.9.1-2.2build1.1),
  libhwasan0 (= 14.2.0-4ubuntu2~24.04),
  libicu74 (= 74.2-1ubuntu3.1),
@@ -122,10 +122,10 @@ Installed-Build-Depends:
  libitm1 (= 14.2.0-4ubuntu2~24.04),
  libjansson4 (= 2.14-2build2),
  libjsoncpp25 (= 1.9.5-6build1),
- libk5crypto3 (= 1.20.1-6ubuntu2.5),
+ libk5crypto3 (= 1.20.1-6ubuntu2.6),
  libkeyutils1 (= 1.6.3-3build1),
- libkrb5-3 (= 1.20.1-6ubuntu2.5),
- libkrb5support0 (= 1.20.1-6ubuntu2.5),
+ libkrb5-3 (= 1.20.1-6ubuntu2.6),
+ libkrb5support0 (= 1.20.1-6ubuntu2.6),
  libldap2 (= 2.6.7+dfsg-1~exp1ubuntu8.2),
  liblsan0 (= 14.2.0-4ubuntu2~24.04),
  liblz4-1 (= 1.9.4-1build1.1),
@@ -162,7 +162,7 @@ Installed-Build-Depends:
  libselinux1 (= 3.5-2ubuntu2.1),
  libsframe1 (= 2.42-4ubuntu2.5),
  libsmartcols1 (= 2.39.3-9ubuntu6.2),
- libsqlite3-0 (= 3.45.1-1ubuntu2.1),
+ libsqlite3-0 (= 3.45.1-1ubuntu2.3),
  libssh-4 (= 0.10.6-2build2),
  libssl3t64 (= 3.0.13-0ubuntu3.5),
  libstdc++-13-dev (= 13.3.0-6ubuntu2~24.04),
@@ -205,10 +205,10 @@ Installed-Build-Depends:
  python3-importlib-metadata (= 4.12.0-1),
  python3-minimal (= 3.12.3-0ubuntu2),
  python3-more-itertools (= 10.2.0-1),
- python3-pkg-resources (= 68.1.2-2ubuntu1.1),
+ python3-pkg-resources (= 68.1.2-2ubuntu1.2),
  python3-pyparsing (= 3.1.1-1),
  python3-roman (= 3.3-3),
- python3-setuptools (= 68.1.2-2ubuntu1.1),
+ python3-setuptools (= 68.1.2-2ubuntu1.2),
  python3-six (= 1.16.0-4),
  python3-zipp (= 1.0.0-6ubuntu0.1),
  python3.12 (= 3.12.3-1ubuntu0.5),
@@ -238,7 +238,7 @@ Installed-Build-Depends:
  sgml-base (= 1.31),
  sysvinit-utils (= 3.08-6ubuntu3),
  tar (= 1.35+dfsg-3build1),
- tzdata (= 2025b-0ubuntu0.24.04),
+ tzdata (= 2025b-0ubuntu0.24.04.1),
  util-linux (= 2.39.3-9ubuntu6.2),
  xml-core (= 0.19),
  xz-utils (= 5.6.1+really5.4.5-1ubuntu0.2),
@@ -249,4 +249,4 @@ Environment:
  LANG="C.UTF-8"
  LC_ALL="C.UTF-8"
  LC_COLLATE="C.UTF-8"
- SOURCE_DATE_EPOCH="1747347196"
+ SOURCE_DATE_EPOCH="1749378921"
