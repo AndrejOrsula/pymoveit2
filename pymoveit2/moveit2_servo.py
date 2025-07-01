@@ -24,6 +24,7 @@ class MoveIt2Servo:
         self,
         node: Node,
         frame_id: str,
+        namespace: str = "",
         linear_speed: float = 1.0,
         angular_speed: float = 1.0,
         enable_at_init: bool = True,
@@ -32,6 +33,7 @@ class MoveIt2Servo:
         """
         Construct an instance of `MoveIt2Servo` interface.
           - `node` - ROS 2 node that this interface is attached to
+          - `namespace` - Namespace for the node
           - `frame_id` - Reference frame in which to publish command messages
           - `linear_speed` - Factor that can be used to scale all input linear twist commands
           - `angular_speed` - Factor that can be used to scale all input angular twist commands
@@ -41,6 +43,8 @@ class MoveIt2Servo:
         """
 
         self._node = node
+
+        self.namespace = namespace
 
         # Create publisher
         self.__twist_pub = self._node.create_publisher(
@@ -57,12 +61,12 @@ class MoveIt2Servo:
         # Create service clients
         self.__start_service = self._node.create_client(
             srv_type=Trigger,
-            srv_name="/servo_node/start_servo",
+            srv_name=self.namespace + "/servo_node/start_servo",
             callback_group=callback_group,
         )
         self.__stop_service = self._node.create_client(
             srv_type=Trigger,
-            srv_name="/servo_node/stop_servo",
+            srv_name=self.namespace + "/servo_node/stop_servo",
             callback_group=callback_group,
         )
         self.__trigger_req = Trigger.Request()
