@@ -1263,6 +1263,7 @@ class MoveIt2:
         self,
         position: Union[Point, Tuple[float, float, float]],
         quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        ik_link_name: Optional[str] = None,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         constraints: Optional[Constraints] = None,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
@@ -1310,14 +1311,17 @@ class MoveIt2:
         self,
         position: Union[Point, Tuple[float, float, float]],
         quat_xyzw: Union[Quaternion, Tuple[float, float, float, float]],
+        ik_link_name: Optional[str] = None,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         constraints: Optional[Constraints] = None,
         wait_for_server_timeout_sec: Optional[float] = 1.0,
     ) -> Optional[Future]:
         """
-        Compute inverse kinematics for the given pose. To indicate beginning of the search space,
-        `start_joint_state` can be specified. Furthermore, `constraints` can be imposed on the
-        computed IK.
+        Compute inverse kinematics for the given pose.
+        ik_link_name can indicate the link for which IK shall be computed.
+        To indicate beginning of the search space, `start_joint_state` can be specified.
+        Furthermore, `constraints` can be imposed on the computed IK.
+          - `ik_link_name` defaults to last link in planning group which is specified by the group_name
           - `start_joint_state` defaults to current joint state.
           - `constraints` defaults to None.
         """
@@ -1352,6 +1356,9 @@ class MoveIt2:
             self.__compute_ik_req.ik_request.pose_stamped.pose.orientation.w = float(
                 quat_xyzw[3]
             )
+
+        if ik_link_name is not None:
+            self.__compute_ik_req.ik_request.ik_link_name = ik_link_name
 
         if start_joint_state is not None:
             if isinstance(start_joint_state, JointState):
