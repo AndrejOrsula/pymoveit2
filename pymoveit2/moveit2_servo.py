@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 
 from control_msgs.msg import JointJog
 from geometry_msgs.msg import TwistStamped
+from moveit_msgs.srv import ServoCommandType
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
 from rclpy.qos import (
@@ -12,7 +13,7 @@ from rclpy.qos import (
     QoSReliabilityPolicy,
 )
 from rclpy.task import Future
-from std_srvs.srv import Trigger
+from std_srvs.srv import SetBool
 
 
 class MoveIt2Servo:
@@ -44,7 +45,6 @@ class MoveIt2Servo:
         """
 
         self._node = node
-
         self.namespace = namespace
 
         # Create publishers
@@ -70,17 +70,21 @@ class MoveIt2Servo:
         )
 
         # Create service clients
-        self.__start_service = self._node.create_client(
-            srv_type=Trigger,
-            srv_name=self.namespace + "/servo_node/start_servo",
+        self.__pause_service = self._node.create_client(
+            srv_type=SetBool,
+            srv_name=self.namespace + "/servo_node/pause_servo",
             callback_group=callback_group,
         )
-        self.__stop_service = self._node.create_client(
-            srv_type=Trigger,
-            srv_name=self.namespace + "/servo_node/stop_servo",
+        self.__command_type_service = self._node.create_client(
+            srv_type=ServoCommandType,
+            srv_name=self.namespace + "/servo_node/switch_command_type",
             callback_group=callback_group,
         )
-        self.__trigger_req = Trigger.Request()
+        self.__enable_req = SetBool.Request(data=False)
+        self.__disable_req = SetBool.Request(data=True)
+        self.__twist_command_type_req = ServoCommandType.Request(
+            command_type=ServoCommandType.Request.TWIST
+        )
         self.__is_enabled = False
 
         # Initialize message based on passed arguments
@@ -104,7 +108,7 @@ class MoveIt2Servo:
 
         try:
             if self.is_enabled:
-                self.__stop_service.call_async(self.__trigger_req)
+                self.__pause_service.call_async(self.__disable_req)
         except:
             pass
 
@@ -186,24 +190,42 @@ class MoveIt2Servo:
         Enable MoveIt 2 Servo server via async service call.
         """
 
-        while not self.__start_service.wait_for_service(
+        while not self.__pause_service.wait_for_service(
             timeout_sec=wait_for_server_timeout_sec
         ):
             self._node.get_logger().warn(
-                f"Service '{self.__start_service.srv_name}' is not yet available..."
+                f"Service '{self.__pause_service.srv_name}' is not yet available..."
+            )
+            return False
+        while not self.__command_type_service.wait_for_service(
+            timeout_sec=wait_for_server_timeout_sec
+        ):
+            self._node.get_logger().warn(
+                f"Service '{self.__command_type_service.srv_name}' is not yet available..."
             )
             return False
 
         if sync:
-            result = self.__start_service.call(self.__trigger_req)
-            if not result.success:
+            result: SetBool.Response = self.__pause_service.call(self.__enable_req)
+            if not result or not result.success:
                 self._node.get_logger().error(
                     f"MoveIt Servo could not be enabled. ({result.message})"
                 )
-            self.__is_enabled = result.success
-            return result.success
+                self.__is_enabled = False
+                return False
+            switch_cmd_result: ServoCommandType.Response = (
+                self.__command_type_service.call(self.__twist_command_type_req)
+            )
+            if not switch_cmd_result or not switch_cmd_result.success:
+                self._node.get_logger().error(
+                    "MoveIt Servo could not be switched to TWIST command type."
+                )
+                self.__is_enabled = False
+                return False
+            self.__is_enabled = True
+            return True
         else:
-            start_service_future = self.__start_service.call_async(self.__trigger_req)
+            start_service_future = self.__pause_service.call_async(self.__enable_req)
             start_service_future.add_done_callback(self.__enable_done_callback)
             return True
 
@@ -214,39 +236,54 @@ class MoveIt2Servo:
         Disable MoveIt 2 Servo server via async service call.
         """
 
-        while not self.__stop_service.wait_for_service(
+        while not self.__pause_service.wait_for_service(
             timeout_sec=wait_for_server_timeout_sec
         ):
             self._node.get_logger().warn(
-                f"Service '{self.__stop_service.srv_name}' is not yet available..."
+                f"Service '{self.__pause_service.srv_name}' is not yet available..."
             )
             return False
 
         if sync:
-            result = self.__stop_service.call(self.__trigger_req)
-            if not result.success:
+            result: SetBool.Response = self.__pause_service.call(self.__disable_req)
+            if not result or not result.success:
                 self._node.get_logger().error(
                     f"MoveIt Servo could not be disabled. ({result.message})"
                 )
             self.__is_enabled = not result.success
             return result.success
         else:
-            stop_service_future = self.__stop_service.call_async(self.__trigger_req)
-            stop_service_future.add_done_callback(self.__disable_done_callback)
+            pause_service_future = self.__pause_service.call_async(self.__disable_req)
+            pause_service_future.add_done_callback(self.__disable_done_callback)
             return True
 
     def __enable_done_callback(self, future: Future):
-        result: Trigger.Response = future.result()
+        result: SetBool.Response = future.result()
 
         if not result.success:
             self._node.get_logger().error(
                 f"MoveIt Servo could not be enabled. ({result.message})"
             )
+            self.__is_enabled = False
+            return
+
+        switch_cmd_future = self.__command_type_service.call_async(
+            self.__twist_command_type_req
+        )
+        switch_cmd_future.add_done_callback(self.__switch_command_type_done_callback)
+
+    def __switch_command_type_done_callback(self, future: Future):
+        result: ServoCommandType.Response = future.result()
+
+        if not result.success:
+            self._node.get_logger().error(
+                "MoveIt Servo could not be switched to TWIST command type."
+            )
 
         self.__is_enabled = result.success
 
     def __disable_done_callback(self, future: Future):
-        result: Trigger.Response = future.result()
+        result: SetBool.Response = future.result()
 
         if not result.success:
             self._node.get_logger().error(
