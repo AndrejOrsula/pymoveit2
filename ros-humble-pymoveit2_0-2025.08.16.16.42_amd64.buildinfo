@@ -2,16 +2,16 @@ Format: 1.0
 Source: ros-humble-pymoveit2
 Binary: ros-humble-pymoveit2
 Architecture: amd64
-Version: 0-2025.06.08.12.08
+Version: 0-2025.08.16.16.42
 Checksums-Md5:
- 10536c4b118eb37780284aee1517870c 27098 ros-humble-pymoveit2_0-2025.06.08.12.08_amd64.deb
+ da4db9ad9a5bb7283921a28dd44b6f27 27456 ros-humble-pymoveit2_0-2025.08.16.16.42_amd64.deb
 Checksums-Sha1:
- 156222b5f7475ae0d55ed51fb30079ace5fedfca 27098 ros-humble-pymoveit2_0-2025.06.08.12.08_amd64.deb
+ fc5c221b622604d817bc592d0a1cab9527fddacf 27456 ros-humble-pymoveit2_0-2025.08.16.16.42_amd64.deb
 Checksums-Sha256:
- b644d95f067c5f13416065385bb85b24f731b1e76adb31a45521e3b36c45a8f6 27098 ros-humble-pymoveit2_0-2025.06.08.12.08_amd64.deb
+ 17cbd78e420f394e0784c02f1151e7f064e7bc1994fc3df3fdb8587a1c8554f7 27456 ros-humble-pymoveit2_0-2025.08.16.16.42_amd64.deb
 Build-Origin: Ubuntu
 Build-Architecture: amd64
-Build-Date: Sun, 08 Jun 2025 12:08:56 +0000
+Build-Date: Sat, 16 Aug 2025 16:43:09 +0000
 Build-Path: /build/package/package
 Installed-Build-Depends:
  autoconf (= 2.71-2),
@@ -65,7 +65,7 @@ Installed-Build-Depends:
  intltool-debian (= 0.35.0+20060710.5),
  libacl1 (= 2.3.1-1),
  libarchive-zip-perl (= 1.68-1),
- libarchive13 (= 3.6.0-1ubuntu1.4),
+ libarchive13 (= 3.6.0-1ubuntu1.5),
  libasan6 (= 11.4.0-1ubuntu1~22.04),
  libatomic1 (= 12.3.0-1ubuntu1~22.04),
  libattr1 (= 1:2.5.1-1build1),
@@ -103,7 +103,7 @@ Installed-Build-Depends:
  libgdbm-compat4 (= 1.23-1),
  libgdbm6 (= 1.23-1),
  libgmp10 (= 2:6.2.1+dfsg-3ubuntu1),
- libgnutls30 (= 3.7.3-4ubuntu1.6),
+ libgnutls30 (= 3.7.3-4ubuntu1.7),
  libgomp1 (= 12.3.0-1ubuntu1~22.04),
  libgpg-error0 (= 1.43-3),
  libgssapi-krb5-2 (= 1.19.2-2ubuntu0.7),
@@ -134,19 +134,19 @@ Installed-Build-Depends:
  libnsl-dev (= 1.3.0-2build2),
  libnsl2 (= 1.3.0-2build2),
  libp11-kit0 (= 0.24.0-6build1),
- libpam-modules (= 1.4.0-11ubuntu2.5),
- libpam-modules-bin (= 1.4.0-11ubuntu2.5),
- libpam-runtime (= 1.4.0-11ubuntu2.5),
- libpam0g (= 1.4.0-11ubuntu2.5),
+ libpam-modules (= 1.4.0-11ubuntu2.6),
+ libpam-modules-bin (= 1.4.0-11ubuntu2.6),
+ libpam-runtime (= 1.4.0-11ubuntu2.6),
+ libpam0g (= 1.4.0-11ubuntu2.6),
  libpcre2-8-0 (= 10.39-3ubuntu0.1),
  libpcre3 (= 2:8.39-13ubuntu0.22.04.1),
- libperl5.34 (= 5.34.0-3ubuntu1.4),
+ libperl5.34 (= 5.34.0-3ubuntu1.5),
  libpipeline1 (= 1.5.5-1),
  libprocps8 (= 2:3.3.17-6ubuntu2.1),
  libpsl5 (= 0.21.0-1.2build2),
  libpython3-stdlib (= 3.10.6-1~22.04.1),
- libpython3.10-minimal (= 3.10.12-1~22.04.9),
- libpython3.10-stdlib (= 3.10.12-1~22.04.9),
+ libpython3.10-minimal (= 3.10.12-1~22.04.10),
+ libpython3.10-stdlib (= 3.10.12-1~22.04.10),
  libquadmath0 (= 12.3.0-1ubuntu1~22.04),
  libreadline8 (= 8.1.2-1),
  librhash0 (= 1.4.2-1ubuntu1),
@@ -157,13 +157,13 @@ Installed-Build-Depends:
  libselinux1 (= 3.3-1build2),
  libsigsegv2 (= 2.13-1ubuntu3),
  libsmartcols1 (= 2.37.2-4ubuntu3.4),
- libsqlite3-0 (= 3.37.2-2ubuntu0.4),
- libssh-4 (= 0.9.6-2ubuntu0.22.04.3),
+ libsqlite3-0 (= 3.37.2-2ubuntu0.5),
+ libssh-4 (= 0.9.6-2ubuntu0.22.04.4),
  libssl3 (= 3.0.2-0ubuntu1.19),
  libstdc++-11-dev (= 11.4.0-1ubuntu1~22.04),
  libstdc++6 (= 12.3.0-1ubuntu1~22.04),
  libsub-override-perl (= 0.09-2),
- libsystemd0 (= 249.11-0ubuntu3.15),
+ libsystemd0 (= 249.11-0ubuntu3.16),
  libtasn1-6 (= 4.18.0-4ubuntu0.1),
  libtinfo6 (= 6.3-2ubuntu0.1),
  libtirpc-common (= 1.3.2-2ubuntu0.1),
@@ -173,13 +173,13 @@ Installed-Build-Depends:
  libtsan0 (= 11.4.0-1ubuntu1~22.04),
  libubsan1 (= 12.3.0-1ubuntu1~22.04),
  libuchardet0 (= 0.0.7-1build2),
- libudev1 (= 249.11-0ubuntu3.15),
+ libudev1 (= 249.11-0ubuntu3.16),
  libunistring2 (= 1.0-1),
  libuuid1 (= 2.37.2-4ubuntu3.4),
  libuv1 (= 1.43.0-1ubuntu0.1),
  libxml2 (= 2.9.13+dfsg-1ubuntu0.7),
  libzstd1 (= 1.4.8+dfsg-3build1),
- linux-libc-dev (= 5.15.0-141.151),
+ linux-libc-dev (= 5.15.0-151.161),
  login (= 1:4.8.1-2ubuntu2.2),
  lsb-base (= 11.1.0ubuntu4),
  lto-disabled-list (= 24),
@@ -191,9 +191,9 @@ Installed-Build-Depends:
  ncurses-base (= 6.3-2ubuntu0.1),
  ncurses-bin (= 6.3-2ubuntu0.1),
  patch (= 2.7.6-7build2),
- perl (= 5.34.0-3ubuntu1.4),
- perl-base (= 5.34.0-3ubuntu1.4),
- perl-modules-5.34 (= 5.34.0-3ubuntu1.4),
+ perl (= 5.34.0-3ubuntu1.5),
+ perl-base (= 5.34.0-3ubuntu1.5),
+ perl-modules-5.34 (= 5.34.0-3ubuntu1.5),
  po-debconf (= 1.0.21+nmu1),
  procps (= 2:3.3.17-6ubuntu2.1),
  python3 (= 3.10.6-1~22.04.1),
@@ -211,27 +211,27 @@ Installed-Build-Depends:
  python3-setuptools (= 59.6.0-1.2ubuntu0.22.04.3),
  python3-six (= 1.16.0-3ubuntu1),
  python3-zipp (= 1.0.0-3ubuntu0.1),
- python3.10 (= 3.10.12-1~22.04.9),
- python3.10-minimal (= 3.10.12-1~22.04.9),
+ python3.10 (= 3.10.12-1~22.04.10),
+ python3.10-minimal (= 3.10.12-1~22.04.10),
  readline-common (= 8.1.2-1),
- ros-humble-ament-cmake (= 1.3.11-1jammy.20241125.233032),
- ros-humble-ament-cmake-core (= 1.3.11-1jammy.20241125.213936),
- ros-humble-ament-cmake-export-definitions (= 1.3.11-1jammy.20241125.230042),
- ros-humble-ament-cmake-export-dependencies (= 1.3.11-1jammy.20241125.230223),
- ros-humble-ament-cmake-export-include-directories (= 1.3.11-1jammy.20241125.230043),
- ros-humble-ament-cmake-export-interfaces (= 1.3.11-1jammy.20241125.230126),
- ros-humble-ament-cmake-export-libraries (= 1.3.11-1jammy.20241125.230050),
- ros-humble-ament-cmake-export-link-flags (= 1.3.11-1jammy.20241125.225619),
- ros-humble-ament-cmake-export-targets (= 1.3.11-1jammy.20241125.230138),
- ros-humble-ament-cmake-gen-version-h (= 1.3.11-1jammy.20241125.232841),
- ros-humble-ament-cmake-include-directories (= 1.3.11-1jammy.20241125.230103),
- ros-humble-ament-cmake-libraries (= 1.3.11-1jammy.20241125.230151),
- ros-humble-ament-cmake-python (= 1.3.11-1jammy.20241125.230201),
- ros-humble-ament-cmake-target-dependencies (= 1.3.11-1jammy.20241125.230301),
- ros-humble-ament-cmake-test (= 1.3.11-1jammy.20241125.230243),
- ros-humble-ament-cmake-version (= 1.3.11-1jammy.20241125.230210),
- ros-humble-ament-package (= 0.14.0-4jammy.20220421.093117),
- ros-humble-ros-workspace (= 1.0.2-2jammy.20241125.214203),
+ ros-humble-ament-cmake (= 1.3.12-1jammy.20250701.021045),
+ ros-humble-ament-cmake-core (= 1.3.12-1jammy.20250701.005441),
+ ros-humble-ament-cmake-export-definitions (= 1.3.12-1jammy.20250701.011358),
+ ros-humble-ament-cmake-export-dependencies (= 1.3.12-1jammy.20250701.011607),
+ ros-humble-ament-cmake-export-include-directories (= 1.3.12-1jammy.20250701.011607),
+ ros-humble-ament-cmake-export-interfaces (= 1.3.12-1jammy.20250701.011817),
+ ros-humble-ament-cmake-export-libraries (= 1.3.12-1jammy.20250701.011611),
+ ros-humble-ament-cmake-export-link-flags (= 1.3.12-1jammy.20250701.011612),
+ ros-humble-ament-cmake-export-targets (= 1.3.12-1jammy.20250701.011836),
+ ros-humble-ament-cmake-gen-version-h (= 1.3.12-1jammy.20250701.012952),
+ ros-humble-ament-cmake-include-directories (= 1.3.12-1jammy.20250701.011618),
+ ros-humble-ament-cmake-libraries (= 1.3.12-1jammy.20250701.011511),
+ ros-humble-ament-cmake-python (= 1.3.12-1jammy.20250701.011622),
+ ros-humble-ament-cmake-target-dependencies (= 1.3.12-1jammy.20250701.011815),
+ ros-humble-ament-cmake-test (= 1.3.12-1jammy.20250701.011837),
+ ros-humble-ament-cmake-version (= 1.3.12-1jammy.20250701.011519),
+ ros-humble-ament-package (= 0.14.1-1jammy.20250522.030837),
+ ros-humble-ros-workspace (= 1.0.2-2jammy.20250701.005808),
  rpcsvc-proto (= 1.4.2-0ubuntu6),
  sed (= 4.8-1ubuntu2),
  sensible-utils (= 0.0.17),
@@ -249,4 +249,4 @@ Environment:
  LANG="C.UTF-8"
  LC_ALL="C.UTF-8"
  LC_COLLATE="C.UTF-8"
- SOURCE_DATE_EPOCH="1749384507"
+ SOURCE_DATE_EPOCH="1755362561"
