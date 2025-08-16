@@ -2367,6 +2367,44 @@ class MoveIt2:
     def planner_id(self, value: str):
         self.__move_action_goal.request.planner_id = value
 
+    def set_workspace_parameters(
+        self,
+        min_corner: Tuple[float, float, float],
+        max_corner: Tuple[float, float, float],
+        frame_id: Optional[str] = None,
+    ):
+        """
+        Set the workspace parameters (min/max corners and optionally frame_id) for planning.
+        - min_corner: (x, y, z) tuple for the minimum workspace corner
+        - max_corner: (x, y, z) tuple for the maximum workspace corner
+        - frame_id: reference frame for the workspace (defaults to base link if not provided)
+        """
+        # Set workspace parameters for the main move action goal
+        ws = self.__move_action_goal.request.workspace_parameters
+        ws.min_corner.x, ws.min_corner.y, ws.min_corner.z = min_corner
+        ws.max_corner.x, ws.max_corner.y, ws.max_corner.z = max_corner
+        if frame_id is not None:
+            ws.header.frame_id = frame_id
+
+        # Also ensure the kinematic path request has the same workspace parameters
+        # This is a safety measure in case the kinematic path request gets recreated
+        if hasattr(self, "_plan_kinematic_path_service"):
+            kinematic_ws = (
+                self.__kinematic_path_request.motion_plan_request.workspace_parameters
+            )
+            (
+                kinematic_ws.min_corner.x,
+                kinematic_ws.min_corner.y,
+                kinematic_ws.min_corner.z,
+            ) = min_corner
+            (
+                kinematic_ws.max_corner.x,
+                kinematic_ws.max_corner.y,
+                kinematic_ws.max_corner.z,
+            ) = max_corner
+            if frame_id is not None:
+                kinematic_ws.header.frame_id = frame_id
+
 
 def init_joint_state(
     joint_names: List[str],
