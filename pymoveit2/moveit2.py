@@ -639,6 +639,24 @@ class MoveIt2:
                 rclpy.spin_once(self._node, timeout_sec=1.0)
         self._node._logger.info(message="Joint states are available now")
 
+        # Ensure the request actually uses the intended start state
+        if start_joint_state is not None:
+            if isinstance(start_joint_state, JointState):
+                self.__move_action_goal.request.start_state.joint_state = (
+                    start_joint_state
+                )
+            else:
+                # start_joint_state is a list of positions
+                self.__move_action_goal.request.start_state.joint_state = (
+                    init_joint_state(
+                        joint_names=self.__joint_names,
+                        joint_positions=start_joint_state,
+                    )
+                )
+        elif self.joint_state is not None:
+            # Default to the latest observed state if none provided
+            self.__move_action_goal.request.start_state.joint_state = self.joint_state
+
         # Plan trajectory asynchronously by service call
         if cartesian:
             future = self._plan_cartesian_path(
