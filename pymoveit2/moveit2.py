@@ -642,12 +642,16 @@ class MoveIt2:
         # Ensure the request actually uses the intended start state
         if start_joint_state is not None:
             if isinstance(start_joint_state, JointState):
-                self.__move_action_goal.request.start_state.joint_state = start_joint_state
+                self.__move_action_goal.request.start_state.joint_state = (
+                    start_joint_state
+                )
             else:
                 # start_joint_state is a list of positions
-                self.__move_action_goal.request.start_state.joint_state = init_joint_state(
-                    joint_names=self.__joint_names,
-                    joint_positions=start_joint_state,
+                self.__move_action_goal.request.start_state.joint_state = (
+                    init_joint_state(
+                        joint_names=self.__joint_names,
+                        joint_positions=start_joint_state,
+                    )
                 )
         elif self.joint_state is not None:
             # Default to the latest observed state if none provided
