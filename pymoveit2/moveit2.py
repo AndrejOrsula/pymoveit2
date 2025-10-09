@@ -2086,9 +2086,11 @@ class MoveIt2:
 
             self.__last_error_code = None
             self.__is_motion_requested = True
-            self.__send_goal_future_move_action = self.__move_action_client.send_goal_async(
-                goal=self.__move_action_goal,
-                feedback_callback=None,
+            self.__send_goal_future_move_action = (
+                self.__move_action_client.send_goal_async(
+                    goal=self.__move_action_goal,
+                    feedback_callback=None,
+                )
             )
 
             self.__send_goal_future_move_action.add_done_callback(
@@ -2168,9 +2170,7 @@ class MoveIt2:
             self.__is_executing = True
             self.__is_motion_requested = False
 
-            self.__get_result_future_execute_trajectory = (
-                goal_handle.get_result_async()
-            )
+            self.__get_result_future_execute_trajectory = goal_handle.get_result_async()
             self.__get_result_future_execute_trajectory.add_done_callback(
                 self.__result_callback_execute_trajectory
             )
