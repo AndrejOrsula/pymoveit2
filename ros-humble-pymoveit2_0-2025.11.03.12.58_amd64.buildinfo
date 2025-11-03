@@ -2,16 +2,16 @@ Format: 1.0
 Source: ros-humble-pymoveit2
 Binary: ros-humble-pymoveit2
 Architecture: amd64
-Version: 0-2025.11.03.12.26
+Version: 0-2025.11.03.12.58
 Checksums-Md5:
- a292604355fc3169dfccb0744a00f09d 27558 ros-humble-pymoveit2_0-2025.11.03.12.26_amd64.deb
+ 899f64fec89411f6630e48c9508cc809 27558 ros-humble-pymoveit2_0-2025.11.03.12.58_amd64.deb
 Checksums-Sha1:
- 5bb68685211c689b150b4300cfe46f60a384c42a 27558 ros-humble-pymoveit2_0-2025.11.03.12.26_amd64.deb
+ fc7a1fb19371f8fd748d2cf98dec436ea02b06e7 27558 ros-humble-pymoveit2_0-2025.11.03.12.58_amd64.deb
 Checksums-Sha256:
- bc6db95b14726262162959124eb21a9590fd354449533252f4b7a9f471d2de0d 27558 ros-humble-pymoveit2_0-2025.11.03.12.26_amd64.deb
+ 9929472b6ba1c1cd41e62aacdc9f2a3249b87580f5d0431fee2cbf076e305751 27558 ros-humble-pymoveit2_0-2025.11.03.12.58_amd64.deb
 Build-Origin: Ubuntu
 Build-Architecture: amd64
-Build-Date: Mon, 03 Nov 2025 12:27:24 +0000
+Build-Date: Mon, 03 Nov 2025 12:58:37 +0000
 Build-Path: /build/package/package
 Installed-Build-Depends:
  autoconf (= 2.71-2),
@@ -250,4 +250,4 @@ Environment:
  LANG="C.UTF-8"
  LC_ALL="C.UTF-8"
  LC_COLLATE="C.UTF-8"
- SOURCE_DATE_EPOCH="1762172816"
+ SOURCE_DATE_EPOCH="1762174688"
