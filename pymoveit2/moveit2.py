@@ -29,6 +29,7 @@ from moveit_msgs.srv import (
 )
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import (
     QoSDurabilityPolicy,
@@ -630,15 +631,19 @@ class MoveIt2:
                 weight=weight_joint_position,
             )
         # Define starting state for the plan (default to the current state)
-        while start_joint_state is None:
-            self._node.get_logger().warning(
-                message="Joint states are not available yet!"
-            )
-            if self.__joint_state is not None:
-                start_joint_state = self.__joint_state
-                break
-            else:
-                rclpy.spin_once(self._node, timeout_sec=1.0)
+        try:
+            while start_joint_state is None:
+                self._node.get_logger().warning(
+                    message="Joint states are not available yet!"
+                )
+                if self.__joint_state is not None:
+                    start_joint_state = self.__joint_state
+                    break
+                else:
+                    rclpy.spin_once(self._node, timeout_sec=1.0)
+        except ExternalShutdownException:
+            return None
+
         self._node.get_logger().info(message="Joint states are available now")
 
         # Ensure the request actually uses the intended start state
