@@ -1,44 +1,44 @@
-sbuild (Debian sbuild) 0.85.10ubuntu0.2 (02 May 2025) on runnervmf2e7y.1elrj4xgivaurasyqqtchrpoqe.ex.internal.cloudapp.net
+sbuild (Debian sbuild) 0.85.10ubuntu0.2 (02 May 2025) on runnervmf2e7y.sdkwdzzwaqsu1mar1bzdugii3h.cx.internal.cloudapp.net
 
 +================================================================================+
-| ros-jazzy-pymoveit2 0-2025.11.03.12.20 (amd64) Mon, 03 Nov 2025 12:20:13 +0000 |
+| ros-jazzy-pymoveit2 0-2025.11.03.12.27 (amd64) Mon, 03 Nov 2025 12:27:54 +0000 |
 +================================================================================+
 
 Package: ros-jazzy-pymoveit2
-Version: 0-2025.11.03.12.20
-Source Version: 0-2025.11.03.12.20
+Version: 0-2025.11.03.12.27
+Source Version: 0-2025.11.03.12.27
 Distribution: noble
 Machine Architecture: amd64
 Host Architecture: amd64
 Build Architecture: amd64
 Build Type: binary
 
-Unpacking /home/runner/.cache/sbuild/noble-amd64.tar to /tmp/tmp.sbuild.OroYMDev1P...
+Unpacking /home/runner/.cache/sbuild/noble-amd64.tar to /tmp/tmp.sbuild.3bGHMhHwXN...
 I: NOTICE: Log filtering will replace 'sbuild-unshare-dummy-location' with '<<CHROOT>>'
-I: NOTICE: Log filtering will replace 'build/package//resolver-llDJxq' with '<<RESOLVERDIR>>'
+I: NOTICE: Log filtering will replace 'build/package//resolver-U52Is9' with '<<RESOLVERDIR>>'
 
 +------------------------------------------------------------------------------+
-| Update chroot                                Mon, 03 Nov 2025 12:20:18 +0000 |
+| Update chroot                                Mon, 03 Nov 2025 12:27:59 +0000 |
 +------------------------------------------------------------------------------+
 
-Get:1 file:/build/package//resolver-wxBVyu/apt_archive ./ InRelease
-Ign:1 file:/build/package//resolver-wxBVyu/apt_archive ./ InRelease
-Get:2 file:/build/package//resolver-wxBVyu/apt_archive ./ Release [597 B]
-Get:2 file:/build/package//resolver-wxBVyu/apt_archive ./ Release [597 B]
-Get:3 file:/build/package//resolver-wxBVyu/apt_archive ./ Release.gpg
-Ign:3 file:/build/package//resolver-wxBVyu/apt_archive ./ Release.gpg
-Get:4 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
-Get:5 http://packages.ros.org/ros2/ubuntu noble InRelease [4676 B]
-Get:6 http://packages.ros.org/ros2/ubuntu noble/main amd64 Packages [1757 kB]
-Get:7 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-Get:8 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1401 kB]
-Get:9 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
-Get:10 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [15.0 MB]
-Get:11 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1498 kB]
-Get:12 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1573 kB]
-Get:13 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1270 kB]
-Get:14 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [906 kB]
-Fetched 24.0 MB in 2s (10.7 MB/s)
+Get:1 file:/build/package//resolver-y0ejaC/apt_archive ./ InRelease
+Ign:1 file:/build/package//resolver-y0ejaC/apt_archive ./ InRelease
+Get:2 file:/build/package//resolver-y0ejaC/apt_archive ./ Release [597 B]
+Get:2 file:/build/package//resolver-y0ejaC/apt_archive ./ Release [597 B]
+Get:3 file:/build/package//resolver-y0ejaC/apt_archive ./ Release.gpg
+Ign:3 file:/build/package//resolver-y0ejaC/apt_archive ./ Release.gpg
+Get:4 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:5 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1270 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:7 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [906 kB]
+Get:8 http://packages.ros.org/ros2/ubuntu noble InRelease [4676 B]
+Get:9 http://packages.ros.org/ros2/ubuntu noble/main amd64 Packages [1757 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble/main amd64 Packages [1401 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble/universe amd64 Packages [15.0 MB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1573 kB]
+Get:14 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1498 kB]
+Fetched 24.0 MB in 3s (8169 kB/s)
 Reading package lists...
 Reading package lists...
 Building dependency tree...
@@ -47,19 +47,19 @@ Calculating upgrade...
 0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
 
 +------------------------------------------------------------------------------+
-| Fetch source files                           Mon, 03 Nov 2025 12:20:21 +0000 |
+| Fetch source files                           Mon, 03 Nov 2025 12:28:04 +0000 |
 +------------------------------------------------------------------------------+
 
 
 Local sources
 -------------
 
-/home/runner/work/pymoveit2/pymoveit2/ros-jazzy-pymoveit2_0-2025.11.03.12.20.dsc exists in /home/runner/work/pymoveit2/pymoveit2; copying to chroot
+/home/runner/work/pymoveit2/pymoveit2/ros-jazzy-pymoveit2_0-2025.11.03.12.27.dsc exists in /home/runner/work/pymoveit2/pymoveit2; copying to chroot
 I: NOTICE: Log filtering will replace 'build/package//package' with '<<PKGBUILDDIR>>'
 I: NOTICE: Log filtering will replace 'build/package/' with '<<BUILDDIR>>'
 
 +------------------------------------------------------------------------------+
-| Install package build dependencies           Mon, 03 Nov 2025 12:20:22 +0000 |
+| Install package build dependencies           Mon, 03 Nov 2025 12:28:05 +0000 |
 +------------------------------------------------------------------------------+
 
 
@@ -76,12 +76,12 @@ Get:4 copy:/<<RESOLVERDIR>>/apt_archive ./ Sources [678 B]
 Get:5 copy:/<<RESOLVERDIR>>/apt_archive ./ Packages [710 B]
 Fetched 1997 B in 0s (0 B/s)
 Reading package lists...
-Get:1 file:/<<BUILDDIR>>/resolver-wxBVyu/apt_archive ./ InRelease
-Ign:1 file:/<<BUILDDIR>>/resolver-wxBVyu/apt_archive ./ InRelease
-Get:2 file:/<<BUILDDIR>>/resolver-wxBVyu/apt_archive ./ Release [597 B]
-Get:2 file:/<<BUILDDIR>>/resolver-wxBVyu/apt_archive ./ Release [597 B]
-Get:3 file:/<<BUILDDIR>>/resolver-wxBVyu/apt_archive ./ Release.gpg
-Ign:3 file:/<<BUILDDIR>>/resolver-wxBVyu/apt_archive ./ Release.gpg
+Get:1 file:/<<BUILDDIR>>/resolver-y0ejaC/apt_archive ./ InRelease
+Ign:1 file:/<<BUILDDIR>>/resolver-y0ejaC/apt_archive ./ InRelease
+Get:2 file:/<<BUILDDIR>>/resolver-y0ejaC/apt_archive ./ Release [597 B]
+Get:2 file:/<<BUILDDIR>>/resolver-y0ejaC/apt_archive ./ Release [597 B]
+Get:3 file:/<<BUILDDIR>>/resolver-y0ejaC/apt_archive ./ Release.gpg
+Ign:3 file:/<<BUILDDIR>>/resolver-y0ejaC/apt_archive ./ Release.gpg
 Reading package lists...
 Hit:1 http://packages.ros.org/ros2/ubuntu noble InRelease
 Reading package lists...
@@ -169,17 +169,17 @@ The following NEW packages will be installed:
 0 upgraded, 107 newly installed, 0 to remove and 0 not upgraded.
 Need to get 45.0 MB of archives.
 After this operation, 164 MB of additional disk space will be used.
-Get:1 copy:/<<RESOLVERDIR>>/apt_archive ./ sbuild-build-depends-main-dummy 0.invalid.0 [692 B]
+Get:1 copy:/<<RESOLVERDIR>>/apt_archive ./ sbuild-build-depends-main-dummy 0.invalid.0 [694 B]
 Get:2 http://packages.ros.org/ros2/ubuntu noble/main amd64 python3-catkin-pkg-modules all 1.1.0-2 [43.3 kB]
-Get:3 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12-minimal amd64 3.12.3-1ubuntu0.8 [836 kB]
-Get:4 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-package amd64 0.16.4-1noble.20250406.073531 [25.7 kB]
-Get:5 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-core amd64 2.5.4-1noble.20250424.102850 [26.9 kB]
-Get:6 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ros-workspace amd64 1.0.3-7noble.20250424.104106 [15.0 kB]
-Get:7 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-definitions amd64 2.5.4-1noble.20250424.105216 [7188 B]
-Get:8 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-libraries amd64 2.5.4-1noble.20250424.105129 [7084 B]
-Get:9 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-dependencies amd64 2.5.4-1noble.20250424.105204 [8586 B]
-Get:10 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-include-directories amd64 2.5.4-1noble.20250424.105215 [7518 B]
-Get:11 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-libraries amd64 2.5.4-1noble.20250424.105214 [9542 B]
+Get:3 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-package amd64 0.16.4-1noble.20250406.073531 [25.7 kB]
+Get:4 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-core amd64 2.5.4-1noble.20250424.102850 [26.9 kB]
+Get:5 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ros-workspace amd64 1.0.3-7noble.20250424.104106 [15.0 kB]
+Get:6 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-definitions amd64 2.5.4-1noble.20250424.105216 [7188 B]
+Get:7 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-libraries amd64 2.5.4-1noble.20250424.105129 [7084 B]
+Get:8 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-dependencies amd64 2.5.4-1noble.20250424.105204 [8586 B]
+Get:9 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-include-directories amd64 2.5.4-1noble.20250424.105215 [7518 B]
+Get:10 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-libraries amd64 2.5.4-1noble.20250424.105214 [9542 B]
+Get:11 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12-minimal amd64 3.12.3-1ubuntu0.8 [836 kB]
 Get:12 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-interfaces amd64 2.5.4-1noble.20250424.105241 [7930 B]
 Get:13 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-link-flags amd64 2.5.4-1noble.20250424.105220 [7118 B]
 Get:14 http://packages.ros.org/ros2/ubuntu noble/main amd64 ros-jazzy-ament-cmake-export-targets amd64 2.5.4-1noble.20250424.105255 [8166 B]
@@ -277,7 +277,7 @@ Get:105 http://archive.ubuntu.com/ubuntu noble/main amd64 python3-importlib-meta
 Get:106 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3-setuptools all 68.1.2-2ubuntu1.2 [397 kB]
 Get:107 http://archive.ubuntu.com/ubuntu noble/universe amd64 dumb-init amd64 1.2.5-3 [13.6 kB]
 debconf: delaying package configuration, since apt-utils is not installed
-Fetched 45.0 MB in 3s (16.1 MB/s)
+Fetched 45.0 MB in 3s (17.6 MB/s)
 Selecting previously unselected package libpython3.12-minimal:amd64.
 (Reading database ... 10052 files and directories currently installed.)
 Preparing to unpack .../libpython3.12-minimal_3.12.3-1ubuntu0.8_amd64.deb ...
@@ -637,8 +637,8 @@ Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg1-5ubuntu3.1) ...
 Setting up tzdata (2025b-0ubuntu0.24.04.1) ...
 
 Current default time zone: 'Etc/UTC'
-Local time is now:      Mon Nov  3 12:20:33 UTC 2025.
-Universal Time is now:  Mon Nov  3 12:20:33 UTC 2025.
+Local time is now:      Mon Nov  3 12:28:17 UTC 2025.
+Universal Time is now:  Mon Nov  3 12:28:17 UTC 2025.
 Run 'dpkg-reconfigure tzdata' if you wish to change it.
 
 Setting up fakeroot (1.33-1) ...
@@ -727,13 +727,13 @@ Setting up ros-jazzy-ament-cmake (2.5.4-1noble.20250424.110322) ...
 Setting up sbuild-build-depends-main-dummy (0.invalid.0) ...
 
 +------------------------------------------------------------------------------+
-| Check architectures                          Mon, 03 Nov 2025 12:20:37 +0000 |
+| Check architectures                          Mon, 03 Nov 2025 12:28:21 +0000 |
 +------------------------------------------------------------------------------+
 
 Arch check ok (amd64 included in any)
 
 +------------------------------------------------------------------------------+
-| Build environment                            Mon, 03 Nov 2025 12:20:37 +0000 |
+| Build environment                            Mon, 03 Nov 2025 12:28:21 +0000 |
 +------------------------------------------------------------------------------+
 
 Kernel: Linux 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 amd64 (x86_64)
@@ -741,7 +741,7 @@ Toolchain package versions: binutils_2.42-4ubuntu2.6 dpkg-dev_1.22.6ubuntu6.5 g+
 Package versions: apt_2.8.3 autoconf_2.71-3 automake_1:1.16.5-1.3ubuntu1 autopoint_0.21-14ubuntu2 autotools-dev_20220109.1 base-files_13ubuntu10.3 base-passwd_3.6.3build1 bash_5.2.21-2ubuntu4 binutils_2.42-4ubuntu2.6 binutils-common_2.42-4ubuntu2.6 binutils-x86-64-linux-gnu_2.42-4ubuntu2.6 bsdextrautils_2.39.3-9ubuntu6.3 bsdutils_1:2.39.3-9ubuntu6.3 build-essential_12.10ubuntu1 bzip2_1.0.8-5.1build0.1 ca-certificates_20240203 ccache_4.9.1-1 cmake_3.28.3-1build7 cmake-data_3.28.3-1build7 coreutils_9.4-3ubuntu6.1 cpp_4:13.2.0-7ubuntu1 cpp-13_13.3.0-6ubuntu2~24.04 cpp-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04 cpp-x86-64-linux-gnu_4:13.2.0-7ubuntu1 dash_0.5.12-6ubuntu5 debconf_1.5.86ubuntu1 debhelper_13.14.1ubuntu5 debianutils_5.17build1 debugedit_1:5.0-5build2 dh-autoreconf_20 dh-strip-nondeterminism_1.13.1-1 diffutils_1:3.10-1build1 docutils-common_0.20.1+dfsg-3 dpkg_1.22.6ubuntu6.5 dpkg-dev_1.22.6ubuntu6.5 dumb-init_1.2.5-3 dwz_0.15-1build6 fakeroot_1.33-1 file_1:5.45-3build1 findutils_4.9.0-5build1 g++_4:13.2.0-7ubuntu1 g++-13_13.3.0-6ubuntu2~24.04 g++-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04 g++-x86-64-linux-gnu_4:13.2.0-7ubuntu1 gcc_4:13.2.0-7ubuntu1 gcc-13_13.3.0-6ubuntu2~24.04 gcc-13-base_13.3.0-6ubuntu2~24.04 gcc-13-x86-64-linux-gnu_13.3.0-6ubuntu2~24.04 gcc-14-base_14.2.0-4ubuntu2~24.04 gcc-x86-64-linux-gnu_4:13.2.0-7ubuntu1 gettext_0.21-14ubuntu2 gettext-base_0.21-14ubuntu2 gpgv_2.4.4-2ubuntu17.3 grep_3.11-4build1 groff-base_1.23.0-3build2 gzip_1.12-1ubuntu3.1 hostname_3.23+nmu2ubuntu2 init-system-helpers_1.66ubuntu1 intltool-debian_0.35.0+20060710.6 libacl1_2.3.2-1build1.1 libapt-pkg6.0t64_2.8.3 libarchive-zip-perl_1.68-1 libarchive13t64_3.7.2-2ubuntu0.5 libasan8_14.2.0-4ubuntu2~24.04 libassuan0_2.5.6-1build1 libatomic1_14.2.0-4ubuntu2~24.04 libattr1_1:2.5.2-1build1.1 libaudit-common_1:3.1.2-2.1build1.1 libaudit1_1:3.1.2-2.1build1.1 libbinutils_2.42-4ubuntu2.6 libblkid1_2.39.3-9ubuntu6.3 libbrotli1_1.1.0-2build2 libbz2-1.0_1.0.8-5.1build0.1 libc-bin_2.39-0ubuntu8.6 libc-dev-bin_2.39-0ubuntu8.6 libc6_2.39-0ubuntu8.6 libc6-dev_2.39-0ubuntu8.6 libcap-ng0_0.8.4-2build2 libcap2_1:2.66-5ubuntu2.2 libcc1-0_14.2.0-4ubuntu2~24.04 libcom-err2_1.47.0-2.4~exp1ubuntu4.1 libcrypt-dev_1:4.4.36-4build1 libcrypt1_1:4.4.36-4build1 libctf-nobfd0_2.42-4ubuntu2.6 libctf0_2.42-4ubuntu2.6 libcurl4t64_8.5.0-2ubuntu10.6 libdb5.3t64_5.3.28+dfsg2-7 libdebconfclient0_0.271ubuntu3 libdebhelper-perl_13.14.1ubuntu5 libdpkg-perl_1.22.6ubuntu6.5 libdw1t64_0.190-1.1ubuntu0.1 libelf1t64_0.190-1.1ubuntu0.1 libexpat1_2.6.1-2ubuntu0.3 libfakeroot_1.33-1 libffi8_3.4.6-1build1 libfile-stripnondeterminism-perl_1.13.1-1 libgcc-13-dev_13.3.0-6ubuntu2~24.04 libgcc-s1_14.2.0-4ubuntu2~24.04 libgcrypt20_1.10.3-2build1 libgdbm-compat4t64_1.23-5.1build1 libgdbm6t64_1.23-5.1build1 libgmp10_2:6.3.0+dfsg-2ubuntu6.1 libgnutls30t64_3.8.3-1.1ubuntu3.4 libgomp1_14.2.0-4ubuntu2~24.04 libgpg-error0_1.47-3build2.1 libgprofng0_2.42-4ubuntu2.6 libgssapi-krb5-2_1.20.1-6ubuntu2.6 libhiredis1.1.0_1.2.0-6ubuntu3 libhogweed6t64_3.9.1-2.2build1.1 libhwasan0_14.2.0-4ubuntu2~24.04 libicu74_74.2-1ubuntu3.1 libidn2-0_2.3.7-2build1.1 libisl23_0.26-3build1.1 libitm1_14.2.0-4ubuntu2~24.04 libjansson4_2.14-2build2 libjsoncpp25_1.9.5-6build1 libk5crypto3_1.20.1-6ubuntu2.6 libkeyutils1_1.6.3-3build1 libkrb5-3_1.20.1-6ubuntu2.6 libkrb5support0_1.20.1-6ubuntu2.6 libldap2_2.6.7+dfsg-1~exp1ubuntu8.2 liblsan0_14.2.0-4ubuntu2~24.04 liblz4-1_1.9.4-1build1.1 liblzma5_5.6.1+really5.4.5-1ubuntu0.2 libmagic-mgc_1:5.45-3build1 libmagic1t64_1:5.45-3build1 libmd0_1.1.0-2build1.1 libmount1_2.39.3-9ubuntu6.3 libmpc3_1.3.1-1build1.1 libmpfr6_4.2.1-1build1.1 libncursesw6_6.4+20240113-1ubuntu2 libnettle8t64_3.9.1-2.2build1.1 libnghttp2-14_1.59.0-1ubuntu0.2 libnpth0t64_1.6-3.1build1 libp11-kit0_0.25.3-4ubuntu2.1 libpam-modules_1.5.3-5ubuntu5.5 libpam-modules-bin_1.5.3-5ubuntu5.5 libpam-runtime_1.5.3-5ubuntu5.5 libpam0g_1.5.3-5ubuntu5.5 libpcre2-8-0_10.42-4ubuntu2.1 libperl5.38t64_5.38.2-3.2ubuntu0.2 libpipeline1_1.5.7-2 libproc2-0_2:4.0.4-4ubuntu3.2 libpsl5t64_0.21.2-1.1build1 libpython3-stdlib_3.12.3-0ubuntu2 libpython3.12-minimal_3.12.3-1ubuntu0.8 libpython3.12-stdlib_3.12.3-1ubuntu0.8 libquadmath0_14.2.0-4ubuntu2~24.04 libreadline8t64_8.2-4build1 librhash0_1.4.3-3build1 librtmp1_2.4+20151223.gitfa8646d.1-2build7 libsasl2-2_2.1.28+dfsg1-5ubuntu3.1 libsasl2-modules-db_2.1.28+dfsg1-5ubuntu3.1 libseccomp2_2.5.5-1ubuntu3.1 libselinux1_3.5-2ubuntu2.1 libsframe1_2.42-4ubuntu2.6 libsmartcols1_2.39.3-9ubuntu6.3 libsqlite3-0_3.45.1-1ubuntu2.5 libssh-4_0.10.6-2ubuntu0.2 libssl3t64_3.0.13-0ubuntu3.6 libstdc++-13-dev_13.3.0-6ubuntu2~24.04 libstdc++6_14.2.0-4ubuntu2~24.04 libsub-override-perl_0.10-1 libsystemd0_255.4-1ubuntu8.11 libtasn1-6_4.19.0-3ubuntu0.24.04.1 libtinfo6_6.4+20240113-1ubuntu2 libtool_2.4.7-7build1 libtsan2_14.2.0-4ubuntu2~24.04 libubsan1_14.2.0-4ubuntu2~24.04 libuchardet0_0.0.8-1build1 libudev1_255.4-1ubuntu8.11 libunistring5_1.1-2build1.1 libuuid1_2.39.3-9ubuntu6.3 libuv1t64_1.48.0-1.1build1 libxml2_2.9.14+dfsg-1.3ubuntu3.6 libxxhash0_0.8.2-2build1 libzstd1_1.5.5+dfsg2-2build1.1 linux-libc-dev_6.8.0-87.88 login_1:4.13+dfsg1-4ubuntu3.2 lto-disabled-list_47 m4_1.4.19-4build1 make_4.3-4.1build2 man-db_2.12.0-4build2 mawk_1.3.4.20240123-1build1 media-types_10.1.0 ncurses-base_6.4+20240113-1ubuntu2 ncurses-bin_6.4+20240113-1ubuntu2 netbase_6.4 openssl_3.0.13-0ubuntu3.6 patch_2.7.6-7build3 perl_5.38.2-3.2ubuntu0.2 perl-base_5.38.2-3.2ubuntu0.2 perl-modules-5.38_5.38.2-3.2ubuntu0.2 po-debconf_1.0.21+nmu1 procps_2:4.0.4-4ubuntu3.2 python3_3.12.3-0ubuntu2 python3-catkin-pkg-modules_1.1.0-2 python3-dateutil_2.8.2-3ubuntu1 python3-docutils_0.20.1+dfsg-3 python3-importlib-metadata_4.12.0-1 python3-minimal_3.12.3-0ubuntu2 python3-more-itertools_10.2.0-1 python3-packaging_24.0-1 python3-pkg-resources_68.1.2-2ubuntu1.2 python3-pyparsing_3.1.1-1 python3-roman_3.3-3 python3-setuptools_68.1.2-2ubuntu1.2 python3-six_1.16.0-4 python3-zipp_1.0.0-6ubuntu0.1 python3.12_3.12.3-1ubuntu0.8 python3.12-minimal_3.12.3-1ubuntu0.8 readline-common_8.2-4build1 ros-jazzy-ament-cmake_2.5.4-1noble.20250424.110322 ros-jazzy-ament-cmake-core_2.5.4-1noble.20250424.102850 ros-jazzy-ament-cmake-export-definitions_2.5.4-1noble.20250424.105216 ros-jazzy-ament-cmake-export-dependencies_2.5.4-1noble.20250424.105204 ros-jazzy-ament-cmake-export-include-directories_2.5.4-1noble.20250424.105215 ros-jazzy-ament-cmake-export-interfaces_2.5.4-1noble.20250424.105241 ros-jazzy-ament-cmake-export-libraries_2.5.4-1noble.20250424.105214 ros-jazzy-ament-cmake-export-link-flags_2.5.4-1noble.20250424.105220 ros-jazzy-ament-cmake-export-targets_2.5.4-1noble.20250424.105255 ros-jazzy-ament-cmake-gen-version-h_2.5.4-1noble.20250424.105221 ros-jazzy-ament-cmake-include-directories_2.5.4-1noble.20250424.105225 ros-jazzy-ament-cmake-libraries_2.5.4-1noble.20250424.105129 ros-jazzy-ament-cmake-python_2.5.4-1noble.20250424.105135 ros-jazzy-ament-cmake-target-dependencies_2.5.4-1noble.20250424.105252 ros-jazzy-ament-cmake-test_2.5.4-1noble.20250424.110207 ros-jazzy-ament-cmake-version_2.5.4-1noble.20250424.105248 ros-jazzy-ament-package_0.16.4-1noble.20250406.073531 ros-jazzy-ros-workspace_1.0.3-7noble.20250424.104106 rpcsvc-proto_1.4.2-0ubuntu7 sbuild-build-depends-main-dummy_0.invalid.0 sed_4.9-2build1 sensible-utils_0.0.22 sgml-base_1.31 sysvinit-utils_3.08-6ubuntu3 tar_1.35+dfsg-3build1 tzdata_2025b-0ubuntu0.24.04.1 ubuntu-keyring_2023.11.28.1 util-linux_2.39.3-9ubuntu6.3 xml-core_0.19 xz-utils_5.6.1+really5.4.5-1ubuntu0.2 zlib1g_1:1.3.dfsg-3.1ubuntu2.1
 
 +------------------------------------------------------------------------------+
-| Build                                        Mon, 03 Nov 2025 12:20:37 +0000 |
+| Build                                        Mon, 03 Nov 2025 12:28:21 +0000 |
 +------------------------------------------------------------------------------+
 
 
@@ -752,22 +752,22 @@ Format: 1.0
 Source: ros-jazzy-pymoveit2
 Binary: ros-jazzy-pymoveit2
 Architecture: any
-Version: 0-2025.11.03.12.20
+Version: 0-2025.11.03.12.27
 Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 9.0.0), ros-jazzy-ament-cmake, ros-jazzy-ament-cmake-python
 Package-List:
  ros-jazzy-pymoveit2 deb misc optional arch=any
 Checksums-Sha1:
- 86d09862f08bbf446e7bfab9bd184f83157eb24d 156143 ros-jazzy-pymoveit2_0-2025.11.03.12.20.tar.gz
+ 0489f81cde6c925c95c70b7f9f7cd2e892e76278 156504 ros-jazzy-pymoveit2_0-2025.11.03.12.27.tar.gz
 Checksums-Sha256:
- 71cd8147c13dc9f3eb6593547d6721a9ed73e913fb2bfdf6ad984416ea12b1ef 156143 ros-jazzy-pymoveit2_0-2025.11.03.12.20.tar.gz
+ 7ea6c4757622739b8e74a2ab988ef965e994d9f858882d01bdb546946332cf32 156504 ros-jazzy-pymoveit2_0-2025.11.03.12.27.tar.gz
 Files:
- 25ddfc64290762b648bfd089431c39ee 156143 ros-jazzy-pymoveit2_0-2025.11.03.12.20.tar.gz
+ b45af5867273ea4dbedc0474d986ebcd 156504 ros-jazzy-pymoveit2_0-2025.11.03.12.27.tar.gz
 
-dpkg-source: warning: extracting unsigned source package (ros-jazzy-pymoveit2_0-2025.11.03.12.20.dsc)
+dpkg-source: warning: extracting unsigned source package (ros-jazzy-pymoveit2_0-2025.11.03.12.27.dsc)
 dpkg-source: info: extracting ros-jazzy-pymoveit2 in /<<BUILDDIR>>package
-dpkg-source: info: unpacking ros-jazzy-pymoveit2_0-2025.11.03.12.20.tar.gz
+dpkg-source: info: unpacking ros-jazzy-pymoveit2_0-2025.11.03.12.27.tar.gz
 
 Check disk space
 ----------------
@@ -795,7 +795,7 @@ dpkg-buildpackage
 
 Command: dpkg-buildpackage --sanitize-env -us -uc -b -rfakeroot
 dpkg-buildpackage: info: source package ros-jazzy-pymoveit2
-dpkg-buildpackage: info: source version 0-2025.11.03.12.20
+dpkg-buildpackage: info: source version 0-2025.11.03.12.27
 dpkg-buildpackage: info: source distribution noble
 dpkg-buildpackage: info: source changed by Andrej Orsula <orsula.andrej@gmail.com>
  dpkg-source --before-build .
@@ -848,7 +848,7 @@ dh_auto_configure -- \
 -- Detecting CXX compile features - done
 -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
 -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
--- Configuring done (0.9s)
+-- Configuring done (1.0s)
 -- Generating done (0.0s)
 CMake Warning:
   Manually-specified variables were not used by the project:
@@ -1078,15 +1078,15 @@ dpkg-gencontrol: warning: Depends field of package ros-jazzy-pymoveit2: substitu
 	chown 0:0 -- debian/ros-jazzy-pymoveit2/DEBIAN/md5sums
    dh_builddeb -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
 	dpkg-deb --build debian/ros-jazzy-pymoveit2 ..
-dpkg-deb: building package 'ros-jazzy-pymoveit2' in '../ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb'.
- dpkg-genbuildinfo --build=binary -O../ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.buildinfo
- dpkg-genchanges --build=binary -O../ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.changes
+dpkg-deb: building package 'ros-jazzy-pymoveit2' in '../ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.deb'.
+ dpkg-genbuildinfo --build=binary -O../ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.buildinfo
+ dpkg-genchanges --build=binary -O../ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.changes
 dpkg-genchanges: info: binary-only upload (no source code included)
  dpkg-source --after-build .
 dpkg-source: info: using options from package/debian/source/options: --auto-commit
 dpkg-buildpackage: info: binary-only upload (no source included)
 --------------------------------------------------------------------------------
-Build finished at 2025-11-03T12:20:43Z
+Build finished at 2025-11-03T12:28:27Z
 
 Finished
 --------
@@ -1094,20 +1094,20 @@ Finished
 I: Built successfully
 
 +------------------------------------------------------------------------------+
-| Changes                                      Mon, 03 Nov 2025 12:20:43 +0000 |
+| Changes                                      Mon, 03 Nov 2025 12:28:28 +0000 |
 +------------------------------------------------------------------------------+
 
 
-ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.changes:
+ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.changes:
 -----------------------------------------------------
 
 Format: 1.8
-Date: Mon, 03 Nov 2025 12:20:11 -0000
+Date: Mon, 03 Nov 2025 12:27:52 -0000
 Source: ros-jazzy-pymoveit2
 Binary: ros-jazzy-pymoveit2
 Built-For-Profiles: noudeb
 Architecture: amd64
-Version: 0-2025.11.03.12.20
+Version: 0-2025.11.03.12.27
 Distribution: noble
 Urgency: high
 Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
@@ -1115,37 +1115,37 @@ Changed-By: Andrej Orsula <orsula.andrej@gmail.com>
 Description:
  ros-jazzy-pymoveit2 - Basic Python interface for MoveIt 2 built on top of ROS 2 actions
 Changes:
- ros-jazzy-pymoveit2 (0-2025.11.03.12.20) noble; urgency=high
+ ros-jazzy-pymoveit2 (0-2025.11.03.12.27) noble; urgency=high
  .
    * Autogenerated, no changelog for this version found in CHANGELOG.rst.
 Checksums-Sha1:
- ecf9f8c61469a17dbf36f10f02f3419a656ec49c 9392 ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.buildinfo
- 05cf5b5a9f5572ae2869582994cc295ae2cae9bc 27456 ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb
+ da88b8e0c0d8a673f62109d544db882f5710bc9c 9392 ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.buildinfo
+ f6d6c7d82f2a05d8f9ac0fc81a86c073db9246af 27438 ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.deb
 Checksums-Sha256:
- c77c3dd9cd60e8602d20042c4655aa58981c89eda5723c259b93edf218509982 9392 ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.buildinfo
- fea3e9cedada521671c91f5edba358b1aade082f737d7e29f292e075a8c1dfb7 27456 ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb
+ e20230c475136983f0a9a7380c7ae88ed4317fa8f55dad30a39710244de7c59c 9392 ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.buildinfo
+ 2286809fadf50ce225086244a3fe1d870ac80decd5ab90096d43370849c20876 27438 ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.deb
 Files:
- 50e70123a9e9b65a436c05250f73ceed 9392 misc optional ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.buildinfo
- 6428e0c786b532d3147a0048a9240999 27456 misc optional ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb
+ ef5f16cfec0bb045415b7f7a7b95397c 9392 misc optional ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.buildinfo
+ 3ce1be8dc41c99c88d83a74f6cd326c9 27438 misc optional ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.deb
 
 +------------------------------------------------------------------------------+
-| Buildinfo                                    Mon, 03 Nov 2025 12:20:43 +0000 |
+| Buildinfo                                    Mon, 03 Nov 2025 12:28:28 +0000 |
 +------------------------------------------------------------------------------+
 
 Format: 1.0
 Source: ros-jazzy-pymoveit2
 Binary: ros-jazzy-pymoveit2
 Architecture: amd64
-Version: 0-2025.11.03.12.20
+Version: 0-2025.11.03.12.27
 Checksums-Md5:
- 6428e0c786b532d3147a0048a9240999 27456 ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb
+ 3ce1be8dc41c99c88d83a74f6cd326c9 27438 ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.deb
 Checksums-Sha1:
- 05cf5b5a9f5572ae2869582994cc295ae2cae9bc 27456 ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb
+ f6d6c7d82f2a05d8f9ac0fc81a86c073db9246af 27438 ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.deb
 Checksums-Sha256:
- fea3e9cedada521671c91f5edba358b1aade082f737d7e29f292e075a8c1dfb7 27456 ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb
+ 2286809fadf50ce225086244a3fe1d870ac80decd5ab90096d43370849c20876 27438 ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.deb
 Build-Origin: Ubuntu
 Build-Architecture: amd64
-Build-Date: Mon, 03 Nov 2025 12:20:42 +0000
+Build-Date: Mon, 03 Nov 2025 12:28:27 +0000
 Build-Path: /<<BUILDDIR>>package
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -1384,23 +1384,23 @@ Environment:
  LANG="C.UTF-8"
  LC_ALL="C.UTF-8"
  LC_COLLATE="C.UTF-8"
- SOURCE_DATE_EPOCH="1762172411"
+ SOURCE_DATE_EPOCH="1762172872"
 
 
 +------------------------------------------------------------------------------+
-| Package contents                             Mon, 03 Nov 2025 12:20:44 +0000 |
+| Package contents                             Mon, 03 Nov 2025 12:28:28 +0000 |
 +------------------------------------------------------------------------------+
 
 
-ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb
+ros-jazzy-pymoveit2_0-2025.11.03.12.27_amd64.deb
 ------------------------------------------------
 
  new Debian package, version 2.0.
- size 27456 bytes: control archive=1902 bytes.
+ size 27438 bytes: control archive=1899 bytes.
      486 bytes,     9 lines      control
     4534 bytes,    48 lines      md5sums
  Package: ros-jazzy-pymoveit2
- Version: 0-2025.11.03.12.20
+ Version: 0-2025.11.03.12.27
  Architecture: amd64
  Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
  Installed-Size: 241
@@ -1409,111 +1409,111 @@ ros-jazzy-pymoveit2_0-2025.11.03.12.20_amd64.deb
  Priority: optional
  Description: Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services
 
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/lib/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/lib/pymoveit2/
--rwxr-xr-x root/root      2007 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_allow_collisions.py
--rwxr-xr-x root/root      3152 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_clear_planning_scene.py
--rwxr-xr-x root/root      4573 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_collision_mesh.py
--rwxr-xr-x root/root      4558 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_collision_primitive.py
--rwxr-xr-x root/root      2635 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_fk.py
--rwxr-xr-x root/root      2428 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_gripper.py
--rwxr-xr-x root/root      2604 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_ik.py
--rwxr-xr-x root/root      4177 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_joint_goal.py
--rwxr-xr-x root/root      4445 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_orientation_path_constraint.py
--rwxr-xr-x root/root      5531 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_pose_goal.py
--rwxr-xr-x root/root      1310 2025-11-03 12:17 ./opt/ros/jazzy/lib/pymoveit2/ex_servo.py
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/site-packages/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/
--rw-r--r-- root/root        53 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/PKG-INFO
--rw-r--r-- root/root       513 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/SOURCES.txt
--rw-r--r-- root/root         1 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/dependency_links.txt
--rw-r--r-- root/root        10 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/top_level.txt
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/
--rw-r--r-- root/root       240 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/__init__.py
--rw-r--r-- root/root     13758 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/gripper_command.py
--rw-r--r-- root/root      8102 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/gripper_interface.py
--rw-r--r-- root/root     94488 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/moveit2.py
--rw-r--r-- root/root     10143 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/moveit2_gripper.py
--rw-r--r-- root/root      8673 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/moveit2_servo.py
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/
--rw-r--r-- root/root        20 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/__init__.py
--rw-r--r-- root/root      1008 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/crane_x7.py
--rw-r--r-- root/root      1134 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/kinova.py
--rw-r--r-- root/root       301 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/lbr.py
--rw-r--r-- root/root       787 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/panda.py
--rw-r--r-- root/root       847 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/phantomx_pincher.py
--rw-r--r-- root/root       760 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/ur.py
--rw-r--r-- root/root       879 2025-11-03 12:17 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/utils.py
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/ament_index/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/ament_index/resource_index/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/ament_index/resource_index/package_run_dependencies/
--rw-r--r-- root/root       104 2025-11-03 12:20 ./opt/ros/jazzy/share/ament_index/resource_index/package_run_dependencies/pymoveit2
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/ament_index/resource_index/packages/
--rw-r--r-- root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/ament_index/resource_index/packages/pymoveit2
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/ament_index/resource_index/parent_prefix_path/
--rw-r--r-- root/root         8 2025-11-03 12:20 ./opt/ros/jazzy/share/ament_index/resource_index/parent_prefix_path/pymoveit2
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/cmake/
--rw-r--r-- root/root       432 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/cmake/pymoveit2Config-version.cmake
--rw-r--r-- root/root      1239 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/cmake/pymoveit2Config.cmake
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/environment/
--rw-r--r-- root/root        41 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/environment/ament_prefix_path.dsv
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/lib/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/lib/pymoveit2/
+-rwxr-xr-x root/root      2007 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_allow_collisions.py
+-rwxr-xr-x root/root      3152 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_clear_planning_scene.py
+-rwxr-xr-x root/root      4573 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_collision_mesh.py
+-rwxr-xr-x root/root      4558 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_collision_primitive.py
+-rwxr-xr-x root/root      2635 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_fk.py
+-rwxr-xr-x root/root      2428 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_gripper.py
+-rwxr-xr-x root/root      2604 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_ik.py
+-rwxr-xr-x root/root      4177 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_joint_goal.py
+-rwxr-xr-x root/root      4445 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_orientation_path_constraint.py
+-rwxr-xr-x root/root      5531 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_pose_goal.py
+-rwxr-xr-x root/root      1310 2025-11-03 12:24 ./opt/ros/jazzy/lib/pymoveit2/ex_servo.py
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/site-packages/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/
+-rw-r--r-- root/root        53 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/PKG-INFO
+-rw-r--r-- root/root       513 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/SOURCES.txt
+-rw-r--r-- root/root         1 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/dependency_links.txt
+-rw-r--r-- root/root        10 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2-4.2.0-py3.12.egg-info/top_level.txt
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/
+-rw-r--r-- root/root       240 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/__init__.py
+-rw-r--r-- root/root     13758 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/gripper_command.py
+-rw-r--r-- root/root      8102 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/gripper_interface.py
+-rw-r--r-- root/root     94488 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/moveit2.py
+-rw-r--r-- root/root     10143 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/moveit2_gripper.py
+-rw-r--r-- root/root      8673 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/moveit2_servo.py
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/
+-rw-r--r-- root/root        20 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/__init__.py
+-rw-r--r-- root/root      1008 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/crane_x7.py
+-rw-r--r-- root/root      1134 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/kinova.py
+-rw-r--r-- root/root       301 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/lbr.py
+-rw-r--r-- root/root       787 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/panda.py
+-rw-r--r-- root/root       847 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/phantomx_pincher.py
+-rw-r--r-- root/root       760 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/robots/ur.py
+-rw-r--r-- root/root       879 2025-11-03 12:24 ./opt/ros/jazzy/lib/python3.12/site-packages/pymoveit2/utils.py
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/ament_index/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/ament_index/resource_index/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/ament_index/resource_index/package_run_dependencies/
+-rw-r--r-- root/root       104 2025-11-03 12:27 ./opt/ros/jazzy/share/ament_index/resource_index/package_run_dependencies/pymoveit2
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/ament_index/resource_index/packages/
+-rw-r--r-- root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/ament_index/resource_index/packages/pymoveit2
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/ament_index/resource_index/parent_prefix_path/
+-rw-r--r-- root/root         8 2025-11-03 12:27 ./opt/ros/jazzy/share/ament_index/resource_index/parent_prefix_path/pymoveit2
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/cmake/
+-rw-r--r-- root/root       432 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/cmake/pymoveit2Config-version.cmake
+-rw-r--r-- root/root      1239 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/cmake/pymoveit2Config.cmake
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/environment/
+-rw-r--r-- root/root        41 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/environment/ament_prefix_path.dsv
 -rw-r--r-- root/root       160 2025-04-24 09:28 ./opt/ros/jazzy/share/pymoveit2/environment/ament_prefix_path.sh
--rw-r--r-- root/root        41 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/environment/path.dsv
+-rw-r--r-- root/root        41 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/environment/path.dsv
 -rw-r--r-- root/root       185 2025-04-24 09:28 ./opt/ros/jazzy/share/pymoveit2/environment/path.sh
--rw-r--r-- root/root        62 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/environment/pythonpath.dsv
--rw-r--r-- root/root       166 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/environment/pythonpath.sh
--rw-r--r-- root/root      1594 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/local_setup.bash
--rw-r--r-- root/root       148 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/local_setup.dsv
--rw-r--r-- root/root      5091 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/local_setup.sh
--rw-r--r-- root/root      1957 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/local_setup.zsh
--rw-r--r-- root/root       156 2025-11-03 12:20 ./opt/ros/jazzy/share/pymoveit2/package.dsv
--rw-r--r-- root/root       945 2025-11-03 12:17 ./opt/ros/jazzy/share/pymoveit2/package.xml
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./usr/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./usr/share/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./usr/share/doc/
-drwxr-xr-x root/root         0 2025-11-03 12:20 ./usr/share/doc/ros-jazzy-pymoveit2/
--rw-r--r-- root/root       193 2025-11-03 12:20 ./usr/share/doc/ros-jazzy-pymoveit2/changelog.Debian.gz
--rw-r--r-- root/root       278 2025-11-03 12:20 ./usr/share/doc/ros-jazzy-pymoveit2/copyright
+-rw-r--r-- root/root        62 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/environment/pythonpath.dsv
+-rw-r--r-- root/root       166 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/environment/pythonpath.sh
+-rw-r--r-- root/root      1594 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/local_setup.bash
+-rw-r--r-- root/root       148 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/local_setup.dsv
+-rw-r--r-- root/root      5091 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/local_setup.sh
+-rw-r--r-- root/root      1957 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/local_setup.zsh
+-rw-r--r-- root/root       156 2025-11-03 12:27 ./opt/ros/jazzy/share/pymoveit2/package.dsv
+-rw-r--r-- root/root       945 2025-11-03 12:24 ./opt/ros/jazzy/share/pymoveit2/package.xml
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./usr/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./usr/share/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./usr/share/doc/
+drwxr-xr-x root/root         0 2025-11-03 12:27 ./usr/share/doc/ros-jazzy-pymoveit2/
+-rw-r--r-- root/root       194 2025-11-03 12:27 ./usr/share/doc/ros-jazzy-pymoveit2/changelog.Debian.gz
+-rw-r--r-- root/root       278 2025-11-03 12:27 ./usr/share/doc/ros-jazzy-pymoveit2/copyright
 
 
 +------------------------------------------------------------------------------+
-| Post Build                                   Mon, 03 Nov 2025 12:20:44 +0000 |
+| Post Build                                   Mon, 03 Nov 2025 12:28:29 +0000 |
 +------------------------------------------------------------------------------+
 
 
 +------------------------------------------------------------------------------+
-| Cleanup                                      Mon, 03 Nov 2025 12:20:44 +0000 |
+| Cleanup                                      Mon, 03 Nov 2025 12:28:29 +0000 |
 +------------------------------------------------------------------------------+
 
 Purging /<<BUILDDIR>>
 Not cleaning session: cloned chroot in use
 
 +------------------------------------------------------------------------------+
-| Summary                                      Mon, 03 Nov 2025 12:20:46 +0000 |
+| Summary                                      Mon, 03 Nov 2025 12:28:30 +0000 |
 +------------------------------------------------------------------------------+
 
 Build Architecture: amd64
 Build Type: binary
-Build-Space: 2368
+Build-Space: 2372
 Build-Time: 5
 Distribution: noble
 Host Architecture: amd64
-Install-Time: 15
-Job: /home/runner/work/pymoveit2/pymoveit2/ros-jazzy-pymoveit2_0-2025.11.03.12.20.dsc
+Install-Time: 16
+Job: /home/runner/work/pymoveit2/pymoveit2/ros-jazzy-pymoveit2_0-2025.11.03.12.27.dsc
 Machine Architecture: amd64
 Package: ros-jazzy-pymoveit2
-Package-Time: 30
-Source-Version: 0-2025.11.03.12.20
-Space: 2368
+Package-Time: 33
+Source-Version: 0-2025.11.03.12.27
+Space: 2372
 Status: successful
-Version: 0-2025.11.03.12.20
+Version: 0-2025.11.03.12.27
 --------------------------------------------------------------------------------
-Finished at 2025-11-03T12:20:43Z
-Build needed 00:00:30, 2368k disk space
+Finished at 2025-11-03T12:28:27Z
+Build needed 00:00:33, 2372k disk space
