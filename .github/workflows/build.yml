@@ -45,3 +45,8 @@ jobs:
         if: ${{ matrix.deb == env.CODENAME }}
         run: |
           sudo apt -y install ./apt_repo/ros-*-pymoveit2_*.deb
+
+      - name: Install ROS 2 CLI Packages
+        if: ${{ matrix.deb == env.CODENAME }}
+        run: |
+          sudo apt -y install ros-${{ matrix.ros }}-ros2cli-common-extensions
