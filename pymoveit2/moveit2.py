@@ -631,13 +631,13 @@ class MoveIt2:
             )
         # Define starting state for the plan (default to the current state)
         while start_joint_state is None:
-            self._node._logger.warn(message="Joint states are not available yet!")
+            self._node.get_logger().warn(message="Joint states are not available yet!")
             if self.__joint_state is not None:
                 start_joint_state = self.__joint_state
                 break
             else:
                 rclpy.spin_once(self._node, timeout_sec=1.0)
-        self._node._logger.info(message="Joint states are available now")
+        self._node.get_logger().info(message="Joint states are available now")
 
         # Ensure the request actually uses the intended start state
         if start_joint_state is not None:
