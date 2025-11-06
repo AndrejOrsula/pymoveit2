@@ -1,16 +1,13 @@
 import math
 from typing import List, Optional
-
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
-
 from .moveit2 import *
 
 
 class MoveIt2Gripper(MoveIt2):
     """
     Python interface for MoveIt 2 Gripper that is controlled by JointTrajectoryController.
-    This implementation builds on MoveIt2 to reuse code (while keeping MoveIt2 standalone).
     """
 
     def __init__(
@@ -20,13 +17,12 @@ class MoveIt2Gripper(MoveIt2):
         open_gripper_joint_positions: List[float],
         closed_gripper_joint_positions: List[float],
         gripper_group_name: str = "gripper",
-        execute_via_moveit: bool = False,
         ignore_new_calls_while_executing: bool = False,
         skip_planning: bool = False,
         skip_planning_fixed_motion_duration: float = 0.5,
         callback_group: Optional[CallbackGroup] = None,
-        follow_joint_trajectory_action_name: str = "DEPRECATED",
-        use_move_group_action: bool = False,
+        execute_via_moveit: bool = True,
+        follow_joint_trajectory_action_name: str = "joint_trajectory_controller/follow_joint_trajectory",
     ):
         """
         Construct an instance of `MoveIt2Gripper` interface.
@@ -35,9 +31,6 @@ class MoveIt2Gripper(MoveIt2):
           - `open_gripper_joint_positions` - Configuration of gripper joints when open
           - `closed_gripper_joint_positions` - Configuration of gripper joints when fully closed
           - `gripper_group_name` - Name of the planning group for robot gripper
-          - [DEPRECATED] `execute_via_moveit` - Flag that enables execution via MoveGroup action (MoveIt 2)
-                                   FollowJointTrajectory action (controller) is employed otherwise
-                                   together with a separate planning service client
           - `ignore_new_calls_while_executing` - Flag to ignore requests to execute new trajectories
                                                  while previous is still being executed
           - `skip_planning` - If enabled, planning is skipped and a single joint trajectory point is published
@@ -46,22 +39,8 @@ class MoveIt2Gripper(MoveIt2):
           - `skip_planning_fixed_motion_duration` - Desired duration for the closing and opening motions when
                                                     `skip_planning` mode is enabled.
           - `callback_group` - Optional callback group to use for ROS 2 communication (topics/services/actions)
-          - [DEPRECATED] `follow_joint_trajectory_action_name` - Name of the action server for the controller
-          - `use_move_group_action` - Flag that enables execution via MoveGroup action (MoveIt 2)
-                               ExecuteTrajectory action is employed otherwise
-                               together with a separate planning service client
+          - `follow_joint_trajectory_action_name` - Name of the action server for the controller
         """
-
-        # Check for deprecated parameters
-        if execute_via_moveit:
-            node.get_logger().warn(
-                "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
-            )
-            use_move_group_action = True
-        if follow_joint_trajectory_action_name != "DEPRECATED":
-            node.get_logger().warn(
-                "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
-            )
 
         super().__init__(
             node=node,
@@ -71,7 +50,9 @@ class MoveIt2Gripper(MoveIt2):
             group_name=gripper_group_name,
             ignore_new_calls_while_executing=ignore_new_calls_while_executing,
             callback_group=callback_group,
-            use_move_group_action=use_move_group_action,
+            execute_via_moveit=execute_via_moveit,
+            follow_joint_trajectory_action_name=follow_joint_trajectory_action_name
+            
         )
         self.__del_redundant_attributes()
 
@@ -116,7 +97,7 @@ class MoveIt2Gripper(MoveIt2):
             * abs(open_gripper_joint_positions[i] - closed_gripper_joint_positions[i])
             for i in range(len(gripper_joint_names))
         ]
-        # Indices of gripper joint within the joint state message topic.
+        # Indices of gripper joint within the message topic: /joint_states.
         # It is assumed that the order of these does not change during execution.
         self.__gripper_joint_indices: Optional[List[int]] = None
 
@@ -124,7 +105,6 @@ class MoveIt2Gripper(MoveIt2):
         """
         Callable that is identical to `MoveIt2Gripper.toggle()`.
         """
-
         self.toggle()
 
     def toggle(self):
@@ -178,21 +158,25 @@ class MoveIt2Gripper(MoveIt2):
         joint_positions = [position for _ in self.joint_names]
         self.move_to_configuration(joint_positions=joint_positions)
 
-    def reset_open(self):
+    def reset_open(self, sync: bool = True):
         """
         Reset into open configuration by sending a dummy joint trajectory.
         This is useful for simulated robots that allow instantaneous reset of joints.
         """
 
-        self.reset_controller(joint_state=self.__open_gripper_joint_positions)
+        self.reset_controller(
+            joint_state=self.__open_gripper_joint_positions, sync=sync
+        )
 
-    def reset_closed(self):
+    def reset_closed(self, sync: bool = True):
         """
         Reset into closed configuration by sending a dummy joint trajectory.
         This is useful for simulated robots that allow instantaneous reset of joints.
         """
 
-        self.reset_controller(joint_state=self.__closed_gripper_joint_positions)
+        self.reset_controller(
+            joint_state=self.__closed_gripper_joint_positions, sync=sync
+        )
 
     def __open_without_planning(self):
         self._send_goal_async_follow_joint_trajectory(
