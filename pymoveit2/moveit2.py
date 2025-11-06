@@ -877,8 +877,7 @@ class MoveIt2:
         msg.object.meshes.append(
             Mesh(
                 # triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
-                triangles=[
-                MeshTriangle(vertex_indices=np.array(face, dtype=np.uint32)) 
+                triangles=[MeshTriangle(vertex_indices=np.array(face, dtype=np.uint32)) 
                 for face in mesh.faces
             ],
                 vertices=[
