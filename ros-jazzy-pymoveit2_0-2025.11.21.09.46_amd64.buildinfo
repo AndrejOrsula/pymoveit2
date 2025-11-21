@@ -2,16 +2,16 @@ Format: 1.0
 Source: ros-jazzy-pymoveit2
 Binary: ros-jazzy-pymoveit2
 Architecture: amd64
-Version: 0-2025.11.03.13.45
+Version: 0-2025.11.21.09.46
 Checksums-Md5:
- 803e2e8455cff89bf163ab981ed29afe 27462 ros-jazzy-pymoveit2_0-2025.11.03.13.45_amd64.deb
+ 30032371c7a31eeaf8a9b42f9e07c28d 27474 ros-jazzy-pymoveit2_0-2025.11.21.09.46_amd64.deb
 Checksums-Sha1:
- 6f08fb0f2bbd96971b73eaf9d5be1317b6aad9d0 27462 ros-jazzy-pymoveit2_0-2025.11.03.13.45_amd64.deb
+ 3a622357b5d57234d188de5ed1d70366c28d0dad 27474 ros-jazzy-pymoveit2_0-2025.11.21.09.46_amd64.deb
 Checksums-Sha256:
- 7721b143d8b3532819d306008a6133508bedfdd96db16176d2381f17d390c4cf 27462 ros-jazzy-pymoveit2_0-2025.11.03.13.45_amd64.deb
+ f9c35b4856d1d0749ad14e78291457339df466c1b07ce4b833c55443340b720f 27474 ros-jazzy-pymoveit2_0-2025.11.21.09.46_amd64.deb
 Build-Origin: Ubuntu
 Build-Architecture: amd64
-Build-Date: Mon, 03 Nov 2025 13:45:35 +0000
+Build-Date: Fri, 21 Nov 2025 09:46:37 +0000
 Build-Path: /build/package/package
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -149,7 +149,7 @@ Installed-Build-Depends:
  libpipeline1 (= 1.5.7-2),
  libproc2-0 (= 2:4.0.4-4ubuntu3.2),
  libpsl5t64 (= 0.21.2-1.1build1),
- libpython3-stdlib (= 3.12.3-0ubuntu2),
+ libpython3-stdlib (= 3.12.3-0ubuntu2.1),
  libpython3.12-minimal (= 3.12.3-1ubuntu0.8),
  libpython3.12-stdlib (= 3.12.3-1ubuntu0.8),
  libquadmath0 (= 14.2.0-4ubuntu2~24.04),
@@ -181,7 +181,7 @@ Installed-Build-Depends:
  libuv1t64 (= 1.48.0-1.1build1),
  libxml2 (= 2.9.14+dfsg-1.3ubuntu3.6),
  libzstd1 (= 1.5.5+dfsg2-2build1.1),
- linux-libc-dev (= 6.8.0-87.88),
+ linux-libc-dev (= 6.8.0-88.89),
  login (= 1:4.13+dfsg1-4ubuntu3.2),
  lto-disabled-list (= 47),
  m4 (= 1.4.19-4build1),
@@ -198,12 +198,12 @@ Installed-Build-Depends:
  perl-modules-5.38 (= 5.38.2-3.2ubuntu0.2),
  po-debconf (= 1.0.21+nmu1),
  procps (= 2:4.0.4-4ubuntu3.2),
- python3 (= 3.12.3-0ubuntu2),
+ python3 (= 3.12.3-0ubuntu2.1),
  python3-catkin-pkg-modules (= 1.1.0-2),
  python3-dateutil (= 2.8.2-3ubuntu1),
  python3-docutils (= 0.20.1+dfsg-3),
  python3-importlib-metadata (= 4.12.0-1),
- python3-minimal (= 3.12.3-0ubuntu2),
+ python3-minimal (= 3.12.3-0ubuntu2.1),
  python3-more-itertools (= 10.2.0-1),
  python3-packaging (= 24.0-1),
  python3-pkg-resources (= 68.1.2-2ubuntu1.2),
@@ -250,4 +250,4 @@ Environment:
  LANG="C.UTF-8"
  LC_ALL="C.UTF-8"
  LC_COLLATE="C.UTF-8"
- SOURCE_DATE_EPOCH="1762177504"
+ SOURCE_DATE_EPOCH="1763718367"
