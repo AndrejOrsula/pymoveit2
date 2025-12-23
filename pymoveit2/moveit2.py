@@ -1,36 +1,36 @@
 import threading
 from typing import List, Optional, Tuple, Union
+
+import numpy as np
 from action_msgs.msg import GoalStatus
 from control_msgs.action import FollowJointTrajectory
 from geometry_msgs.msg import Point, Pose, PoseStamped, Quaternion
 from moveit_msgs.action import MoveGroup
-import numpy as np
-
 from moveit_msgs.msg import (
-    CollisionObject,
     AttachedCollisionObject,
+    CollisionObject,
     Constraints,
     JointConstraint,
     MoveItErrorCodes,
     OrientationConstraint,
-    PositionConstraint,)
-
+    PositionConstraint,
+)
 from moveit_msgs.srv import (
     GetCartesianPath,
     GetMotionPlan,
     GetPositionFK,
-    GetPositionIK,)
-
+    GetPositionIK,
+)
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
-
 from rclpy.qos import (
     QoSDurabilityPolicy,
     QoSHistoryPolicy,
     QoSProfile,
-    QoSReliabilityPolicy,)
-
+    QoSReliabilityPolicy,
+)
 from sensor_msgs.msg import JointState
 from shape_msgs.msg import Mesh, MeshTriangle, SolidPrimitive
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
@@ -248,7 +248,9 @@ class MoveIt2:
 
         if self.__execute_via_moveit:
             if self.__ignore_new_calls_while_executing and self.__is_executing:
-                self._node.get_logger().warn("Controller is already following a trajectory. Skipping motion.")
+                self._node.get_logger().warn(
+                    "Controller is already following a trajectory. Skipping motion."
+                )
                 return
             self.__is_motion_requested = True
 
@@ -265,8 +267,12 @@ class MoveIt2:
             )
             # Define starting state as the current state
             if self.joint_state is not None:
-                self.__move_action_goal.request.start_state.joint_state = (self.joint_state)
-            self._node.get_logger().warn(f"Moving {target_link} with repspect to {frame_id} using set_pose_goal()")
+                self.__move_action_goal.request.start_state.joint_state = (
+                    self.joint_state
+                )
+            self._node.get_logger().warn(
+                f"Moving {target_link} with repspect to {frame_id} using set_pose_goal()"
+            )
             # Send to goal to the server (async) - both planning and execution
             self._send_goal_async_move_action()
             # Clear all previous goal constrains
@@ -449,20 +455,20 @@ class MoveIt2:
 
         self._send_goal_async_follow_joint_trajectory(goal=follow_joint_trajectory_goal)
 
-    def wait_until_executed(self)-> bool:
+    def wait_until_executed(self) -> bool:
         """
         Wait until the previously requested motion is finalised through either a success or failure.
         """
 
         if not self.__is_motion_requested:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot wait until motion is executed (no motion is in progress)."
             )
             return False
 
         while self.__is_motion_requested or self.__is_executing:
             self.__wait_until_executed_rate.sleep()
-        
+
         # made it to return boolean data type
         return self.motion_suceeded
 
@@ -798,7 +804,7 @@ class MoveIt2:
         if not self.__compute_ik_client.wait_for_service(
             timeout_sec=wait_for_server_timeout_sec
         ):
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self.__compute_ik_client.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -854,7 +860,7 @@ class MoveIt2:
             ) from err
 
         mesh = trimesh.load(filepath)
-        msg = AttachedCollisionObject()#CollisionObject()
+        msg = AttachedCollisionObject()  # CollisionObject()
         msg.link_name = frame_id
 
         if not isinstance(position, Point):
@@ -877,9 +883,10 @@ class MoveIt2:
         msg.object.meshes.append(
             Mesh(
                 # triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
-                triangles=[MeshTriangle(vertex_indices=np.array(face, dtype=np.uint32)) 
-                for face in mesh.faces
-            ],
+                triangles=[
+                    MeshTriangle(vertex_indices=np.array(face, dtype=np.uint32))
+                    for face in mesh.faces
+                ],
                 vertices=[
                     Point(x=vert[0], y=vert[1], z=vert[2]) for vert in mesh.vertices
                 ],
@@ -954,7 +961,7 @@ class MoveIt2:
     def _plan_kinematic_path(
         self, wait_for_server_timeout_sec: Optional[float] = 1.0
     ) -> Optional[JointTrajectory]:
-        # Re-use request from move action goal
+        # Reuse request from move action goal
         self.__kinematic_path_request.motion_plan_request = (
             self.__move_action_goal.request
         )
@@ -997,7 +1004,7 @@ class MoveIt2:
         wait_for_server_timeout_sec: Optional[float] = 1.0,
         frame_id: Optional[str] = None,
     ) -> Optional[JointTrajectory]:
-        # Re-use request from move action goal
+        # Reuse request from move action goal
         self.__cartesian_path_request.start_state = (
             self.__move_action_goal.request.start_state
         )
@@ -1087,7 +1094,7 @@ class MoveIt2:
     def __response_callback_move_action(self, response):
         goal_handle = response.result()
         if not goal_handle.accepted:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Action '{self.__move_action_client._action_name}' was rejected."
             )
             self.__is_motion_requested = False
@@ -1108,7 +1115,7 @@ class MoveIt2:
             )
             # added this 1106-1110
             self.motion_suceeded = False
-        
+
         else:
             self.motion_suceeded = True
 
@@ -1178,7 +1185,7 @@ class MoveIt2:
                 f"Action '{self.__follow_joint_trajectory_action_client._action_name}' was unsuccessful: {res.result().status}."
             )
             self.motion_suceeded = False
-            
+
         else:
             self.motion_suceeded = True
 
@@ -1205,8 +1212,8 @@ class MoveIt2:
         # move_action_goal.request.pipeline_id = "Ignored"
         # move_action_goal.request.planner_id = "Ignored"
         move_action_goal.request.group_name = group_name
-        move_action_goal.request.num_planning_attempts = 50 #
-        move_action_goal.request.allowed_planning_time = 5.0 #0.5
+        move_action_goal.request.num_planning_attempts = 50  #
+        move_action_goal.request.allowed_planning_time = 5.0  # 0.5
         move_action_goal.request.max_velocity_scaling_factor = 0.0
         move_action_goal.request.max_acceleration_scaling_factor = 0.0
         move_action_goal.request.cartesian_speed_end_effector_link = end_effector

@@ -1,7 +1,9 @@
 import math
 from typing import List, Optional
+
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
+
 from .moveit2 import *
 
 
@@ -51,8 +53,7 @@ class MoveIt2Gripper(MoveIt2):
             ignore_new_calls_while_executing=ignore_new_calls_while_executing,
             callback_group=callback_group,
             execute_via_moveit=execute_via_moveit,
-            follow_joint_trajectory_action_name=follow_joint_trajectory_action_name
-            
+            follow_joint_trajectory_action_name=follow_joint_trajectory_action_name,
         )
         self.__del_redundant_attributes()
 
