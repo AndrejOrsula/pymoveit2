@@ -29,6 +29,7 @@ from moveit_msgs.srv import (
 )
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import (
     QoSDurabilityPolicy,
@@ -103,12 +104,12 @@ class MoveIt2:
 
         # Check for deprecated parameters
         if execute_via_moveit:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
             )
             use_move_group_action = True
         if follow_joint_trajectory_action_name != "DEPRECATED":
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
             )
 
@@ -313,7 +314,7 @@ class MoveIt2:
 
     def cancel_execution(self):
         if self.query_state() != MoveIt2State.EXECUTING:
-            self._node.get_logger().warn("Attempted to cancel without active goal.")
+            self._node.get_logger().warning("Attempted to cancel without active goal.")
             return None
 
         cancel_string = String()
@@ -322,7 +323,7 @@ class MoveIt2:
 
     def get_execution_future(self) -> Optional[Future]:
         if self.query_state() != MoveIt2State.EXECUTING:
-            self._node.get_logger().warn("Need active goal for future.")
+            self._node.get_logger().warning("Need active goal for future.")
             return None
 
         return self.__execution_goal_handle.get_result_async()
@@ -392,7 +393,7 @@ class MoveIt2:
             if self.__ignore_new_calls_while_executing and (
                 self.__is_motion_requested or self.__is_executing
             ):
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     "Controller is already following a trajectory. Skipping motion."
                 )
                 return
@@ -453,7 +454,7 @@ class MoveIt2:
             if self.__ignore_new_calls_while_executing and (
                 self.__is_motion_requested or self.__is_executing
             ):
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     "Controller is already following a trajectory. Skipping motion."
                 )
                 return
@@ -630,14 +631,20 @@ class MoveIt2:
                 weight=weight_joint_position,
             )
         # Define starting state for the plan (default to the current state)
-        while start_joint_state is None:
-            self._node._logger.warn(message="Joint states are not available yet!")
-            if self.__joint_state is not None:
-                start_joint_state = self.__joint_state
-                break
-            else:
-                rclpy.spin_once(self._node, timeout_sec=1.0)
-        self._node._logger.info(message="Joint states are available now")
+        try:
+            while start_joint_state is None:
+                self._node.get_logger().warning(
+                    message="Joint states are not available yet!"
+                )
+                if self.__joint_state is not None:
+                    start_joint_state = self.__joint_state
+                    break
+                else:
+                    rclpy.spin_once(self._node, timeout_sec=1.0)
+        except ExternalShutdownException:
+            return None
+
+        self._node.get_logger().info(message="Joint states are available now")
 
         # Ensure the request actually uses the intended start state
         if start_joint_state is not None:
@@ -691,7 +698,7 @@ class MoveIt2:
         less than `cartesian_fraction_threshold`.
         """
         if not future.done():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot get trajectory because future is not done."
             )
             return None
@@ -704,13 +711,13 @@ class MoveIt2:
                 if res.fraction >= cartesian_fraction_threshold:
                     return res.solution.joint_trajectory
                 else:
-                    self._node.get_logger().warn(
+                    self._node.get_logger().warning(
                         f"Planning failed! Cartesian planner completed {res.fraction} "
                         f"of the trajectory, less than the threshold {cartesian_fraction_threshold}."
                     )
                     return None
             else:
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     f"Planning failed! Error code: {enum_to_str(MoveItErrorCodes, res.error_code.val)}"
                 )
                 return None
@@ -720,7 +727,7 @@ class MoveIt2:
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
             return res.trajectory.joint_trajectory
         else:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Planning failed! Error code: {enum_to_str(MoveItErrorCodes, res.error_code.val)}"
             )
             return None
@@ -733,7 +740,7 @@ class MoveIt2:
         if self.__ignore_new_calls_while_executing and (
             self.__is_motion_requested or self.__is_executing
         ):
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Controller is already following a trajectory. Skipping motion."
             )
             return
@@ -743,7 +750,7 @@ class MoveIt2:
         )
 
         if execute_trajectory_goal is None:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot execute motion because the provided/planned trajectory is invalid."
             )
             return
@@ -756,7 +763,7 @@ class MoveIt2:
         """
 
         if not self.__is_motion_requested:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot wait until motion is executed (no motion is in progress)."
             )
             return False
@@ -1218,7 +1225,7 @@ class MoveIt2:
         if the future is done and successful, else None.
         """
         if not future.done():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot get FK result because future is not done."
             )
             return None
@@ -1231,7 +1238,7 @@ class MoveIt2:
             else:
                 return res.pose_stamped
         else:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"FK computation failed! Error code: {res.error_code.val}."
             )
             return None
@@ -1270,7 +1277,7 @@ class MoveIt2:
         self.__compute_fk_req.header.stamp = stamp
         self.__compute_fk_client.wait_for_service(timeout_sec=3.0)
         if not self.__compute_fk_client.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self.__compute_fk_client.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -1310,7 +1317,7 @@ class MoveIt2:
         if the future is done and successful, else None.
         """
         if not future.done():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot get IK result because future is not done."
             )
             return None
@@ -1320,7 +1327,7 @@ class MoveIt2:
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
             return res.solution.joint_state
         else:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"IK computation failed! Error code: {enum_to_str(MoveItErrorCodes, res.error_code.val)}"
             )
             return None
@@ -1402,7 +1409,7 @@ class MoveIt2:
         if not self.__compute_ik_client.wait_for_service(
             timeout_sec=wait_for_server_timeout_sec
         ):
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self.__compute_ik_client.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -1837,7 +1844,7 @@ class MoveIt2:
         """
         self._get_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._get_planning_scene_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._get_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
             return False
@@ -1888,7 +1895,7 @@ class MoveIt2:
         # Apply the new planning scene
         self._apply_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._apply_planning_scene_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -1933,7 +1940,7 @@ class MoveIt2:
         # Apply the new planning scene
         self._apply_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._apply_planning_scene_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -1994,7 +2001,7 @@ class MoveIt2:
                 orientation_constraint.header.stamp = stamp
         self._plan_kinematic_path_service.wait_for_service(timeout_sec=3.0)
         if not self._plan_kinematic_path_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -2065,7 +2072,7 @@ class MoveIt2:
         self.__cartesian_path_request.waypoints = [target_pose]
         self._plan_cartesian_path_service.wait_for_service(timeout_sec=3.0)
         if not self._plan_cartesian_path_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._plan_cartesian_path_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -2119,7 +2126,7 @@ class MoveIt2:
     def __result_callback_move_action(self, res):
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
             )
             self.motion_suceeded = False
@@ -2178,7 +2185,7 @@ class MoveIt2:
     def __result_callback_execute_trajectory(self, res):
         self.__execution_mutex.acquire()
         if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
             )
             self.motion_suceeded = False

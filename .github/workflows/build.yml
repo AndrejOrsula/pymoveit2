@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
-  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -19,9 +17,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {deb: jammy, ros: humble}
-          - {deb: noble, ros: jazzy}
-          - {deb: noble, ros: rolling}
+          - { deb: jammy, ros: humble }
+          - { deb: noble, ros: jazzy }
+          - { deb: noble, ros: rolling }
     steps:
       - name: Build for ROS ${{ matrix.ros_distro }}
         uses: jspricke/ros-deb-builder-action@main
@@ -46,3 +44,22 @@ jobs:
         if: ${{ matrix.deb == env.CODENAME }}
         run: |
           sudo apt -y install ./apt_repo/ros-*-pymoveit2_*.deb
+
+      - name: Install ROS 2 CLI Packages
+        if: ${{ matrix.deb == env.CODENAME }}
+        run: |
+          sudo apt -y install ros-${{ matrix.ros }}-ros2cli-common-extensions
+
+      - name: Run 'ex_pose_goal' example
+        if: ${{ matrix.deb == env.CODENAME }}
+        run: |
+          . /opt/ros/${{ matrix.ros }}/setup.bash
+          # do not exit on first failure to allow processing the timeout exit code
+          set +e
+          timeout --preserve-status 5s ros2 run pymoveit2 ex_pose_goal.py
+          status=$?
+          set -e
+          echo "timeout status: " $status
+          # success on timeout or command success
+          # 143 = 128 + SIGTERM
+          [ $status -eq 0 ] || [ $status -eq 143 ] || exit $status
