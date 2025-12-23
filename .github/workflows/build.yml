@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -18,9 +17,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - {deb: jammy, ros: humble}
-          - {deb: noble, ros: jazzy}
-          - {deb: noble, ros: rolling}
+          - { deb: jammy, ros: humble }
+          - { deb: noble, ros: jazzy }
+          - { deb: noble, ros: rolling }
     steps:
       - name: Build for ROS ${{ matrix.ros_distro }}
         uses: jspricke/ros-deb-builder-action@main
