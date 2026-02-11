@@ -50,7 +50,7 @@ class MoveIt2Servo:
         # Create publishers
         self.__twist_pub = self._node.create_publisher(
             msg_type=TwistStamped,
-            topic="delta_twist_cmds",
+            topic=self.namespace + "/servo_node/delta_twist_cmds",
             qos_profile=QoSProfile(
                 durability=QoSDurabilityPolicy.VOLATILE,
                 reliability=QoSReliabilityPolicy.RELIABLE,
