@@ -2,16 +2,16 @@ Format: 1.0
 Source: ros-jazzy-pymoveit2
 Binary: ros-jazzy-pymoveit2
 Architecture: amd64
-Version: 0-2026.02.11.16.14
+Version: 0-2026.02.11.16.31
 Checksums-Md5:
- fdcb964a8c310fd611a2c43bf6492531 27642 ros-jazzy-pymoveit2_0-2026.02.11.16.14_amd64.deb
+ e3655b7c7b1f00754699f438c82d5c03 27642 ros-jazzy-pymoveit2_0-2026.02.11.16.31_amd64.deb
 Checksums-Sha1:
- 31f5e28d8f0a747171c068396eb8bac828dbfcb8 27642 ros-jazzy-pymoveit2_0-2026.02.11.16.14_amd64.deb
+ f81cbdadbdcf89b25ebdfe986a1885818099fbbe 27642 ros-jazzy-pymoveit2_0-2026.02.11.16.31_amd64.deb
 Checksums-Sha256:
- f96812ad3460921cac51d4a18c1a2f40ca8aacdc4b8a12cf4a73d81e8306790e 27642 ros-jazzy-pymoveit2_0-2026.02.11.16.14_amd64.deb
+ a898a8ff56ab84f561176d88e910807eb561ef26501b94bc8216b8b91a0cabb0 27642 ros-jazzy-pymoveit2_0-2026.02.11.16.31_amd64.deb
 Build-Origin: Ubuntu
 Build-Architecture: amd64
-Build-Date: Wed, 11 Feb 2026 16:15:12 +0000
+Build-Date: Wed, 11 Feb 2026 16:32:20 +0000
 Build-Path: /build/package/package
 Build-Tainted-By:
  merged-usr-via-aliased-dirs
@@ -250,4 +250,4 @@ Environment:
  LANG="C.UTF-8"
  LC_ALL="C.UTF-8"
  LC_COLLATE="C.UTF-8"
- SOURCE_DATE_EPOCH="1770826482"
+ SOURCE_DATE_EPOCH="1770827511"
