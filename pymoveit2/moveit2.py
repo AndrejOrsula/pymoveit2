@@ -29,6 +29,7 @@ from moveit_msgs.srv import (
 )
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import (
     QoSDurabilityPolicy,
@@ -103,12 +104,12 @@ class MoveIt2:
 
         # Check for deprecated parameters
         if execute_via_moveit:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Parameter `execute_via_moveit` is deprecated. Please use `use_move_group_action` instead."
             )
             use_move_group_action = True
         if follow_joint_trajectory_action_name != "DEPRECATED":
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
             )
 
@@ -313,7 +314,7 @@ class MoveIt2:
 
     def cancel_execution(self):
         if self.query_state() != MoveIt2State.EXECUTING:
-            self._node.get_logger().warn("Attempted to cancel without active goal.")
+            self._node.get_logger().warning("Attempted to cancel without active goal.")
             return None
 
         cancel_string = String()
@@ -322,7 +323,7 @@ class MoveIt2:
 
     def get_execution_future(self) -> Optional[Future]:
         if self.query_state() != MoveIt2State.EXECUTING:
-            self._node.get_logger().warn("Need active goal for future.")
+            self._node.get_logger().warning("Need active goal for future.")
             return None
 
         return self.__execution_goal_handle.get_result_async()
@@ -392,7 +393,7 @@ class MoveIt2:
             if self.__ignore_new_calls_while_executing and (
                 self.__is_motion_requested or self.__is_executing
             ):
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     "Controller is already following a trajectory. Skipping motion."
                 )
                 return
@@ -453,7 +454,7 @@ class MoveIt2:
             if self.__ignore_new_calls_while_executing and (
                 self.__is_motion_requested or self.__is_executing
             ):
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     "Controller is already following a trajectory. Skipping motion."
                 )
                 return
@@ -630,14 +631,38 @@ class MoveIt2:
                 weight=weight_joint_position,
             )
         # Define starting state for the plan (default to the current state)
-        while start_joint_state is None:
-            self._node._logger.warn(message="Joint states are not available yet!")
-            if self.__joint_state is not None:
-                start_joint_state = self.__joint_state
-                break
+        try:
+            while start_joint_state is None:
+                self._node.get_logger().warning(
+                    message="Joint states are not available yet!"
+                )
+                if self.__joint_state is not None:
+                    start_joint_state = self.__joint_state
+                    break
+                else:
+                    rclpy.spin_once(self._node, timeout_sec=1.0)
+        except ExternalShutdownException:
+            return None
+
+        self._node.get_logger().info(message="Joint states are available now")
+
+        # Ensure the request actually uses the intended start state
+        if start_joint_state is not None:
+            if isinstance(start_joint_state, JointState):
+                self.__move_action_goal.request.start_state.joint_state = (
+                    start_joint_state
+                )
             else:
-                rclpy.spin_once(self._node, timeout_sec=1.0)
-        self._node._logger.info(message="Joint states are available now")
+                # start_joint_state is a list of positions
+                self.__move_action_goal.request.start_state.joint_state = (
+                    init_joint_state(
+                        joint_names=self.__joint_names,
+                        joint_positions=start_joint_state,
+                    )
+                )
+        elif self.joint_state is not None:
+            # Default to the latest observed state if none provided
+            self.__move_action_goal.request.start_state.joint_state = self.joint_state
 
         # Ensure the request actually uses the intended start state
         if start_joint_state is not None:
@@ -691,7 +716,7 @@ class MoveIt2:
         less than `cartesian_fraction_threshold`.
         """
         if not future.done():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot get trajectory because future is not done."
             )
             return None
@@ -704,13 +729,13 @@ class MoveIt2:
                 if res.fraction >= cartesian_fraction_threshold:
                     return res.solution.joint_trajectory
                 else:
-                    self._node.get_logger().warn(
+                    self._node.get_logger().warning(
                         f"Planning failed! Cartesian planner completed {res.fraction} "
                         f"of the trajectory, less than the threshold {cartesian_fraction_threshold}."
                     )
                     return None
             else:
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     f"Planning failed! Error code: {enum_to_str(MoveItErrorCodes, res.error_code.val)}"
                 )
                 return None
@@ -720,7 +745,7 @@ class MoveIt2:
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
             return res.trajectory.joint_trajectory
         else:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Planning failed! Error code: {enum_to_str(MoveItErrorCodes, res.error_code.val)}"
             )
             return None
@@ -733,7 +758,7 @@ class MoveIt2:
         if self.__ignore_new_calls_while_executing and (
             self.__is_motion_requested or self.__is_executing
         ):
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Controller is already following a trajectory. Skipping motion."
             )
             return
@@ -743,7 +768,7 @@ class MoveIt2:
         )
 
         if execute_trajectory_goal is None:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot execute motion because the provided/planned trajectory is invalid."
             )
             return
@@ -756,7 +781,7 @@ class MoveIt2:
         """
 
         if not self.__is_motion_requested:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot wait until motion is executed (no motion is in progress)."
             )
             return False
@@ -1218,7 +1243,7 @@ class MoveIt2:
         if the future is done and successful, else None.
         """
         if not future.done():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot get FK result because future is not done."
             )
             return None
@@ -1231,7 +1256,7 @@ class MoveIt2:
             else:
                 return res.pose_stamped
         else:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"FK computation failed! Error code: {res.error_code.val}."
             )
             return None
@@ -1270,7 +1295,7 @@ class MoveIt2:
         self.__compute_fk_req.header.stamp = stamp
         self.__compute_fk_client.wait_for_service(timeout_sec=3.0)
         if not self.__compute_fk_client.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self.__compute_fk_client.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -1310,7 +1335,7 @@ class MoveIt2:
         if the future is done and successful, else None.
         """
         if not future.done():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 "Cannot get IK result because future is not done."
             )
             return None
@@ -1320,7 +1345,7 @@ class MoveIt2:
         if MoveItErrorCodes.SUCCESS == res.error_code.val:
             return res.solution.joint_state
         else:
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"IK computation failed! Error code: {enum_to_str(MoveItErrorCodes, res.error_code.val)}"
             )
             return None
@@ -1402,7 +1427,7 @@ class MoveIt2:
         if not self.__compute_ik_client.wait_for_service(
             timeout_sec=wait_for_server_timeout_sec
         ):
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self.__compute_ik_client.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -1837,13 +1862,18 @@ class MoveIt2:
         """
         self._get_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._get_planning_scene_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._get_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
             return False
-        self.__planning_scene = self._get_planning_scene_service.call(
+        planning_scene_future = self._get_planning_scene_service.call_async(
             GetPlanningScene.Request()
-        ).scene
+        )
+
+        while not planning_scene_future.done():
+            rclpy.spin_once(self._node, timeout_sec=1.0)
+
+        self.__planning_scene = planning_scene_future.result().scene
         return True
 
     def allow_collisions(self, id: str, allow: bool) -> Optional[Future]:
@@ -1888,7 +1918,7 @@ class MoveIt2:
         # Apply the new planning scene
         self._apply_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._apply_planning_scene_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -1933,7 +1963,7 @@ class MoveIt2:
         # Apply the new planning scene
         self._apply_planning_scene_service.wait_for_service(timeout_sec=3.0)
         if not self._apply_planning_scene_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._apply_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -1994,7 +2024,7 @@ class MoveIt2:
                 orientation_constraint.header.stamp = stamp
         self._plan_kinematic_path_service.wait_for_service(timeout_sec=3.0)
         if not self._plan_kinematic_path_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._plan_kinematic_path_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -2065,7 +2095,7 @@ class MoveIt2:
         self.__cartesian_path_request.waypoints = [target_pose]
         self._plan_cartesian_path_service.wait_for_service(timeout_sec=3.0)
         if not self._plan_cartesian_path_service.service_is_ready():
-            self._node.get_logger().warn(
+            self._node.get_logger().warning(
                 f"Service '{self._plan_cartesian_path_service.srv_name}' is not yet available. Better luck next time!"
             )
             return None
@@ -2075,125 +2105,119 @@ class MoveIt2:
         )
 
     def _send_goal_async_move_action(self):
-        self.__execution_mutex.acquire()
-        stamp = self._node.get_clock().now().to_msg()
-        self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
-        if not self.__move_action_client.server_is_ready():
-            self._node.get_logger().warn(
-                f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
+        with self.__execution_mutex:
+            stamp = self._node.get_clock().now().to_msg()
+            self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
+            if not self.__move_action_client.server_is_ready():
+                self._node.get_logger().warning(
+                    f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
+                )
+                return
+
+            self.__last_error_code = None
+            self.__is_motion_requested = True
+            self.__send_goal_future_move_action = (
+                self.__move_action_client.send_goal_async(
+                    goal=self.__move_action_goal,
+                    feedback_callback=None,
+                )
             )
-            return
 
-        self.__last_error_code = None
-        self.__is_motion_requested = True
-        self.__send_goal_future_move_action = self.__move_action_client.send_goal_async(
-            goal=self.__move_action_goal,
-            feedback_callback=None,
-        )
-
-        self.__send_goal_future_move_action.add_done_callback(
-            self.__response_callback_move_action
-        )
-
-        self.__execution_mutex.release()
+            self.__send_goal_future_move_action.add_done_callback(
+                self.__response_callback_move_action
+            )
 
     def __response_callback_move_action(self, response):
-        self.__execution_mutex.acquire()
-        goal_handle = response.result()
-        if not goal_handle.accepted:
-            self._node.get_logger().warn(
-                f"Action '{self.__move_action_client._action_name}' was rejected."
-            )
+        with self.__execution_mutex:
+            goal_handle = response.result()
+            if not goal_handle.accepted:
+                self._node.get_logger().warning(
+                    f"Action '{self.__move_action_client._action_name}' was rejected."
+                )
+                self.__is_motion_requested = False
+                return
+
+            self.__execution_goal_handle = goal_handle
+            self.__is_executing = True
             self.__is_motion_requested = False
-            return
 
-        self.__execution_goal_handle = goal_handle
-        self.__is_executing = True
-        self.__is_motion_requested = False
-
-        self.__get_result_future_move_action = goal_handle.get_result_async()
-        self.__get_result_future_move_action.add_done_callback(
-            self.__result_callback_move_action
-        )
-        self.__execution_mutex.release()
+            self.__get_result_future_move_action = goal_handle.get_result_async()
+            self.__get_result_future_move_action.add_done_callback(
+                self.__result_callback_move_action
+            )
 
     def __result_callback_move_action(self, res):
-        self.__execution_mutex.acquire()
-        if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().warn(
-                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
-            )
-            self.motion_suceeded = False
-        else:
-            self.motion_suceeded = True
+        with self.__execution_mutex:
+            if res.result().status != GoalStatus.STATUS_SUCCEEDED:
+                self._node.get_logger().warning(
+                    f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
+                )
+                self.motion_suceeded = False
+            else:
+                self.motion_suceeded = True
 
-        self.__last_error_code = res.result().result.error_code
+            self.__last_error_code = res.result().result.error_code
 
-        self.__execution_goal_handle = None
-        self.__is_executing = False
-        self.__execution_mutex.release()
+            self.__execution_goal_handle = None
+            self.__is_executing = False
 
     def _send_goal_async_execute_trajectory(
         self,
         goal: ExecuteTrajectory,
     ):
-        self.__execution_mutex.acquire()
+        with self.__execution_mutex:
+            if not self._execute_trajectory_action_client.server_is_ready():
+                self._node.get_logger().warning(
+                    f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
+                )
+                return
 
-        if not self._execute_trajectory_action_client.server_is_ready():
-            self._node.get_logger().warn(
-                f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
+            self.__last_error_code = None
+            self.__is_motion_requested = True
+            self.__send_goal_future_execute_trajectory = (
+                self._execute_trajectory_action_client.send_goal_async(
+                    goal=goal,
+                    feedback_callback=None,
+                )
             )
-            return
 
-        self.__last_error_code = None
-        self.__is_motion_requested = True
-        self.__send_goal_future_execute_trajectory = (
-            self._execute_trajectory_action_client.send_goal_async(
-                goal=goal,
-                feedback_callback=None,
+            self.__send_goal_future_execute_trajectory.add_done_callback(
+                self.__response_callback_execute_trajectory
             )
-        )
-
-        self.__send_goal_future_execute_trajectory.add_done_callback(
-            self.__response_callback_execute_trajectory
-        )
-        self.__execution_mutex.release()
 
     def __response_callback_execute_trajectory(self, response):
-        self.__execution_mutex.acquire()
-        goal_handle = response.result()
-        if not goal_handle.accepted:
-            self._node.get_logger().warn(
-                f"Action '{self._execute_trajectory_action_client._action_name}' was rejected."
-            )
+        with self.__execution_mutex:
+            goal_handle = response.result()
+            if not goal_handle.accepted:
+                self._node.get_logger().warning(
+                    f"Action '{self._execute_trajectory_action_client._action_name}' was rejected."
+                )
+                self.__is_motion_requested = False
+                return
+
+            self.__execution_goal_handle = goal_handle
+            self.__is_executing = True
             self.__is_motion_requested = False
-            return
 
-        self.__execution_goal_handle = goal_handle
-        self.__is_executing = True
-        self.__is_motion_requested = False
-
-        self.__get_result_future_execute_trajectory = goal_handle.get_result_async()
-        self.__get_result_future_execute_trajectory.add_done_callback(
-            self.__result_callback_execute_trajectory
-        )
-        self.__execution_mutex.release()
+            self.__get_result_future_execute_trajectory = goal_handle.get_result_async()
+            self.__get_result_future_execute_trajectory.add_done_callback(
+                self.__result_callback_execute_trajectory
+            )
 
     def __result_callback_execute_trajectory(self, res):
-        self.__execution_mutex.acquire()
-        if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().warn(
-                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
-            )
-            self.motion_suceeded = False
-        else:
-            self.motion_suceeded = True
+        with self.__execution_mutex:
+            if res.result().status != GoalStatus.STATUS_SUCCEEDED:
+                self._node.get_logger().warning(
+                    f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
+                )
+                self.motion_suceeded = False
+            else:
+                self.motion_suceeded = True
 
-        self.__last_error_code = res.result().result.error_code
+            self.__last_error_code = res.result().result.error_code
 
-        self.__execution_goal_handle = None
-        self.__is_executing = False
-        self.__execution_mutex.release()
+            self.__execution_goal_handle = None
+            self.__is_executing = False
 
     @classmethod
     def __init_move_action_goal(

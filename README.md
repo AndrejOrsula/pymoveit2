@@ -59,15 +59,15 @@ This enables importing of `pymoveit2` module from external workspaces.
 
 ## Examples
 
-To demonstrate `pymoveit2` usage, [examples](./examples) directory contains scripts that demonstrate the basic functionality. Additional examples can be found under [ign_moveit2_examples](https://github.com/AndrejOrsula/ign_moveit2_examples) repository.
+To demonstrate `pymoveit2` usage, [examples](./examples) directory contains scripts that demonstrate the basic functionality. Additional examples can be found under [gz_moveit2_examples](https://github.com/AndrejOrsula/gz_moveit2_examples) repository.
 
-Prior to running the examples, configure an environment for control of a robot with MoveIt 2. For instance, one of the following launch scripts from [panda_ign_moveit2](https://github.com/AndrejOrsula/panda_ign_moveit2) repository can be used.
+Prior to running the examples, configure an environment for control of a robot with MoveIt 2. For instance, one of the following launch scripts from [panda_gz_moveit2](https://github.com/AndrejOrsula/panda_gz_moveit2) repository can be used.
 
 ```bash
 # RViz (fake) ROS 2 control
 ros2 launch panda_moveit_config ex_fake_control.launch.py
 # Gazebo (simulated) ROS 2 control
-ros2 launch panda_moveit_config ex_ign_control.launch.py
+ros2 launch panda_moveit_config ex_gz_control.launch.py
 ```
 
 After that, the individual scripts can be run.
