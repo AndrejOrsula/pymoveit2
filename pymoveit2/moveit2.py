@@ -513,11 +513,13 @@ class MoveIt2:
         """
         Call plan_async and wait on future
         """
-        future = self.plan_async(**{
-            key: value
-            for key, value in locals().items()
-            if key not in ["self", "cartesian_fraction_threshold"]
-        })
+        future = self.plan_async(
+            **{
+                key: value
+                for key, value in locals().items()
+                if key not in ["self", "cartesian_fraction_threshold"]
+            }
+        )
 
         if future is None:
             return None
@@ -1201,9 +1203,9 @@ class MoveIt2:
         """
         Call compute_fk_async and wait on future
         """
-        future = self.compute_fk_async(**{
-            key: value for key, value in locals().items() if key != "self"
-        })
+        future = self.compute_fk_async(
+            **{key: value for key, value in locals().items() if key != "self"}
+        )
 
         if future is None:
             return None
@@ -1294,9 +1296,9 @@ class MoveIt2:
         """
         Call compute_ik_async and wait on future
         """
-        future = self.compute_ik_async(**{
-            key: value for key, value in locals().items() if key != "self"
-        })
+        future = self.compute_ik_async(
+            **{key: value for key, value in locals().items() if key != "self"}
+        )
 
         if future is None:
             return None
@@ -1992,7 +1994,9 @@ class MoveIt2:
         )
 
         stamp = self._node.get_clock().now().to_msg()
-        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = stamp
+        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = (
+            stamp
+        )
         for (
             constraints
         ) in self.__kinematic_path_request.motion_plan_request.goal_constraints:
