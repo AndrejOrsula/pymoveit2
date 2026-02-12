@@ -1,16 +1,16 @@
 Package: ros-humble-pymoveit2
 Architecture: amd64
-Version: 0-2026.02.12.12.36
+Version: 0-2026.02.12.12.45
 Priority: optional
 Section: misc
 Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
 Installed-Size: 244
 Depends: ros-humble-action-msgs, ros-humble-control-msgs, ros-humble-geometry-msgs, ros-humble-moveit-msgs, ros-humble-rclpy, ros-humble-sensor-msgs, ros-humble-shape-msgs, ros-humble-std-srvs, ros-humble-trajectory-msgs
-Filename: ./ros-humble-pymoveit2_0-2026.02.12.12.36_amd64.deb
-Size: 27806
-MD5sum: 742bffa385e3af47fc55bf1c78f9af47
-SHA1: 3db0a90d15254779bbf29461f4a803e8912bc4f3
-SHA256: 2e2a07dea259b0c4c2ef4a6c8701613349627b91b7f11787bf723b278719b661
-SHA512: c7f8fc240f52989bae7fa3b1ff72fd1eeba08516a83b2a36f65ac4b282fe62574e38bec2bee01e81e78bf634ca22d5e4c903571befd16035bc1aec61ffc1f41d
+Filename: ./ros-humble-pymoveit2_0-2026.02.12.12.45_amd64.deb
+Size: 27808
+MD5sum: 16ca118e329603115b916e7d21c5b2ef
+SHA1: 4012497103f712ca3e49601cba7d5f2038dd81ce
+SHA256: af095cb9878fec3dc0b45acf519a853ac01d7e0a441d7a19088545e9fec9c0ae
+SHA512: e72fa1806c3eefd68843d23ed932118abd42b163463689ace0c6eb92ba043a971eb3d18c688ff240d4aaa2b1caee05544ad422e5add6aefd9615ac4d3eb6c5eb
 Description: Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services
 
