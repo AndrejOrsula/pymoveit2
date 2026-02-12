@@ -2082,125 +2082,119 @@ class MoveIt2:
         )
 
     def _send_goal_async_move_action(self):
-        self.__execution_mutex.acquire()
-        stamp = self._node.get_clock().now().to_msg()
-        self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
-        if not self.__move_action_client.server_is_ready():
-            self._node.get_logger().warning(
-                f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
+        with self.__execution_mutex:
+            stamp = self._node.get_clock().now().to_msg()
+            self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
+            if not self.__move_action_client.server_is_ready():
+                self._node.get_logger().warning(
+                    f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
+                )
+                return
+
+            self.__last_error_code = None
+            self.__is_motion_requested = True
+            self.__send_goal_future_move_action = (
+                self.__move_action_client.send_goal_async(
+                    goal=self.__move_action_goal,
+                    feedback_callback=None,
+                )
             )
-            return
 
-        self.__last_error_code = None
-        self.__is_motion_requested = True
-        self.__send_goal_future_move_action = self.__move_action_client.send_goal_async(
-            goal=self.__move_action_goal,
-            feedback_callback=None,
-        )
-
-        self.__send_goal_future_move_action.add_done_callback(
-            self.__response_callback_move_action
-        )
-
-        self.__execution_mutex.release()
+            self.__send_goal_future_move_action.add_done_callback(
+                self.__response_callback_move_action
+            )
 
     def __response_callback_move_action(self, response):
-        self.__execution_mutex.acquire()
-        goal_handle = response.result()
-        if not goal_handle.accepted:
-            self._node.get_logger().warning(
-                f"Action '{self.__move_action_client._action_name}' was rejected."
-            )
+        with self.__execution_mutex:
+            goal_handle = response.result()
+            if not goal_handle.accepted:
+                self._node.get_logger().warning(
+                    f"Action '{self.__move_action_client._action_name}' was rejected."
+                )
+                self.__is_motion_requested = False
+                return
+
+            self.__execution_goal_handle = goal_handle
+            self.__is_executing = True
             self.__is_motion_requested = False
-            return
 
-        self.__execution_goal_handle = goal_handle
-        self.__is_executing = True
-        self.__is_motion_requested = False
-
-        self.__get_result_future_move_action = goal_handle.get_result_async()
-        self.__get_result_future_move_action.add_done_callback(
-            self.__result_callback_move_action
-        )
-        self.__execution_mutex.release()
+            self.__get_result_future_move_action = goal_handle.get_result_async()
+            self.__get_result_future_move_action.add_done_callback(
+                self.__result_callback_move_action
+            )
 
     def __result_callback_move_action(self, res):
-        self.__execution_mutex.acquire()
-        if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().warning(
-                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
-            )
-            self.motion_suceeded = False
-        else:
-            self.motion_suceeded = True
+        with self.__execution_mutex:
+            if res.result().status != GoalStatus.STATUS_SUCCEEDED:
+                self._node.get_logger().warning(
+                    f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
+                )
+                self.motion_suceeded = False
+            else:
+                self.motion_suceeded = True
 
-        self.__last_error_code = res.result().result.error_code
+            self.__last_error_code = res.result().result.error_code
 
-        self.__execution_goal_handle = None
-        self.__is_executing = False
-        self.__execution_mutex.release()
+            self.__execution_goal_handle = None
+            self.__is_executing = False
 
     def _send_goal_async_execute_trajectory(
         self,
         goal: ExecuteTrajectory,
     ):
-        self.__execution_mutex.acquire()
+        with self.__execution_mutex:
+            if not self._execute_trajectory_action_client.server_is_ready():
+                self._node.get_logger().warning(
+                    f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
+                )
+                return
 
-        if not self._execute_trajectory_action_client.server_is_ready():
-            self._node.get_logger().warning(
-                f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
+            self.__last_error_code = None
+            self.__is_motion_requested = True
+            self.__send_goal_future_execute_trajectory = (
+                self._execute_trajectory_action_client.send_goal_async(
+                    goal=goal,
+                    feedback_callback=None,
+                )
             )
-            return
 
-        self.__last_error_code = None
-        self.__is_motion_requested = True
-        self.__send_goal_future_execute_trajectory = (
-            self._execute_trajectory_action_client.send_goal_async(
-                goal=goal,
-                feedback_callback=None,
+            self.__send_goal_future_execute_trajectory.add_done_callback(
+                self.__response_callback_execute_trajectory
             )
-        )
-
-        self.__send_goal_future_execute_trajectory.add_done_callback(
-            self.__response_callback_execute_trajectory
-        )
-        self.__execution_mutex.release()
 
     def __response_callback_execute_trajectory(self, response):
-        self.__execution_mutex.acquire()
-        goal_handle = response.result()
-        if not goal_handle.accepted:
-            self._node.get_logger().warning(
-                f"Action '{self._execute_trajectory_action_client._action_name}' was rejected."
-            )
+        with self.__execution_mutex:
+            goal_handle = response.result()
+            if not goal_handle.accepted:
+                self._node.get_logger().warning(
+                    f"Action '{self._execute_trajectory_action_client._action_name}' was rejected."
+                )
+                self.__is_motion_requested = False
+                return
+
+            self.__execution_goal_handle = goal_handle
+            self.__is_executing = True
             self.__is_motion_requested = False
-            return
 
-        self.__execution_goal_handle = goal_handle
-        self.__is_executing = True
-        self.__is_motion_requested = False
-
-        self.__get_result_future_execute_trajectory = goal_handle.get_result_async()
-        self.__get_result_future_execute_trajectory.add_done_callback(
-            self.__result_callback_execute_trajectory
-        )
-        self.__execution_mutex.release()
+            self.__get_result_future_execute_trajectory = goal_handle.get_result_async()
+            self.__get_result_future_execute_trajectory.add_done_callback(
+                self.__result_callback_execute_trajectory
+            )
 
     def __result_callback_execute_trajectory(self, res):
-        self.__execution_mutex.acquire()
-        if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().warning(
-                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
-            )
-            self.motion_suceeded = False
-        else:
-            self.motion_suceeded = True
+        with self.__execution_mutex:
+            if res.result().status != GoalStatus.STATUS_SUCCEEDED:
+                self._node.get_logger().warning(
+                    f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
+                )
+                self.motion_suceeded = False
+            else:
+                self.motion_suceeded = True
 
-        self.__last_error_code = res.result().result.error_code
+            self.__last_error_code = res.result().result.error_code
 
-        self.__execution_goal_handle = None
-        self.__is_executing = False
-        self.__execution_mutex.release()
+            self.__execution_goal_handle = None
+            self.__is_executing = False
 
     @classmethod
     def __init_move_action_goal(
