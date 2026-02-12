@@ -1848,9 +1848,14 @@ class MoveIt2:
                 f"Service '{self._get_planning_scene_service.srv_name}' is not yet available. Better luck next time!"
             )
             return False
-        self.__planning_scene = self._get_planning_scene_service.call(
+        planning_scene_future = self._get_planning_scene_service.call_async(
             GetPlanningScene.Request()
-        ).scene
+        )
+
+        while not planning_scene_future.done():
+            rclpy.spin_once(self._node, timeout_sec=1.0)
+
+        self.__planning_scene = planning_scene_future.result().scene
         return True
 
     def allow_collisions(self, id: str, allow: bool) -> Optional[Future]:
