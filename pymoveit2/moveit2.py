@@ -513,13 +513,11 @@ class MoveIt2:
         """
         Call plan_async and wait on future
         """
-        future = self.plan_async(
-            **{
-                key: value
-                for key, value in locals().items()
-                if key not in ["self", "cartesian_fraction_threshold"]
-            }
-        )
+        future = self.plan_async(**{
+            key: value
+            for key, value in locals().items()
+            if key not in ["self", "cartesian_fraction_threshold"]
+        })
 
         if future is None:
             return None
@@ -1203,9 +1201,9 @@ class MoveIt2:
         """
         Call compute_fk_async and wait on future
         """
-        future = self.compute_fk_async(
-            **{key: value for key, value in locals().items() if key != "self"}
-        )
+        future = self.compute_fk_async(**{
+            key: value for key, value in locals().items() if key != "self"
+        })
 
         if future is None:
             return None
@@ -1296,9 +1294,9 @@ class MoveIt2:
         """
         Call compute_ik_async and wait on future
         """
-        future = self.compute_ik_async(
-            **{key: value for key, value in locals().items() if key != "self"}
-        )
+        future = self.compute_ik_async(**{
+            key: value for key, value in locals().items() if key != "self"
+        })
 
         if future is None:
             return None
@@ -1994,9 +1992,7 @@ class MoveIt2:
         )
 
         stamp = self._node.get_clock().now().to_msg()
-        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = (
-            stamp
-        )
+        self.__kinematic_path_request.motion_plan_request.workspace_parameters.header.stamp = stamp
         for (
             constraints
         ) in self.__kinematic_path_request.motion_plan_request.goal_constraints:
@@ -2091,7 +2087,7 @@ class MoveIt2:
             stamp = self._node.get_clock().now().to_msg()
             self.__move_action_goal.request.workspace_parameters.header.stamp = stamp
             if not self.__move_action_client.server_is_ready():
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     f"Action server '{self.__move_action_client._action_name}' is not yet available. Better luck next time!"
                 )
                 return
@@ -2113,7 +2109,7 @@ class MoveIt2:
         with self.__execution_mutex:
             goal_handle = response.result()
             if not goal_handle.accepted:
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     f"Action '{self.__move_action_client._action_name}' was rejected."
                 )
                 self.__is_motion_requested = False
@@ -2129,20 +2125,19 @@ class MoveIt2:
             )
 
     def __result_callback_move_action(self, res):
-        self.__execution_mutex.acquire()
-        if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().warning(
-                f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
-            )
-            self.motion_suceeded = False
-        else:
-            self.motion_suceeded = True
+        with self.__execution_mutex:
+            if res.result().status != GoalStatus.STATUS_SUCCEEDED:
+                self._node.get_logger().warning(
+                    f"Action '{self.__move_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
+                )
+                self.motion_suceeded = False
+            else:
+                self.motion_suceeded = True
 
-        self.__last_error_code = res.result().result.error_code
+            self.__last_error_code = res.result().result.error_code
 
-        self.__execution_goal_handle = None
-        self.__is_executing = False
-        self.__execution_mutex.release()
+            self.__execution_goal_handle = None
+            self.__is_executing = False
 
     def _send_goal_async_execute_trajectory(
         self,
@@ -2150,7 +2145,7 @@ class MoveIt2:
     ):
         with self.__execution_mutex:
             if not self._execute_trajectory_action_client.server_is_ready():
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     f"Action server '{self._execute_trajectory_action_client._action_name}' is not yet available. Better luck next time!"
                 )
                 return
@@ -2172,7 +2167,7 @@ class MoveIt2:
         with self.__execution_mutex:
             goal_handle = response.result()
             if not goal_handle.accepted:
-                self._node.get_logger().warn(
+                self._node.get_logger().warning(
                     f"Action '{self._execute_trajectory_action_client._action_name}' was rejected."
                 )
                 self.__is_motion_requested = False
@@ -2188,20 +2183,19 @@ class MoveIt2:
             )
 
     def __result_callback_execute_trajectory(self, res):
-        self.__execution_mutex.acquire()
-        if res.result().status != GoalStatus.STATUS_SUCCEEDED:
-            self._node.get_logger().warning(
-                f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
-            )
-            self.motion_suceeded = False
-        else:
-            self.motion_suceeded = True
+        with self.__execution_mutex:
+            if res.result().status != GoalStatus.STATUS_SUCCEEDED:
+                self._node.get_logger().warning(
+                    f"Action '{self._execute_trajectory_action_client._action_name}' was unsuccessful: {enum_to_str(GoalStatus, res.result().status)}."
+                )
+                self.motion_suceeded = False
+            else:
+                self.motion_suceeded = True
 
-        self.__last_error_code = res.result().result.error_code
+            self.__last_error_code = res.result().result.error_code
 
-        self.__execution_goal_handle = None
-        self.__is_executing = False
-        self.__execution_mutex.release()
+            self.__execution_goal_handle = None
+            self.__is_executing = False
 
     @classmethod
     def __init_move_action_goal(
