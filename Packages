@@ -8,9 +8,9 @@ Installed-Size: 242
 Depends: ros-rolling-action-msgs, ros-rolling-control-msgs, ros-rolling-geometry-msgs, ros-rolling-moveit-msgs, ros-rolling-rclpy, ros-rolling-sensor-msgs, ros-rolling-shape-msgs, ros-rolling-std-srvs, ros-rolling-trajectory-msgs
 Filename: ./ros-rolling-pymoveit2_0-2026.02.12.12.36_amd64.deb
 Size: 27654
-MD5sum: 65c2c3ed76ecf71a210a450fd4dcb6f3
-SHA1: c2cab5fe34cbdf6cf1a30c56aa4e177471ee0c6e
-SHA256: 703a76dc75acd4c81d908b98c43e921aa00b32708db30159289d29aa08de9f39
-SHA512: 6c7cbc44db0062e87743f290f932039e9d6532b8e91498da62c62a927d961efe30bfd78d8c3b3c874dd8b5df94f4966bc1ea37e3f79236db4f5f456b523415b1
+MD5sum: 6fb54b5c3ca67e9016bdc69fd17cadc4
+SHA1: c40bba83774baf462ed676671f0cb3cd1932a7cb
+SHA256: 0b36e336150ab4d369b1300af85397e98ed940113af5b11993d3ac8950b6e8de
+SHA512: fbcc08523a597ac873828263d52dc79a7a2bd454275dcb4b31c8c7d4191495a7656e3fe588e71cc7273ce0d530f33e1e82a824058f6f102e76dd13fede5c2714
 Description: Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services
 
