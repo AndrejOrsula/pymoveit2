@@ -1744,9 +1744,20 @@ class MoveIt2:
             np.fill_diagonal(transform, scale)
             mesh.apply_transform(transform)
 
+        # trimesh loads faces as a TrackedArray (an ndarray subclass) of
+        # int64 by default. shape_msgs/MeshTriangle's generated setter
+        # requires vertex_indices to be exactly numpy.ndarray (a strict
+        # type-name check in the rosidl C extension, not just dtype) --
+        # found by actually running this against a real STL. `.astype()`
+        # preserves the TrackedArray subclass by default, which still
+        # fails that check even with the right dtype; np.array(...,
+        # dtype=..., subok=False) is needed to get a plain ndarray.
         msg.meshes.append(
             Mesh(
-                triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
+                triangles=[
+                    MeshTriangle(vertex_indices=np.array(face, dtype=np.uint32, subok=False))
+                    for face in mesh.faces
+                ],
                 vertices=[
                     Point(x=vert[0], y=vert[1], z=vert[2]) for vert in mesh.vertices
                 ],
