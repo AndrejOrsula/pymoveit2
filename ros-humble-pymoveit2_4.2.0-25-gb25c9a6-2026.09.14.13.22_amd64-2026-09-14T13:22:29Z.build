@@ -1,44 +1,44 @@
-sbuild (Debian sbuild) 0.85.10ubuntu0.2 (02 May 2025) on runnervmwffz4.xp2z4hqevwpupjssoemgtobmze.gx.internal.cloudapp.net
+sbuild (Debian sbuild) 0.85.10ubuntu0.2 (02 May 2025) on runnervmlun5p.3xvpnnmqe0pufide3cozgi5fjc.cx.internal.cloudapp.net
 
-+=================================================================================+
-| ros-humble-pymoveit2 0-2026.02.12.12.47 (amd64) Thu, 12 Feb 2026 12:47:25 +0000 |
-+=================================================================================+
++=================================================================================================+
+| ros-humble-pymoveit2 4.2.0-25-gb25c9a6-2026.09.14.13.22 (amd64) Mon, 14 Sep 2026 13:22:29 +0000 |
++=================================================================================================+
 
 Package: ros-humble-pymoveit2
-Version: 0-2026.02.12.12.47
-Source Version: 0-2026.02.12.12.47
+Version: 4.2.0-25-gb25c9a6-2026.09.14.13.22
+Source Version: 4.2.0-25-gb25c9a6-2026.09.14.13.22
 Distribution: jammy
 Machine Architecture: amd64
 Host Architecture: amd64
 Build Architecture: amd64
 Build Type: binary
 
-Unpacking /home/runner/.cache/sbuild/jammy-amd64.tar to /tmp/tmp.sbuild.JiuJPGBvJE...
+Unpacking /home/runner/.cache/sbuild/jammy-amd64.tar to /tmp/tmp.sbuild.JShN9hitTk...
 I: NOTICE: Log filtering will replace 'sbuild-unshare-dummy-location' with '<<CHROOT>>'
-I: NOTICE: Log filtering will replace 'build/package//resolver-jhHvn7' with '<<RESOLVERDIR>>'
+I: NOTICE: Log filtering will replace 'build/package//resolver-hMvs9P' with '<<RESOLVERDIR>>'
 
 +------------------------------------------------------------------------------+
-| Update chroot                                Thu, 12 Feb 2026 12:47:30 +0000 |
+| Update chroot                                Mon, 14 Sep 2026 13:22:34 +0000 |
 +------------------------------------------------------------------------------+
 
-Get:1 file:/build/package//resolver-Sjv71B/apt_archive ./ InRelease
-Ign:1 file:/build/package//resolver-Sjv71B/apt_archive ./ InRelease
-Get:2 file:/build/package//resolver-Sjv71B/apt_archive ./ Release [597 B]
-Get:2 file:/build/package//resolver-Sjv71B/apt_archive ./ Release [597 B]
-Get:3 file:/build/package//resolver-Sjv71B/apt_archive ./ Release.gpg
-Ign:3 file:/build/package//resolver-Sjv71B/apt_archive ./ Release.gpg
+Get:1 file:/build/package//resolver-rW5VQP/apt_archive ./ InRelease
+Ign:1 file:/build/package//resolver-rW5VQP/apt_archive ./ InRelease
+Get:2 file:/build/package//resolver-rW5VQP/apt_archive ./ Release [597 B]
+Get:2 file:/build/package//resolver-rW5VQP/apt_archive ./ Release [597 B]
+Get:3 file:/build/package//resolver-rW5VQP/apt_archive ./ Release.gpg
+Ign:3 file:/build/package//resolver-rW5VQP/apt_archive ./ Release.gpg
 Get:4 http://packages.ros.org/ros2/ubuntu jammy InRelease [4682 B]
-Get:5 http://packages.ros.org/ros2/ubuntu jammy/main amd64 Packages [1741 kB]
-Get:6 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
-Get:7 http://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
-Get:8 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [2959 kB]
+Get:5 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Get:6 http://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
+Get:7 http://packages.ros.org/ros2/ubuntu jammy/main amd64 Packages [1827 kB]
+Get:8 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1048 kB]
 Get:9 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
 Get:10 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages [14.1 MB]
-Get:11 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1016 kB]
+Get:11 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [3526 kB]
 Get:12 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages [1395 kB]
-Get:13 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1254 kB]
-Get:14 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [3220 kB]
-Fetched 26.2 MB in 4s (6872 kB/s)
+Get:13 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [3795 kB]
+Get:14 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1282 kB]
+Fetched 27.5 MB in 4s (6397 kB/s)
 Reading package lists...
 Reading package lists...
 Building dependency tree...
@@ -47,19 +47,19 @@ Calculating upgrade...
 0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
 
 +------------------------------------------------------------------------------+
-| Fetch source files                           Thu, 12 Feb 2026 12:47:35 +0000 |
+| Fetch source files                           Mon, 14 Sep 2026 13:22:40 +0000 |
 +------------------------------------------------------------------------------+
 
 
 Local sources
 -------------
 
-/home/runner/work/pymoveit2/pymoveit2/ros-humble-pymoveit2_0-2026.02.12.12.47.dsc exists in /home/runner/work/pymoveit2/pymoveit2; copying to chroot
+/home/runner/work/pymoveit2/pymoveit2/ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22.dsc exists in /home/runner/work/pymoveit2/pymoveit2; copying to chroot
 I: NOTICE: Log filtering will replace 'build/package//package' with '<<PKGBUILDDIR>>'
 I: NOTICE: Log filtering will replace 'build/package/' with '<<BUILDDIR>>'
 
 +------------------------------------------------------------------------------+
-| Install package build dependencies           Thu, 12 Feb 2026 12:47:36 +0000 |
+| Install package build dependencies           Mon, 14 Sep 2026 13:22:41 +0000 |
 +------------------------------------------------------------------------------+
 
 
@@ -76,12 +76,12 @@ Get:4 copy:/<<RESOLVERDIR>>/apt_archive ./ Sources [680 B]
 Get:5 copy:/<<RESOLVERDIR>>/apt_archive ./ Packages [712 B]
 Fetched 2001 B in 0s (0 B/s)
 Reading package lists...
-Get:1 file:/<<BUILDDIR>>/resolver-Sjv71B/apt_archive ./ InRelease
-Ign:1 file:/<<BUILDDIR>>/resolver-Sjv71B/apt_archive ./ InRelease
-Get:2 file:/<<BUILDDIR>>/resolver-Sjv71B/apt_archive ./ Release [597 B]
-Get:2 file:/<<BUILDDIR>>/resolver-Sjv71B/apt_archive ./ Release [597 B]
-Get:3 file:/<<BUILDDIR>>/resolver-Sjv71B/apt_archive ./ Release.gpg
-Ign:3 file:/<<BUILDDIR>>/resolver-Sjv71B/apt_archive ./ Release.gpg
+Get:1 file:/<<BUILDDIR>>/resolver-rW5VQP/apt_archive ./ InRelease
+Ign:1 file:/<<BUILDDIR>>/resolver-rW5VQP/apt_archive ./ InRelease
+Get:2 file:/<<BUILDDIR>>/resolver-rW5VQP/apt_archive ./ Release [597 B]
+Get:2 file:/<<BUILDDIR>>/resolver-rW5VQP/apt_archive ./ Release [597 B]
+Get:3 file:/<<BUILDDIR>>/resolver-rW5VQP/apt_archive ./ Release.gpg
+Ign:3 file:/<<BUILDDIR>>/resolver-rW5VQP/apt_archive ./ Release.gpg
 Reading package lists...
 Hit:1 http://packages.ros.org/ros2/ubuntu jammy InRelease
 Reading package lists...
@@ -168,58 +168,58 @@ The following NEW packages will be installed:
 0 upgraded, 107 newly installed, 0 to remove and 0 not upgraded.
 Need to get 36.8 MB of archives.
 After this operation, 141 MB of additional disk space will be used.
-Get:1 copy:/<<RESOLVERDIR>>/apt_archive ./ sbuild-build-depends-main-dummy 0.invalid.0 [700 B]
-Get:2 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libpython3.10-minimal amd64 3.10.12-1~22.04.14 [816 kB]
-Get:3 http://packages.ros.org/ros2/ubuntu jammy/main amd64 python3-catkin-pkg-modules all 1.1.0-2 [43.3 kB]
-Get:4 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-package amd64 0.14.1-1jammy.20250522.030837 [23.6 kB]
-Get:5 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-core amd64 1.3.12-1jammy.20250701.005441 [29.1 kB]
-Get:6 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ros-workspace amd64 1.0.2-2jammy.20250701.005808 [16.7 kB]
-Get:7 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-definitions amd64 1.3.12-1jammy.20250701.011358 [7550 B]
-Get:8 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-libraries amd64 1.3.12-1jammy.20250701.011511 [7184 B]
-Get:9 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-dependencies amd64 1.3.12-1jammy.20250701.011607 [9062 B]
-Get:10 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-include-directories amd64 1.3.12-1jammy.20250701.011607 [7862 B]
-Get:11 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-libraries amd64 1.3.12-1jammy.20250701.011611 [10.6 kB]
-Get:12 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-interfaces amd64 1.3.12-1jammy.20250701.011817 [8274 B]
-Get:13 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-link-flags amd64 1.3.12-1jammy.20250701.011612 [7138 B]
-Get:14 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-targets amd64 1.3.12-1jammy.20250701.011836 [8072 B]
-Get:15 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-gen-version-h amd64 1.3.12-1jammy.20250701.012952 [9236 B]
-Get:16 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libexpat1 amd64 2.4.7-1ubuntu0.7 [92.1 kB]
-Get:17 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 python3.10-minimal amd64 3.10.12-1~22.04.14 [2275 kB]
-Get:18 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-python amd64 1.3.12-1jammy.20250701.011622 [10.6 kB]
-Get:19 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-include-directories amd64 1.3.12-1jammy.20250701.011618 [7572 B]
-Get:20 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-target-dependencies amd64 1.3.12-1jammy.20250701.011815 [9786 B]
-Get:21 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-test amd64 1.3.12-1jammy.20250701.011837 [16.9 kB]
-Get:22 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-version amd64 1.3.12-1jammy.20250701.011519 [7342 B]
-Get:23 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake amd64 1.3.12-1jammy.20250701.021045 [7664 B]
+Get:1 copy:/<<RESOLVERDIR>>/apt_archive ./ sbuild-build-depends-main-dummy 0.invalid.0 [702 B]
+Get:2 http://packages.ros.org/ros2/ubuntu jammy/main amd64 python3-catkin-pkg-modules all 1.1.1-1 [43.4 kB]
+Get:3 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libpython3.10-minimal amd64 3.10.12-1~22.04.18 [817 kB]
+Get:4 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-package amd64 0.14.2-1jammy.20260213.215617 [23.8 kB]
+Get:5 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-core amd64 1.3.14-1jammy.20260224.185609 [29.3 kB]
+Get:6 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ros-workspace amd64 1.0.2-2jammy.20260224.185744 [16.7 kB]
+Get:7 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-definitions amd64 1.3.14-1jammy.20260226.010509 [7552 B]
+Get:8 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-libraries amd64 1.3.14-1jammy.20260226.010453 [7264 B]
+Get:9 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-dependencies amd64 1.3.14-1jammy.20260226.011144 [9048 B]
+Get:10 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-include-directories amd64 1.3.14-1jammy.20260226.010305 [7876 B]
+Get:11 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-libraries amd64 1.3.14-1jammy.20260226.004939 [10.6 kB]
+Get:12 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-interfaces amd64 1.3.14-1jammy.20260226.005715 [8288 B]
+Get:13 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-link-flags amd64 1.3.14-1jammy.20260226.010357 [7154 B]
+Get:14 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-export-targets amd64 1.3.14-1jammy.20260226.005705 [8136 B]
+Get:15 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-gen-version-h amd64 1.3.14-1jammy.20260226.034234 [9322 B]
+Get:16 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-python amd64 1.3.14-1jammy.20260226.005145 [10.7 kB]
+Get:17 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-include-directories amd64 1.3.14-1jammy.20260226.010650 [7570 B]
+Get:18 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-target-dependencies amd64 1.3.14-1jammy.20260226.013622 [9800 B]
+Get:19 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-test amd64 1.3.14-1jammy.20260226.013528 [16.9 kB]
+Get:20 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake-version amd64 1.3.14-1jammy.20260226.010514 [7340 B]
+Get:21 http://packages.ros.org/ros2/ubuntu jammy/main amd64 ros-humble-ament-cmake amd64 1.3.14-1jammy.20260226.035055 [7694 B]
+Get:22 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libexpat1 amd64 2.4.7-1ubuntu0.7 [92.1 kB]
+Get:23 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 python3.10-minimal amd64 3.10.12-1~22.04.18 [2277 kB]
 Get:24 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 python3-minimal amd64 3.10.6-1~22.04.1 [24.3 kB]
 Get:25 http://archive.ubuntu.com/ubuntu jammy/main amd64 media-types all 7.0.0 [25.5 kB]
 Get:26 http://archive.ubuntu.com/ubuntu jammy/main amd64 libmpdec3 amd64 2.5.1-2build2 [86.8 kB]
-Get:27 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libncursesw6 amd64 6.3-2ubuntu0.1 [147 kB]
+Get:27 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libncursesw6 amd64 6.3-2ubuntu0.3 [147 kB]
 Get:28 http://archive.ubuntu.com/ubuntu jammy/main amd64 readline-common all 8.1.2-1 [53.5 kB]
 Get:29 http://archive.ubuntu.com/ubuntu jammy/main amd64 libreadline8 amd64 8.1.2-1 [153 kB]
-Get:30 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libsqlite3-0 amd64 3.37.2-2ubuntu0.5 [643 kB]
-Get:31 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libpython3.10-stdlib amd64 3.10.12-1~22.04.14 [1850 kB]
-Get:32 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 python3.10 amd64 3.10.12-1~22.04.14 [509 kB]
+Get:30 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libsqlite3-0 amd64 3.37.2-2ubuntu0.7 [643 kB]
+Get:31 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libpython3.10-stdlib amd64 3.10.12-1~22.04.18 [1850 kB]
+Get:32 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 python3.10 amd64 3.10.12-1~22.04.18 [508 kB]
 Get:33 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libpython3-stdlib amd64 3.10.6-1~22.04.1 [6812 B]
 Get:34 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 python3 amd64 3.10.6-1~22.04.1 [22.8 kB]
 Get:35 http://archive.ubuntu.com/ubuntu jammy/main amd64 sgml-base all 1.30 [12.5 kB]
-Get:36 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libncurses6 amd64 6.3-2ubuntu0.1 [111 kB]
+Get:36 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libncurses6 amd64 6.3-2ubuntu0.3 [111 kB]
 Get:37 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libprocps8 amd64 2:3.3.17-6ubuntu2.1 [36.2 kB]
 Get:38 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 procps amd64 2:3.3.17-6ubuntu2.1 [378 kB]
 Get:39 http://archive.ubuntu.com/ubuntu jammy/main amd64 sensible-utils all 0.0.17 [20.1 kB]
 Get:40 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libelf1 amd64 0.186-1ubuntu0.1 [51.1 kB]
 Get:41 http://archive.ubuntu.com/ubuntu jammy/main amd64 libicu70 amd64 70.1-2 [10.6 MB]
-Get:42 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libxml2 amd64 2.9.13+dfsg-1ubuntu0.11 [765 kB]
+Get:42 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libxml2 amd64 2.9.13+dfsg-1ubuntu0.12 [765 kB]
 Get:43 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 python3-pkg-resources all 59.6.0-1.2ubuntu0.22.04.3 [133 kB]
-Get:44 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 tzdata all 2025b-0ubuntu0.22.04.1 [347 kB]
-Get:45 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 bsdextrautils amd64 2.37.2-4ubuntu3.4 [71.4 kB]
+Get:44 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 tzdata all 2026c-0ubuntu0.22.04.1 [346 kB]
+Get:45 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 bsdextrautils amd64 2.37.2-4ubuntu3.6 [71.3 kB]
 Get:46 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libmagic-mgc amd64 1:5.41-3ubuntu0.1 [257 kB]
 Get:47 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libmagic1 amd64 1:5.41-3ubuntu0.1 [87.2 kB]
 Get:48 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 file amd64 1:5.41-3ubuntu0.1 [21.5 kB]
 Get:49 http://archive.ubuntu.com/ubuntu jammy/main amd64 gettext-base amd64 0.21-4ubuntu4 [37.8 kB]
 Get:50 http://archive.ubuntu.com/ubuntu jammy/main amd64 libuchardet0 amd64 0.0.7-1build2 [76.9 kB]
 Get:51 http://archive.ubuntu.com/ubuntu jammy/main amd64 groff-base amd64 1.22.4-8build1 [955 kB]
-Get:52 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libnghttp2-14 amd64 1.43.0-1ubuntu0.2 [76.9 kB]
+Get:52 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libnghttp2-14 amd64 1.43.0-1ubuntu0.4 [76.9 kB]
 Get:53 http://archive.ubuntu.com/ubuntu jammy/main amd64 libpipeline1 amd64 1.5.5-1 [23.5 kB]
 Get:54 http://archive.ubuntu.com/ubuntu jammy/main amd64 libpsl5 amd64 0.21.0-1.2build2 [58.4 kB]
 Get:55 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libuv1 amd64 1.43.0-1ubuntu0.1 [92.7 kB]
@@ -230,14 +230,14 @@ Get:59 http://archive.ubuntu.com/ubuntu jammy/main amd64 autoconf all 2.71-2 [33
 Get:60 http://archive.ubuntu.com/ubuntu jammy/main amd64 autotools-dev all 20220109.1 [44.9 kB]
 Get:61 http://archive.ubuntu.com/ubuntu jammy/main amd64 automake all 1:1.16.5-1.3 [558 kB]
 Get:62 http://archive.ubuntu.com/ubuntu jammy/main amd64 autopoint all 0.21-4ubuntu4 [422 kB]
-Get:63 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libarchive13 amd64 3.6.0-1ubuntu1.5 [368 kB]
+Get:63 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libarchive13 amd64 3.6.0-1ubuntu1.8 [368 kB]
 Get:64 http://archive.ubuntu.com/ubuntu jammy/main amd64 libbrotli1 amd64 1.0.9-2build6 [315 kB]
 Get:65 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libsasl2-modules-db amd64 2.1.27+dfsg2-3ubuntu1.2 [20.5 kB]
 Get:66 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libsasl2-2 amd64 2.1.27+dfsg2-3ubuntu1.2 [53.8 kB]
 Get:67 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libldap-2.5-0 amd64 2.5.20+dfsg-0ubuntu0.22.04.1 [184 kB]
 Get:68 http://archive.ubuntu.com/ubuntu jammy/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2build4 [58.2 kB]
-Get:69 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libssh-4 amd64 0.9.6-2ubuntu0.22.04.5 [187 kB]
-Get:70 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libcurl4 amd64 7.81.0-1ubuntu1.21 [290 kB]
+Get:69 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libssh-4 amd64 0.9.6-2ubuntu0.22.04.8 [189 kB]
+Get:70 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libcurl4 amd64 7.81.0-1ubuntu1.27 [292 kB]
 Get:71 http://archive.ubuntu.com/ubuntu jammy/main amd64 libjsoncpp25 amd64 1.9.5-3 [80.0 kB]
 Get:72 http://archive.ubuntu.com/ubuntu jammy/main amd64 librhash0 amd64 1.4.2-1ubuntu1 [125 kB]
 Get:73 http://archive.ubuntu.com/ubuntu jammy/main amd64 dh-elpa-helper all 2.0.9ubuntu1 [7610 B]
@@ -276,22 +276,22 @@ Get:105 http://archive.ubuntu.com/ubuntu jammy/main amd64 python3-importlib-meta
 Get:106 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 python3-setuptools all 59.6.0-1.2ubuntu0.22.04.3 [340 kB]
 Get:107 http://archive.ubuntu.com/ubuntu jammy/universe amd64 dumb-init amd64 1.2.5-2 [14.1 kB]
 debconf: delaying package configuration, since apt-utils is not installed
-Fetched 36.8 MB in 1s (30.0 MB/s)
+Fetched 36.8 MB in 3s (10.9 MB/s)
 Selecting previously unselected package libpython3.10-minimal:amd64.
-(Reading database ... 10212 files and directories currently installed.)
-Preparing to unpack .../libpython3.10-minimal_3.10.12-1~22.04.14_amd64.deb ...
-Unpacking libpython3.10-minimal:amd64 (3.10.12-1~22.04.14) ...
+(Reading database ... 10187 files and directories currently installed.)
+Preparing to unpack .../libpython3.10-minimal_3.10.12-1~22.04.18_amd64.deb ...
+Unpacking libpython3.10-minimal:amd64 (3.10.12-1~22.04.18) ...
 Selecting previously unselected package libexpat1:amd64.
 Preparing to unpack .../libexpat1_2.4.7-1ubuntu0.7_amd64.deb ...
 Unpacking libexpat1:amd64 (2.4.7-1ubuntu0.7) ...
 Selecting previously unselected package python3.10-minimal.
-Preparing to unpack .../python3.10-minimal_3.10.12-1~22.04.14_amd64.deb ...
-Unpacking python3.10-minimal (3.10.12-1~22.04.14) ...
-Setting up libpython3.10-minimal:amd64 (3.10.12-1~22.04.14) ...
+Preparing to unpack .../python3.10-minimal_3.10.12-1~22.04.18_amd64.deb ...
+Unpacking python3.10-minimal (3.10.12-1~22.04.18) ...
+Setting up libpython3.10-minimal:amd64 (3.10.12-1~22.04.18) ...
 Setting up libexpat1:amd64 (2.4.7-1ubuntu0.7) ...
-Setting up python3.10-minimal (3.10.12-1~22.04.14) ...
+Setting up python3.10-minimal (3.10.12-1~22.04.18) ...
 Selecting previously unselected package python3-minimal.
-(Reading database ... 10516 files and directories currently installed.)
+(Reading database ... 10491 files and directories currently installed.)
 Preparing to unpack .../0-python3-minimal_3.10.6-1~22.04.1_amd64.deb ...
 Unpacking python3-minimal (3.10.6-1~22.04.1) ...
 Selecting previously unselected package media-types.
@@ -301,8 +301,8 @@ Selecting previously unselected package libmpdec3:amd64.
 Preparing to unpack .../2-libmpdec3_2.5.1-2build2_amd64.deb ...
 Unpacking libmpdec3:amd64 (2.5.1-2build2) ...
 Selecting previously unselected package libncursesw6:amd64.
-Preparing to unpack .../3-libncursesw6_6.3-2ubuntu0.1_amd64.deb ...
-Unpacking libncursesw6:amd64 (6.3-2ubuntu0.1) ...
+Preparing to unpack .../3-libncursesw6_6.3-2ubuntu0.3_amd64.deb ...
+Unpacking libncursesw6:amd64 (6.3-2ubuntu0.3) ...
 Selecting previously unselected package readline-common.
 Preparing to unpack .../4-readline-common_8.1.2-1_all.deb ...
 Unpacking readline-common (8.1.2-1) ...
@@ -310,28 +310,28 @@ Selecting previously unselected package libreadline8:amd64.
 Preparing to unpack .../5-libreadline8_8.1.2-1_amd64.deb ...
 Unpacking libreadline8:amd64 (8.1.2-1) ...
 Selecting previously unselected package libsqlite3-0:amd64.
-Preparing to unpack .../6-libsqlite3-0_3.37.2-2ubuntu0.5_amd64.deb ...
-Unpacking libsqlite3-0:amd64 (3.37.2-2ubuntu0.5) ...
+Preparing to unpack .../6-libsqlite3-0_3.37.2-2ubuntu0.7_amd64.deb ...
+Unpacking libsqlite3-0:amd64 (3.37.2-2ubuntu0.7) ...
 Selecting previously unselected package libpython3.10-stdlib:amd64.
-Preparing to unpack .../7-libpython3.10-stdlib_3.10.12-1~22.04.14_amd64.deb ...
-Unpacking libpython3.10-stdlib:amd64 (3.10.12-1~22.04.14) ...
+Preparing to unpack .../7-libpython3.10-stdlib_3.10.12-1~22.04.18_amd64.deb ...
+Unpacking libpython3.10-stdlib:amd64 (3.10.12-1~22.04.18) ...
 Selecting previously unselected package python3.10.
-Preparing to unpack .../8-python3.10_3.10.12-1~22.04.14_amd64.deb ...
-Unpacking python3.10 (3.10.12-1~22.04.14) ...
+Preparing to unpack .../8-python3.10_3.10.12-1~22.04.18_amd64.deb ...
+Unpacking python3.10 (3.10.12-1~22.04.18) ...
 Selecting previously unselected package libpython3-stdlib:amd64.
 Preparing to unpack .../9-libpython3-stdlib_3.10.6-1~22.04.1_amd64.deb ...
 Unpacking libpython3-stdlib:amd64 (3.10.6-1~22.04.1) ...
 Setting up python3-minimal (3.10.6-1~22.04.1) ...
 Selecting previously unselected package python3.
-(Reading database ... 10955 files and directories currently installed.)
+(Reading database ... 10930 files and directories currently installed.)
 Preparing to unpack .../00-python3_3.10.6-1~22.04.1_amd64.deb ...
 Unpacking python3 (3.10.6-1~22.04.1) ...
 Selecting previously unselected package sgml-base.
 Preparing to unpack .../01-sgml-base_1.30_all.deb ...
 Unpacking sgml-base (1.30) ...
 Selecting previously unselected package libncurses6:amd64.
-Preparing to unpack .../02-libncurses6_6.3-2ubuntu0.1_amd64.deb ...
-Unpacking libncurses6:amd64 (6.3-2ubuntu0.1) ...
+Preparing to unpack .../02-libncurses6_6.3-2ubuntu0.3_amd64.deb ...
+Unpacking libncurses6:amd64 (6.3-2ubuntu0.3) ...
 Selecting previously unselected package libprocps8:amd64.
 Preparing to unpack .../03-libprocps8_2%3a3.3.17-6ubuntu2.1_amd64.deb ...
 Unpacking libprocps8:amd64 (2:3.3.17-6ubuntu2.1) ...
@@ -348,17 +348,17 @@ Selecting previously unselected package libicu70:amd64.
 Preparing to unpack .../07-libicu70_70.1-2_amd64.deb ...
 Unpacking libicu70:amd64 (70.1-2) ...
 Selecting previously unselected package libxml2:amd64.
-Preparing to unpack .../08-libxml2_2.9.13+dfsg-1ubuntu0.11_amd64.deb ...
-Unpacking libxml2:amd64 (2.9.13+dfsg-1ubuntu0.11) ...
+Preparing to unpack .../08-libxml2_2.9.13+dfsg-1ubuntu0.12_amd64.deb ...
+Unpacking libxml2:amd64 (2.9.13+dfsg-1ubuntu0.12) ...
 Selecting previously unselected package python3-pkg-resources.
 Preparing to unpack .../09-python3-pkg-resources_59.6.0-1.2ubuntu0.22.04.3_all.deb ...
 Unpacking python3-pkg-resources (59.6.0-1.2ubuntu0.22.04.3) ...
 Selecting previously unselected package tzdata.
-Preparing to unpack .../10-tzdata_2025b-0ubuntu0.22.04.1_all.deb ...
-Unpacking tzdata (2025b-0ubuntu0.22.04.1) ...
+Preparing to unpack .../10-tzdata_2026c-0ubuntu0.22.04.1_all.deb ...
+Unpacking tzdata (2026c-0ubuntu0.22.04.1) ...
 Selecting previously unselected package bsdextrautils.
-Preparing to unpack .../11-bsdextrautils_2.37.2-4ubuntu3.4_amd64.deb ...
-Unpacking bsdextrautils (2.37.2-4ubuntu3.4) ...
+Preparing to unpack .../11-bsdextrautils_2.37.2-4ubuntu3.6_amd64.deb ...
+Unpacking bsdextrautils (2.37.2-4ubuntu3.6) ...
 Selecting previously unselected package libmagic-mgc.
 Preparing to unpack .../12-libmagic-mgc_1%3a5.41-3ubuntu0.1_amd64.deb ...
 Unpacking libmagic-mgc (1:5.41-3ubuntu0.1) ...
@@ -378,8 +378,8 @@ Selecting previously unselected package groff-base.
 Preparing to unpack .../17-groff-base_1.22.4-8build1_amd64.deb ...
 Unpacking groff-base (1.22.4-8build1) ...
 Selecting previously unselected package libnghttp2-14:amd64.
-Preparing to unpack .../18-libnghttp2-14_1.43.0-1ubuntu0.2_amd64.deb ...
-Unpacking libnghttp2-14:amd64 (1.43.0-1ubuntu0.2) ...
+Preparing to unpack .../18-libnghttp2-14_1.43.0-1ubuntu0.4_amd64.deb ...
+Unpacking libnghttp2-14:amd64 (1.43.0-1ubuntu0.4) ...
 Selecting previously unselected package libpipeline1:amd64.
 Preparing to unpack .../19-libpipeline1_1.5.5-1_amd64.deb ...
 Unpacking libpipeline1:amd64 (1.5.5-1) ...
@@ -411,8 +411,8 @@ Selecting previously unselected package autopoint.
 Preparing to unpack .../28-autopoint_0.21-4ubuntu4_all.deb ...
 Unpacking autopoint (0.21-4ubuntu4) ...
 Selecting previously unselected package libarchive13:amd64.
-Preparing to unpack .../29-libarchive13_3.6.0-1ubuntu1.5_amd64.deb ...
-Unpacking libarchive13:amd64 (3.6.0-1ubuntu1.5) ...
+Preparing to unpack .../29-libarchive13_3.6.0-1ubuntu1.8_amd64.deb ...
+Unpacking libarchive13:amd64 (3.6.0-1ubuntu1.8) ...
 Selecting previously unselected package libbrotli1:amd64.
 Preparing to unpack .../30-libbrotli1_1.0.9-2build6_amd64.deb ...
 Unpacking libbrotli1:amd64 (1.0.9-2build6) ...
@@ -429,11 +429,11 @@ Selecting previously unselected package librtmp1:amd64.
 Preparing to unpack .../34-librtmp1_2.4+20151223.gitfa8646d.1-2build4_amd64.deb ...
 Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2build4) ...
 Selecting previously unselected package libssh-4:amd64.
-Preparing to unpack .../35-libssh-4_0.9.6-2ubuntu0.22.04.5_amd64.deb ...
-Unpacking libssh-4:amd64 (0.9.6-2ubuntu0.22.04.5) ...
+Preparing to unpack .../35-libssh-4_0.9.6-2ubuntu0.22.04.8_amd64.deb ...
+Unpacking libssh-4:amd64 (0.9.6-2ubuntu0.22.04.8) ...
 Selecting previously unselected package libcurl4:amd64.
-Preparing to unpack .../36-libcurl4_7.81.0-1ubuntu1.21_amd64.deb ...
-Unpacking libcurl4:amd64 (7.81.0-1ubuntu1.21) ...
+Preparing to unpack .../36-libcurl4_7.81.0-1ubuntu1.27_amd64.deb ...
+Unpacking libcurl4:amd64 (7.81.0-1ubuntu1.27) ...
 Selecting previously unselected package libjsoncpp25:amd64.
 Preparing to unpack .../37-libjsoncpp25_1.9.5-3_amd64.deb ...
 Unpacking libjsoncpp25:amd64 (1.9.5-3) ...
@@ -525,8 +525,8 @@ Selecting previously unselected package python3-packaging.
 Preparing to unpack .../66-python3-packaging_21.3-1_all.deb ...
 Unpacking python3-packaging (21.3-1) ...
 Selecting previously unselected package python3-catkin-pkg-modules.
-Preparing to unpack .../67-python3-catkin-pkg-modules_1.1.0-2_all.deb ...
-Unpacking python3-catkin-pkg-modules (1.1.0-2) ...
+Preparing to unpack .../67-python3-catkin-pkg-modules_1.1.1-1_all.deb ...
+Unpacking python3-catkin-pkg-modules (1.1.1-1) ...
 Selecting previously unselected package python3-lib2to3.
 Preparing to unpack .../68-python3-lib2to3_3.10.8-1~22.04_all.deb ...
 Unpacking python3-lib2to3 (3.10.8-1~22.04) ...
@@ -546,88 +546,88 @@ Selecting previously unselected package python3-setuptools.
 Preparing to unpack .../73-python3-setuptools_59.6.0-1.2ubuntu0.22.04.3_all.deb ...
 Unpacking python3-setuptools (59.6.0-1.2ubuntu0.22.04.3) ...
 Selecting previously unselected package ros-humble-ament-package.
-Preparing to unpack .../74-ros-humble-ament-package_0.14.1-1jammy.20250522.030837_amd64.deb ...
-Unpacking ros-humble-ament-package (0.14.1-1jammy.20250522.030837) ...
+Preparing to unpack .../74-ros-humble-ament-package_0.14.2-1jammy.20260213.215617_amd64.deb ...
+Unpacking ros-humble-ament-package (0.14.2-1jammy.20260213.215617) ...
 Selecting previously unselected package ros-humble-ament-cmake-core.
-Preparing to unpack .../75-ros-humble-ament-cmake-core_1.3.12-1jammy.20250701.005441_amd64.deb ...
-Unpacking ros-humble-ament-cmake-core (1.3.12-1jammy.20250701.005441) ...
+Preparing to unpack .../75-ros-humble-ament-cmake-core_1.3.14-1jammy.20260224.185609_amd64.deb ...
+Unpacking ros-humble-ament-cmake-core (1.3.14-1jammy.20260224.185609) ...
 Selecting previously unselected package ros-humble-ros-workspace.
-Preparing to unpack .../76-ros-humble-ros-workspace_1.0.2-2jammy.20250701.005808_amd64.deb ...
-Unpacking ros-humble-ros-workspace (1.0.2-2jammy.20250701.005808) ...
+Preparing to unpack .../76-ros-humble-ros-workspace_1.0.2-2jammy.20260224.185744_amd64.deb ...
+Unpacking ros-humble-ros-workspace (1.0.2-2jammy.20260224.185744) ...
 Selecting previously unselected package ros-humble-ament-cmake-export-definitions.
-Preparing to unpack .../77-ros-humble-ament-cmake-export-definitions_1.3.12-1jammy.20250701.011358_amd64.deb ...
-Unpacking ros-humble-ament-cmake-export-definitions (1.3.12-1jammy.20250701.011358) ...
+Preparing to unpack .../77-ros-humble-ament-cmake-export-definitions_1.3.14-1jammy.20260226.010509_amd64.deb ...
+Unpacking ros-humble-ament-cmake-export-definitions (1.3.14-1jammy.20260226.010509) ...
 Selecting previously unselected package ros-humble-ament-cmake-libraries.
-Preparing to unpack .../78-ros-humble-ament-cmake-libraries_1.3.12-1jammy.20250701.011511_amd64.deb ...
-Unpacking ros-humble-ament-cmake-libraries (1.3.12-1jammy.20250701.011511) ...
+Preparing to unpack .../78-ros-humble-ament-cmake-libraries_1.3.14-1jammy.20260226.010453_amd64.deb ...
+Unpacking ros-humble-ament-cmake-libraries (1.3.14-1jammy.20260226.010453) ...
 Selecting previously unselected package ros-humble-ament-cmake-export-dependencies.
-Preparing to unpack .../79-ros-humble-ament-cmake-export-dependencies_1.3.12-1jammy.20250701.011607_amd64.deb ...
-Unpacking ros-humble-ament-cmake-export-dependencies (1.3.12-1jammy.20250701.011607) ...
+Preparing to unpack .../79-ros-humble-ament-cmake-export-dependencies_1.3.14-1jammy.20260226.011144_amd64.deb ...
+Unpacking ros-humble-ament-cmake-export-dependencies (1.3.14-1jammy.20260226.011144) ...
 Selecting previously unselected package ros-humble-ament-cmake-export-include-directories.
-Preparing to unpack .../80-ros-humble-ament-cmake-export-include-directories_1.3.12-1jammy.20250701.011607_amd64.deb ...
-Unpacking ros-humble-ament-cmake-export-include-directories (1.3.12-1jammy.20250701.011607) ...
+Preparing to unpack .../80-ros-humble-ament-cmake-export-include-directories_1.3.14-1jammy.20260226.010305_amd64.deb ...
+Unpacking ros-humble-ament-cmake-export-include-directories (1.3.14-1jammy.20260226.010305) ...
 Selecting previously unselected package ros-humble-ament-cmake-export-libraries.
-Preparing to unpack .../81-ros-humble-ament-cmake-export-libraries_1.3.12-1jammy.20250701.011611_amd64.deb ...
-Unpacking ros-humble-ament-cmake-export-libraries (1.3.12-1jammy.20250701.011611) ...
+Preparing to unpack .../81-ros-humble-ament-cmake-export-libraries_1.3.14-1jammy.20260226.004939_amd64.deb ...
+Unpacking ros-humble-ament-cmake-export-libraries (1.3.14-1jammy.20260226.004939) ...
 Selecting previously unselected package ros-humble-ament-cmake-export-interfaces.
-Preparing to unpack .../82-ros-humble-ament-cmake-export-interfaces_1.3.12-1jammy.20250701.011817_amd64.deb ...
-Unpacking ros-humble-ament-cmake-export-interfaces (1.3.12-1jammy.20250701.011817) ...
+Preparing to unpack .../82-ros-humble-ament-cmake-export-interfaces_1.3.14-1jammy.20260226.005715_amd64.deb ...
+Unpacking ros-humble-ament-cmake-export-interfaces (1.3.14-1jammy.20260226.005715) ...
 Selecting previously unselected package ros-humble-ament-cmake-export-link-flags.
-Preparing to unpack .../83-ros-humble-ament-cmake-export-link-flags_1.3.12-1jammy.20250701.011612_amd64.deb ...
-Unpacking ros-humble-ament-cmake-export-link-flags (1.3.12-1jammy.20250701.011612) ...
+Preparing to unpack .../83-ros-humble-ament-cmake-export-link-flags_1.3.14-1jammy.20260226.010357_amd64.deb ...
+Unpacking ros-humble-ament-cmake-export-link-flags (1.3.14-1jammy.20260226.010357) ...
 Selecting previously unselected package ros-humble-ament-cmake-export-targets.
-Preparing to unpack .../84-ros-humble-ament-cmake-export-targets_1.3.12-1jammy.20250701.011836_amd64.deb ...
-Unpacking ros-humble-ament-cmake-export-targets (1.3.12-1jammy.20250701.011836) ...
+Preparing to unpack .../84-ros-humble-ament-cmake-export-targets_1.3.14-1jammy.20260226.005705_amd64.deb ...
+Unpacking ros-humble-ament-cmake-export-targets (1.3.14-1jammy.20260226.005705) ...
 Selecting previously unselected package ros-humble-ament-cmake-gen-version-h.
-Preparing to unpack .../85-ros-humble-ament-cmake-gen-version-h_1.3.12-1jammy.20250701.012952_amd64.deb ...
-Unpacking ros-humble-ament-cmake-gen-version-h (1.3.12-1jammy.20250701.012952) ...
+Preparing to unpack .../85-ros-humble-ament-cmake-gen-version-h_1.3.14-1jammy.20260226.034234_amd64.deb ...
+Unpacking ros-humble-ament-cmake-gen-version-h (1.3.14-1jammy.20260226.034234) ...
 Selecting previously unselected package ros-humble-ament-cmake-python.
-Preparing to unpack .../86-ros-humble-ament-cmake-python_1.3.12-1jammy.20250701.011622_amd64.deb ...
-Unpacking ros-humble-ament-cmake-python (1.3.12-1jammy.20250701.011622) ...
+Preparing to unpack .../86-ros-humble-ament-cmake-python_1.3.14-1jammy.20260226.005145_amd64.deb ...
+Unpacking ros-humble-ament-cmake-python (1.3.14-1jammy.20260226.005145) ...
 Selecting previously unselected package ros-humble-ament-cmake-include-directories.
-Preparing to unpack .../87-ros-humble-ament-cmake-include-directories_1.3.12-1jammy.20250701.011618_amd64.deb ...
-Unpacking ros-humble-ament-cmake-include-directories (1.3.12-1jammy.20250701.011618) ...
+Preparing to unpack .../87-ros-humble-ament-cmake-include-directories_1.3.14-1jammy.20260226.010650_amd64.deb ...
+Unpacking ros-humble-ament-cmake-include-directories (1.3.14-1jammy.20260226.010650) ...
 Selecting previously unselected package ros-humble-ament-cmake-target-dependencies.
-Preparing to unpack .../88-ros-humble-ament-cmake-target-dependencies_1.3.12-1jammy.20250701.011815_amd64.deb ...
-Unpacking ros-humble-ament-cmake-target-dependencies (1.3.12-1jammy.20250701.011815) ...
+Preparing to unpack .../88-ros-humble-ament-cmake-target-dependencies_1.3.14-1jammy.20260226.013622_amd64.deb ...
+Unpacking ros-humble-ament-cmake-target-dependencies (1.3.14-1jammy.20260226.013622) ...
 Selecting previously unselected package ros-humble-ament-cmake-test.
-Preparing to unpack .../89-ros-humble-ament-cmake-test_1.3.12-1jammy.20250701.011837_amd64.deb ...
-Unpacking ros-humble-ament-cmake-test (1.3.12-1jammy.20250701.011837) ...
+Preparing to unpack .../89-ros-humble-ament-cmake-test_1.3.14-1jammy.20260226.013528_amd64.deb ...
+Unpacking ros-humble-ament-cmake-test (1.3.14-1jammy.20260226.013528) ...
 Selecting previously unselected package ros-humble-ament-cmake-version.
-Preparing to unpack .../90-ros-humble-ament-cmake-version_1.3.12-1jammy.20250701.011519_amd64.deb ...
-Unpacking ros-humble-ament-cmake-version (1.3.12-1jammy.20250701.011519) ...
+Preparing to unpack .../90-ros-humble-ament-cmake-version_1.3.14-1jammy.20260226.010514_amd64.deb ...
+Unpacking ros-humble-ament-cmake-version (1.3.14-1jammy.20260226.010514) ...
 Selecting previously unselected package ros-humble-ament-cmake.
-Preparing to unpack .../91-ros-humble-ament-cmake_1.3.12-1jammy.20250701.021045_amd64.deb ...
-Unpacking ros-humble-ament-cmake (1.3.12-1jammy.20250701.021045) ...
+Preparing to unpack .../91-ros-humble-ament-cmake_1.3.14-1jammy.20260226.035055_amd64.deb ...
+Unpacking ros-humble-ament-cmake (1.3.14-1jammy.20260226.035055) ...
 Selecting previously unselected package dumb-init.
 Preparing to unpack .../92-dumb-init_1.2.5-2_amd64.deb ...
 Unpacking dumb-init (1.2.5-2) ...
 Selecting previously unselected package sbuild-build-depends-main-dummy.
 Preparing to unpack .../93-sbuild-build-depends-main-dummy_0.invalid.0_amd64.deb ...
 Unpacking sbuild-build-depends-main-dummy (0.invalid.0) ...
-Setting up ros-humble-ros-workspace (1.0.2-2jammy.20250701.005808) ...
+Setting up ros-humble-ros-workspace (1.0.2-2jammy.20260224.185744) ...
 Setting up media-types (7.0.0) ...
 Setting up dumb-init (1.2.5-2) ...
 Setting up libpipeline1:amd64 (1.5.5-1) ...
 Setting up libpsl5:amd64 (0.21.0-1.2build2) ...
-Setting up bsdextrautils (2.37.2-4ubuntu3.4) ...
+Setting up bsdextrautils (2.37.2-4ubuntu3.6) ...
 update-alternatives: using /usr/bin/write.ul to provide /usr/bin/write (write) in auto mode
 Setting up libmagic-mgc (1:5.41-3ubuntu0.1) ...
 Setting up libarchive-zip-perl (1.68-1) ...
 Setting up libdebhelper-perl (13.6ubuntu1) ...
 Setting up libbrotli1:amd64 (1.0.9-2build6) ...
-Setting up libsqlite3-0:amd64 (3.37.2-2ubuntu0.5) ...
-Setting up libnghttp2-14:amd64 (1.43.0-1ubuntu0.2) ...
+Setting up libsqlite3-0:amd64 (3.37.2-2ubuntu0.7) ...
+Setting up libnghttp2-14:amd64 (1.43.0-1ubuntu0.4) ...
 Setting up libmagic1:amd64 (1:5.41-3ubuntu0.1) ...
 Setting up gettext-base (0.21-4ubuntu4) ...
 Setting up file (1:5.41-3ubuntu0.1) ...
 Setting up libfakeroot:amd64 (1.28-1ubuntu1) ...
 Setting up libsasl2-modules-db:amd64 (2.1.27+dfsg2-3ubuntu1.2) ...
-Setting up tzdata (2025b-0ubuntu0.22.04.1) ...
+Setting up tzdata (2026c-0ubuntu0.22.04.1) ...
 
 Current default time zone: 'Etc/UTC'
-Local time is now:      Thu Feb 12 12:47:45 UTC 2026.
-Universal Time is now:  Thu Feb 12 12:47:45 UTC 2026.
+Local time is now:      Mon Sep 14 13:22:52 UTC 2026.
+Universal Time is now:  Mon Sep 14 13:22:52 UTC 2026.
 Run 'dpkg-reconfigure tzdata' if you wish to change it.
 
 Setting up fakeroot (1.28-1ubuntu1) ...
@@ -637,13 +637,13 @@ Setting up libuv1:amd64 (1.43.0-1ubuntu0.1) ...
 Setting up emacsen-common (3.0.4) ...
 Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2build4) ...
 Setting up dh-elpa-helper (2.0.9ubuntu1) ...
-Setting up libncurses6:amd64 (6.3-2ubuntu0.1) ...
+Setting up libncurses6:amd64 (6.3-2ubuntu0.3) ...
 Setting up libsigsegv2:amd64 (2.13-1ubuntu3) ...
 Setting up autopoint (0.21-4ubuntu4) ...
 Setting up libjsoncpp25:amd64 (1.9.5-3) ...
-Setting up libncursesw6:amd64 (6.3-2ubuntu0.1) ...
+Setting up libncursesw6:amd64 (6.3-2ubuntu0.3) ...
 Setting up libsasl2-2:amd64 (2.1.27+dfsg2-3ubuntu1.2) ...
-Setting up libssh-4:amd64 (0.9.6-2ubuntu0.22.04.5) ...
+Setting up libssh-4:amd64 (0.9.6-2ubuntu0.22.04.8) ...
 Setting up sensible-utils (0.0.17) ...
 Setting up librhash0:amd64 (1.4.2-1ubuntu1) ...
 Setting up libuchardet0:amd64 (0.0.7-1build2) ...
@@ -661,7 +661,7 @@ Setting up libtool (2.4.6-15build2) ...
 Setting up libreadline8:amd64 (8.1.2-1) ...
 Setting up m4 (1.4.18-5ubuntu2) ...
 Setting up libldap-2.5-0:amd64 (2.5.20+dfsg-0ubuntu0.22.04.1) ...
-Setting up libpython3.10-stdlib:amd64 (3.10.12-1~22.04.14) ...
+Setting up libpython3.10-stdlib:amd64 (3.10.12-1~22.04.18) ...
 Setting up autoconf (2.71-2) ...
 Setting up dh-strip-nondeterminism (1.13.0-1) ...
 Setting up dwz (0.14-1build2) ...
@@ -669,14 +669,14 @@ Setting up groff-base (1.22.4-8build1) ...
 Setting up xml-core (0.18+nmu1) ...
 Setting up procps (2:3.3.17-6ubuntu2.1) ...
 Setting up debugedit (1:5.0-4build1) ...
-Setting up libcurl4:amd64 (7.81.0-1ubuntu1.21) ...
-Setting up libxml2:amd64 (2.9.13+dfsg-1ubuntu0.11) ...
+Setting up libcurl4:amd64 (7.81.0-1ubuntu1.27) ...
+Setting up libxml2:amd64 (2.9.13+dfsg-1ubuntu0.12) ...
 Setting up libpython3-stdlib:amd64 (3.10.6-1~22.04.1) ...
 Setting up automake (1:1.16.5-1.3) ...
 update-alternatives: using /usr/bin/automake-1.16 to provide /usr/bin/automake (automake) in auto mode
 Setting up gettext (0.21-4ubuntu4) ...
-Setting up python3.10 (3.10.12-1~22.04.14) ...
-Setting up libarchive13:amd64 (3.6.0-1ubuntu1.5) ...
+Setting up python3.10 (3.10.12-1~22.04.18) ...
+Setting up libarchive13:amd64 (3.6.0-1ubuntu1.8) ...
 Setting up python3 (3.10.6-1~22.04.1) ...
 Setting up man-db (2.10.2-1) ...
 Not building database; man-db/auto-update is not 'true'.
@@ -697,47 +697,47 @@ Setting up debhelper (13.6ubuntu1) ...
 Setting up python3-zipp (1.0.0-3ubuntu0.1) ...
 Setting up python3-packaging (21.3-1) ...
 Setting up python3-importlib-metadata (4.6.4-1) ...
-Setting up ros-humble-ament-package (0.14.1-1jammy.20250522.030837) ...
-Processing triggers for libc-bin (2.35-0ubuntu3.13) ...
+Setting up ros-humble-ament-package (0.14.2-1jammy.20260213.215617) ...
+Processing triggers for libc-bin (2.35-0ubuntu3.15) ...
 Processing triggers for sgml-base (1.30) ...
 Setting up docutils-common (0.17.1+dfsg-2) ...
 Processing triggers for sgml-base (1.30) ...
 Setting up python3-docutils (0.17.1+dfsg-2) ...
-Setting up python3-catkin-pkg-modules (1.1.0-2) ...
-Setting up ros-humble-ament-cmake-core (1.3.12-1jammy.20250701.005441) ...
-Setting up ros-humble-ament-cmake-gen-version-h (1.3.12-1jammy.20250701.012952) ...
-Setting up ros-humble-ament-cmake-test (1.3.12-1jammy.20250701.011837) ...
-Setting up ros-humble-ament-cmake-python (1.3.12-1jammy.20250701.011622) ...
-Setting up ros-humble-ament-cmake-export-definitions (1.3.12-1jammy.20250701.011358) ...
-Setting up ros-humble-ament-cmake-export-libraries (1.3.12-1jammy.20250701.011611) ...
-Setting up ros-humble-ament-cmake-include-directories (1.3.12-1jammy.20250701.011618) ...
-Setting up ros-humble-ament-cmake-libraries (1.3.12-1jammy.20250701.011511) ...
-Setting up ros-humble-ament-cmake-export-targets (1.3.12-1jammy.20250701.011836) ...
-Setting up ros-humble-ament-cmake-export-include-directories (1.3.12-1jammy.20250701.011607) ...
-Setting up ros-humble-ament-cmake-export-link-flags (1.3.12-1jammy.20250701.011612) ...
-Setting up ros-humble-ament-cmake-version (1.3.12-1jammy.20250701.011519) ...
-Setting up ros-humble-ament-cmake-export-interfaces (1.3.12-1jammy.20250701.011817) ...
-Setting up ros-humble-ament-cmake-export-dependencies (1.3.12-1jammy.20250701.011607) ...
-Setting up ros-humble-ament-cmake-target-dependencies (1.3.12-1jammy.20250701.011815) ...
-Setting up ros-humble-ament-cmake (1.3.12-1jammy.20250701.021045) ...
+Setting up python3-catkin-pkg-modules (1.1.1-1) ...
+Setting up ros-humble-ament-cmake-core (1.3.14-1jammy.20260224.185609) ...
+Setting up ros-humble-ament-cmake-gen-version-h (1.3.14-1jammy.20260226.034234) ...
+Setting up ros-humble-ament-cmake-test (1.3.14-1jammy.20260226.013528) ...
+Setting up ros-humble-ament-cmake-python (1.3.14-1jammy.20260226.005145) ...
+Setting up ros-humble-ament-cmake-export-definitions (1.3.14-1jammy.20260226.010509) ...
+Setting up ros-humble-ament-cmake-export-libraries (1.3.14-1jammy.20260226.004939) ...
+Setting up ros-humble-ament-cmake-include-directories (1.3.14-1jammy.20260226.010650) ...
+Setting up ros-humble-ament-cmake-libraries (1.3.14-1jammy.20260226.010453) ...
+Setting up ros-humble-ament-cmake-export-targets (1.3.14-1jammy.20260226.005705) ...
+Setting up ros-humble-ament-cmake-export-include-directories (1.3.14-1jammy.20260226.010305) ...
+Setting up ros-humble-ament-cmake-export-link-flags (1.3.14-1jammy.20260226.010357) ...
+Setting up ros-humble-ament-cmake-version (1.3.14-1jammy.20260226.010514) ...
+Setting up ros-humble-ament-cmake-export-interfaces (1.3.14-1jammy.20260226.005715) ...
+Setting up ros-humble-ament-cmake-export-dependencies (1.3.14-1jammy.20260226.011144) ...
+Setting up ros-humble-ament-cmake-target-dependencies (1.3.14-1jammy.20260226.013622) ...
+Setting up ros-humble-ament-cmake (1.3.14-1jammy.20260226.035055) ...
 Setting up sbuild-build-depends-main-dummy (0.invalid.0) ...
 
 +------------------------------------------------------------------------------+
-| Check architectures                          Thu, 12 Feb 2026 12:47:49 +0000 |
+| Check architectures                          Mon, 14 Sep 2026 13:22:55 +0000 |
 +------------------------------------------------------------------------------+
 
 Arch check ok (amd64 included in any)
 
 +------------------------------------------------------------------------------+
-| Build environment                            Thu, 12 Feb 2026 12:47:49 +0000 |
+| Build environment                            Mon, 14 Sep 2026 13:22:56 +0000 |
 +------------------------------------------------------------------------------+
 
-Kernel: Linux 6.11.0-1018-azure #18~24.04.1-Ubuntu SMP Sat Jun 28 04:46:03 UTC 2025 amd64 (x86_64)
-Toolchain package versions: binutils_2.38-4ubuntu2.12 dpkg-dev_1.21.1ubuntu2.6 g++-11_11.4.0-1ubuntu1~22.04.2 gcc-11_11.4.0-1ubuntu1~22.04.2 libc6-dev_2.35-0ubuntu3.13 libstdc++-11-dev_11.4.0-1ubuntu1~22.04.2 libstdc++6_12.3.0-1ubuntu1~22.04.2 linux-libc-dev_5.15.0-170.180
-Package versions: adduser_3.118ubuntu5 apt_2.4.14 autoconf_2.71-2 automake_1:1.16.5-1.3 autopoint_0.21-4ubuntu4 autotools-dev_20220109.1 base-files_12ubuntu4.7 base-passwd_3.5.52build1 bash_5.1-6ubuntu1.1 binutils_2.38-4ubuntu2.12 binutils-common_2.38-4ubuntu2.12 binutils-x86-64-linux-gnu_2.38-4ubuntu2.12 bsdextrautils_2.37.2-4ubuntu3.4 bsdutils_1:2.37.2-4ubuntu3.4 build-essential_12.9ubuntu3 bzip2_1.0.8-5build1 ca-certificates_20240203~22.04.1 ccache_4.5.1-1 cmake_3.22.1-1ubuntu1.22.04.2 cmake-data_3.22.1-1ubuntu1.22.04.2 coreutils_8.32-4.1ubuntu1.2 cpp_4:11.2.0-1ubuntu1 cpp-11_11.4.0-1ubuntu1~22.04.2 dash_0.5.11+git20210903+057cd650a4ed-3build1 debconf_1.5.79ubuntu1 debhelper_13.6ubuntu1 debianutils_5.5-1ubuntu2 debugedit_1:5.0-4build1 dh-autoreconf_20 dh-elpa-helper_2.0.9ubuntu1 dh-strip-nondeterminism_1.13.0-1 diffutils_1:3.8-0ubuntu2 docutils-common_0.17.1+dfsg-2 dpkg_1.21.1ubuntu2.6 dpkg-dev_1.21.1ubuntu2.6 dumb-init_1.2.5-2 dwz_0.14-1build2 emacsen-common_3.0.4 fakeroot_1.28-1ubuntu1 file_1:5.41-3ubuntu0.1 findutils_4.8.0-1ubuntu3 g++_4:11.2.0-1ubuntu1 g++-11_11.4.0-1ubuntu1~22.04.2 gcc_4:11.2.0-1ubuntu1 gcc-11_11.4.0-1ubuntu1~22.04.2 gcc-11-base_11.4.0-1ubuntu1~22.04.2 gcc-12-base_12.3.0-1ubuntu1~22.04.2 gettext_0.21-4ubuntu4 gettext-base_0.21-4ubuntu4 gpgv_2.2.27-3ubuntu2.5 grep_3.7-1build1 groff-base_1.22.4-8build1 gzip_1.10-4ubuntu4.1 hostname_3.23ubuntu2 init-system-helpers_1.62 intltool-debian_0.35.0+20060710.5 libacl1_2.3.1-1 libapt-pkg6.0_2.4.14 libarchive-zip-perl_1.68-1 libarchive13_3.6.0-1ubuntu1.5 libasan6_11.4.0-1ubuntu1~22.04.2 libatomic1_12.3.0-1ubuntu1~22.04.2 libattr1_1:2.5.1-1build1 libaudit-common_1:3.0.7-1build1 libaudit1_1:3.0.7-1build1 libbinutils_2.38-4ubuntu2.12 libblkid1_2.37.2-4ubuntu3.4 libbrotli1_1.0.9-2build6 libbz2-1.0_1.0.8-5build1 libc-bin_2.35-0ubuntu3.13 libc-dev-bin_2.35-0ubuntu3.13 libc6_2.35-0ubuntu3.13 libc6-dev_2.35-0ubuntu3.13 libcap-ng0_0.7.9-2.2build3 libcap2_1:2.44-1ubuntu0.22.04.2 libcc1-0_12.3.0-1ubuntu1~22.04.2 libcom-err2_1.46.5-2ubuntu1.2 libcrypt-dev_1:4.4.27-1 libcrypt1_1:4.4.27-1 libctf-nobfd0_2.38-4ubuntu2.12 libctf0_2.38-4ubuntu2.12 libcurl4_7.81.0-1ubuntu1.21 libdb5.3_5.3.28+dfsg1-0.8ubuntu3 libdebconfclient0_0.261ubuntu1 libdebhelper-perl_13.6ubuntu1 libdpkg-perl_1.21.1ubuntu2.6 libdw1_0.186-1ubuntu0.1 libelf1_0.186-1ubuntu0.1 libexpat1_2.4.7-1ubuntu0.7 libfakeroot_1.28-1ubuntu1 libffi8_3.4.2-4 libfile-stripnondeterminism-perl_1.13.0-1 libgcc-11-dev_11.4.0-1ubuntu1~22.04.2 libgcc-s1_12.3.0-1ubuntu1~22.04.2 libgcrypt20_1.9.4-3ubuntu3 libgdbm-compat4_1.23-1 libgdbm6_1.23-1 libgmp10_2:6.2.1+dfsg-3ubuntu1 libgnutls30_3.7.3-4ubuntu1.7 libgomp1_12.3.0-1ubuntu1~22.04.2 libgpg-error0_1.43-3 libgssapi-krb5-2_1.19.2-2ubuntu0.7 libhiredis0.14_0.14.1-2 libhogweed6_3.7.3-1build2 libicu70_70.1-2 libidn2-0_2.3.2-2build1 libisl23_0.24-2build1 libitm1_12.3.0-1ubuntu1~22.04.2 libjsoncpp25_1.9.5-3 libk5crypto3_1.19.2-2ubuntu0.7 libkeyutils1_1.6.1-2ubuntu3 libkrb5-3_1.19.2-2ubuntu0.7 libkrb5support0_1.19.2-2ubuntu0.7 libldap-2.5-0_2.5.20+dfsg-0ubuntu0.22.04.1 liblsan0_12.3.0-1ubuntu1~22.04.2 liblz4-1_1.9.3-2build2 liblzma5_5.2.5-2ubuntu1 libmagic-mgc_1:5.41-3ubuntu0.1 libmagic1_1:5.41-3ubuntu0.1 libmount1_2.37.2-4ubuntu3.4 libmpc3_1.2.1-2build1 libmpdec3_2.5.1-2build2 libmpfr6_4.1.0-3build3 libncurses6_6.3-2ubuntu0.1 libncursesw6_6.3-2ubuntu0.1 libnettle8_3.7.3-1build2 libnghttp2-14_1.43.0-1ubuntu0.2 libnsl-dev_1.3.0-2build2 libnsl2_1.3.0-2build2 libp11-kit0_0.24.0-6build1 libpam-modules_1.4.0-11ubuntu2.6 libpam-modules-bin_1.4.0-11ubuntu2.6 libpam-runtime_1.4.0-11ubuntu2.6 libpam0g_1.4.0-11ubuntu2.6 libpcre2-8-0_10.39-3ubuntu0.1 libpcre3_2:8.39-13ubuntu0.22.04.1 libperl5.34_5.34.0-3ubuntu1.5 libpipeline1_1.5.5-1 libprocps8_2:3.3.17-6ubuntu2.1 libpsl5_0.21.0-1.2build2 libpython3-stdlib_3.10.6-1~22.04.1 libpython3.10-minimal_3.10.12-1~22.04.14 libpython3.10-stdlib_3.10.12-1~22.04.14 libquadmath0_12.3.0-1ubuntu1~22.04.2 libreadline8_8.1.2-1 librhash0_1.4.2-1ubuntu1 librtmp1_2.4+20151223.gitfa8646d.1-2build4 libsasl2-2_2.1.27+dfsg2-3ubuntu1.2 libsasl2-modules-db_2.1.27+dfsg2-3ubuntu1.2 libseccomp2_2.5.3-2ubuntu3~22.04.1 libselinux1_3.3-1build2 libsemanage-common_3.3-1build2 libsemanage2_3.3-1build2 libsepol2_3.3-1build1 libsigsegv2_2.13-1ubuntu3 libsmartcols1_2.37.2-4ubuntu3.4 libsqlite3-0_3.37.2-2ubuntu0.5 libssh-4_0.9.6-2ubuntu0.22.04.5 libssl3_3.0.2-0ubuntu1.21 libstdc++-11-dev_11.4.0-1ubuntu1~22.04.2 libstdc++6_12.3.0-1ubuntu1~22.04.2 libsub-override-perl_0.09-2 libsystemd0_249.11-0ubuntu3.17 libtasn1-6_4.18.0-4ubuntu0.2 libtinfo6_6.3-2ubuntu0.1 libtirpc-common_1.3.2-2ubuntu0.1 libtirpc-dev_1.3.2-2ubuntu0.1 libtirpc3_1.3.2-2ubuntu0.1 libtool_2.4.6-15build2 libtsan0_11.4.0-1ubuntu1~22.04.2 libubsan1_12.3.0-1ubuntu1~22.04.2 libuchardet0_0.0.7-1build2 libudev1_249.11-0ubuntu3.17 libunistring2_1.0-1 libuuid1_2.37.2-4ubuntu3.4 libuv1_1.43.0-1ubuntu0.1 libxml2_2.9.13+dfsg-1ubuntu0.11 libxxhash0_0.8.1-1 libzstd1_1.4.8+dfsg-3build1 linux-libc-dev_5.15.0-170.180 login_1:4.8.1-2ubuntu2.2 lsb-base_11.1.0ubuntu4 lto-disabled-list_24 m4_1.4.18-5ubuntu2 make_4.3-4.1build1 man-db_2.10.2-1 mawk_1.3.4.20200120-3 media-types_7.0.0 ncurses-base_6.3-2ubuntu0.1 ncurses-bin_6.3-2ubuntu0.1 openssl_3.0.2-0ubuntu1.21 passwd_1:4.8.1-2ubuntu2.2 patch_2.7.6-7build2 perl_5.34.0-3ubuntu1.5 perl-base_5.34.0-3ubuntu1.5 perl-modules-5.34_5.34.0-3ubuntu1.5 po-debconf_1.0.21+nmu1 procps_2:3.3.17-6ubuntu2.1 python3_3.10.6-1~22.04.1 python3-catkin-pkg-modules_1.1.0-2 python3-dateutil_2.8.1-6 python3-distutils_3.10.8-1~22.04 python3-docutils_0.17.1+dfsg-2 python3-importlib-metadata_4.6.4-1 python3-lib2to3_3.10.8-1~22.04 python3-minimal_3.10.6-1~22.04.1 python3-more-itertools_8.10.0-2 python3-packaging_21.3-1 python3-pkg-resources_59.6.0-1.2ubuntu0.22.04.3 python3-pyparsing_2.4.7-1 python3-roman_3.3-1 python3-setuptools_59.6.0-1.2ubuntu0.22.04.3 python3-six_1.16.0-3ubuntu1 python3-zipp_1.0.0-3ubuntu0.1 python3.10_3.10.12-1~22.04.14 python3.10-minimal_3.10.12-1~22.04.14 readline-common_8.1.2-1 ros-humble-ament-cmake_1.3.12-1jammy.20250701.021045 ros-humble-ament-cmake-core_1.3.12-1jammy.20250701.005441 ros-humble-ament-cmake-export-definitions_1.3.12-1jammy.20250701.011358 ros-humble-ament-cmake-export-dependencies_1.3.12-1jammy.20250701.011607 ros-humble-ament-cmake-export-include-directories_1.3.12-1jammy.20250701.011607 ros-humble-ament-cmake-export-interfaces_1.3.12-1jammy.20250701.011817 ros-humble-ament-cmake-export-libraries_1.3.12-1jammy.20250701.011611 ros-humble-ament-cmake-export-link-flags_1.3.12-1jammy.20250701.011612 ros-humble-ament-cmake-export-targets_1.3.12-1jammy.20250701.011836 ros-humble-ament-cmake-gen-version-h_1.3.12-1jammy.20250701.012952 ros-humble-ament-cmake-include-directories_1.3.12-1jammy.20250701.011618 ros-humble-ament-cmake-libraries_1.3.12-1jammy.20250701.011511 ros-humble-ament-cmake-python_1.3.12-1jammy.20250701.011622 ros-humble-ament-cmake-target-dependencies_1.3.12-1jammy.20250701.011815 ros-humble-ament-cmake-test_1.3.12-1jammy.20250701.011837 ros-humble-ament-cmake-version_1.3.12-1jammy.20250701.011519 ros-humble-ament-package_0.14.1-1jammy.20250522.030837 ros-humble-ros-workspace_1.0.2-2jammy.20250701.005808 rpcsvc-proto_1.4.2-0ubuntu6 sbuild-build-depends-main-dummy_0.invalid.0 sed_4.8-1ubuntu2 sensible-utils_0.0.17 sgml-base_1.30 sysvinit-utils_3.01-1ubuntu1 tar_1.34+dfsg-1ubuntu0.1.22.04.2 tzdata_2025b-0ubuntu0.22.04.1 ubuntu-keyring_2021.03.26 util-linux_2.37.2-4ubuntu3.4 xml-core_0.18+nmu1 xz-utils_5.2.5-2ubuntu1 zlib1g_1:1.2.11.dfsg-2ubuntu9.2
+Kernel: Linux 6.17.0-1022-azure #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026 amd64 (x86_64)
+Toolchain package versions: binutils_2.38-4ubuntu2.12 dpkg-dev_1.21.1ubuntu2.6 g++-11_11.4.0-1ubuntu1~22.04.3 gcc-11_11.4.0-1ubuntu1~22.04.3 libc6-dev_2.35-0ubuntu3.15 libstdc++-11-dev_11.4.0-1ubuntu1~22.04.3 libstdc++6_12.3.0-1ubuntu1~22.04.3 linux-libc-dev_5.15.0-191.201
+Package versions: adduser_3.118ubuntu5 apt_2.4.14 autoconf_2.71-2 automake_1:1.16.5-1.3 autopoint_0.21-4ubuntu4 autotools-dev_20220109.1 base-files_12ubuntu4.7 base-passwd_3.5.52build1 bash_5.1-6ubuntu1.1 binutils_2.38-4ubuntu2.12 binutils-common_2.38-4ubuntu2.12 binutils-x86-64-linux-gnu_2.38-4ubuntu2.12 bsdextrautils_2.37.2-4ubuntu3.6 bsdutils_1:2.37.2-4ubuntu3.6 build-essential_12.9ubuntu3 bzip2_1.0.8-5ubuntu0.1 ca-certificates_20260601~22.04.1 ccache_4.5.1-1 cmake_3.22.1-1ubuntu1.22.04.2 cmake-data_3.22.1-1ubuntu1.22.04.2 coreutils_8.32-4.1ubuntu1.4 cpp_4:11.2.0-1ubuntu1 cpp-11_11.4.0-1ubuntu1~22.04.3 dash_0.5.11+git20210903+057cd650a4ed-3build1 debconf_1.5.79ubuntu1 debhelper_13.6ubuntu1 debianutils_5.5-1ubuntu2 debugedit_1:5.0-4build1 dh-autoreconf_20 dh-elpa-helper_2.0.9ubuntu1 dh-strip-nondeterminism_1.13.0-1 diffutils_1:3.8-0ubuntu2.1 docutils-common_0.17.1+dfsg-2 dpkg_1.21.1ubuntu2.6 dpkg-dev_1.21.1ubuntu2.6 dumb-init_1.2.5-2 dwz_0.14-1build2 emacsen-common_3.0.4 fakeroot_1.28-1ubuntu1 file_1:5.41-3ubuntu0.1 findutils_4.8.0-1ubuntu3 g++_4:11.2.0-1ubuntu1 g++-11_11.4.0-1ubuntu1~22.04.3 gcc_4:11.2.0-1ubuntu1 gcc-11_11.4.0-1ubuntu1~22.04.3 gcc-11-base_11.4.0-1ubuntu1~22.04.3 gcc-12-base_12.3.0-1ubuntu1~22.04.3 gettext_0.21-4ubuntu4 gettext-base_0.21-4ubuntu4 gpgv_2.2.27-3ubuntu2.5 grep_3.7-1build1 groff-base_1.22.4-8build1 gzip_1.10-4ubuntu4.2 hostname_3.23ubuntu2 init-system-helpers_1.62 intltool-debian_0.35.0+20060710.5 libacl1_2.3.1-1 libapt-pkg6.0_2.4.14 libarchive-zip-perl_1.68-1 libarchive13_3.6.0-1ubuntu1.8 libasan6_11.4.0-1ubuntu1~22.04.3 libatomic1_12.3.0-1ubuntu1~22.04.3 libattr1_1:2.5.1-1ubuntu0.1 libaudit-common_1:3.0.7-1build1 libaudit1_1:3.0.7-1build1 libbinutils_2.38-4ubuntu2.12 libblkid1_2.37.2-4ubuntu3.6 libbrotli1_1.0.9-2build6 libbz2-1.0_1.0.8-5ubuntu0.1 libc-bin_2.35-0ubuntu3.15 libc-dev-bin_2.35-0ubuntu3.15 libc6_2.35-0ubuntu3.15 libc6-dev_2.35-0ubuntu3.15 libcap-ng0_0.7.9-2.2build3 libcap2_1:2.44-1ubuntu0.22.04.3 libcc1-0_12.3.0-1ubuntu1~22.04.3 libcom-err2_1.46.5-2ubuntu1.2 libcrypt-dev_1:4.4.27-1 libcrypt1_1:4.4.27-1 libctf-nobfd0_2.38-4ubuntu2.12 libctf0_2.38-4ubuntu2.12 libcurl4_7.81.0-1ubuntu1.27 libdb5.3_5.3.28+dfsg1-0.8ubuntu3 libdebconfclient0_0.261ubuntu1 libdebhelper-perl_13.6ubuntu1 libdpkg-perl_1.21.1ubuntu2.6 libdw1_0.186-1ubuntu0.1 libelf1_0.186-1ubuntu0.1 libexpat1_2.4.7-1ubuntu0.7 libfakeroot_1.28-1ubuntu1 libffi8_3.4.2-4 libfile-stripnondeterminism-perl_1.13.0-1 libgcc-11-dev_11.4.0-1ubuntu1~22.04.3 libgcc-s1_12.3.0-1ubuntu1~22.04.3 libgcrypt20_1.9.4-3ubuntu3.3 libgdbm-compat4_1.23-1 libgdbm6_1.23-1 libgmp10_2:6.2.1+dfsg-3ubuntu1 libgnutls30_3.7.3-4ubuntu1.9 libgomp1_12.3.0-1ubuntu1~22.04.3 libgpg-error0_1.43-3 libgssapi-krb5-2_1.19.2-2ubuntu0.8 libhiredis0.14_0.14.1-2 libhogweed6_3.7.3-1build2 libicu70_70.1-2 libidn2-0_2.3.2-2build1 libisl23_0.24-2build1 libitm1_12.3.0-1ubuntu1~22.04.3 libjsoncpp25_1.9.5-3 libk5crypto3_1.19.2-2ubuntu0.8 libkeyutils1_1.6.1-2ubuntu3 libkrb5-3_1.19.2-2ubuntu0.8 libkrb5support0_1.19.2-2ubuntu0.8 libldap-2.5-0_2.5.20+dfsg-0ubuntu0.22.04.1 liblsan0_12.3.0-1ubuntu1~22.04.3 liblz4-1_1.9.3-2build2 liblzma5_5.2.5-2ubuntu1.1 libmagic-mgc_1:5.41-3ubuntu0.1 libmagic1_1:5.41-3ubuntu0.1 libmount1_2.37.2-4ubuntu3.6 libmpc3_1.2.1-2build1 libmpdec3_2.5.1-2build2 libmpfr6_4.1.0-3build3 libncurses6_6.3-2ubuntu0.3 libncursesw6_6.3-2ubuntu0.3 libnettle8_3.7.3-1build2 libnghttp2-14_1.43.0-1ubuntu0.4 libnsl-dev_1.3.0-2build2 libnsl2_1.3.0-2build2 libp11-kit0_0.24.0-6ubuntu0.1 libpam-modules_1.4.0-11ubuntu2.8 libpam-modules-bin_1.4.0-11ubuntu2.8 libpam-runtime_1.4.0-11ubuntu2.8 libpam0g_1.4.0-11ubuntu2.8 libpcre2-8-0_10.39-3ubuntu0.1 libpcre3_2:8.39-13ubuntu0.22.04.1 libperl5.34_5.34.0-3ubuntu1.9 libpipeline1_1.5.5-1 libprocps8_2:3.3.17-6ubuntu2.1 libpsl5_0.21.0-1.2build2 libpython3-stdlib_3.10.6-1~22.04.1 libpython3.10-minimal_3.10.12-1~22.04.18 libpython3.10-stdlib_3.10.12-1~22.04.18 libquadmath0_12.3.0-1ubuntu1~22.04.3 libreadline8_8.1.2-1 librhash0_1.4.2-1ubuntu1 librtmp1_2.4+20151223.gitfa8646d.1-2build4 libsasl2-2_2.1.27+dfsg2-3ubuntu1.2 libsasl2-modules-db_2.1.27+dfsg2-3ubuntu1.2 libseccomp2_2.5.3-2ubuntu3~22.04.1 libselinux1_3.3-1build2 libsemanage-common_3.3-1build2 libsemanage2_3.3-1build2 libsepol2_3.3-1build1 libsigsegv2_2.13-1ubuntu3 libsmartcols1_2.37.2-4ubuntu3.6 libsqlite3-0_3.37.2-2ubuntu0.7 libssh-4_0.9.6-2ubuntu0.22.04.8 libssl3_3.0.2-0ubuntu1.29 libstdc++-11-dev_11.4.0-1ubuntu1~22.04.3 libstdc++6_12.3.0-1ubuntu1~22.04.3 libsub-override-perl_0.09-2 libsystemd0_249.11-0ubuntu3.22 libtasn1-6_4.18.0-4ubuntu0.2 libtinfo6_6.3-2ubuntu0.3 libtirpc-common_1.3.2-2ubuntu0.1 libtirpc-dev_1.3.2-2ubuntu0.1 libtirpc3_1.3.2-2ubuntu0.1 libtool_2.4.6-15build2 libtsan0_11.4.0-1ubuntu1~22.04.3 libubsan1_12.3.0-1ubuntu1~22.04.3 libuchardet0_0.0.7-1build2 libudev1_249.11-0ubuntu3.22 libunistring2_1.0-1 libuuid1_2.37.2-4ubuntu3.6 libuv1_1.43.0-1ubuntu0.1 libxml2_2.9.13+dfsg-1ubuntu0.12 libxxhash0_0.8.1-1 libzstd1_1.4.8+dfsg-3build1 linux-libc-dev_5.15.0-191.201 login_1:4.8.1-2ubuntu2.2 lsb-base_11.1.0ubuntu4 lto-disabled-list_24 m4_1.4.18-5ubuntu2 make_4.3-4.1build1 man-db_2.10.2-1 mawk_1.3.4.20200120-3 media-types_7.0.0 ncurses-base_6.3-2ubuntu0.3 ncurses-bin_6.3-2ubuntu0.3 openssl_3.0.2-0ubuntu1.29 passwd_1:4.8.1-2ubuntu2.2 patch_2.7.6-7build2 perl_5.34.0-3ubuntu1.9 perl-base_5.34.0-3ubuntu1.9 perl-modules-5.34_5.34.0-3ubuntu1.9 po-debconf_1.0.21+nmu1 procps_2:3.3.17-6ubuntu2.1 python3_3.10.6-1~22.04.1 python3-catkin-pkg-modules_1.1.1-1 python3-dateutil_2.8.1-6 python3-distutils_3.10.8-1~22.04 python3-docutils_0.17.1+dfsg-2 python3-importlib-metadata_4.6.4-1 python3-lib2to3_3.10.8-1~22.04 python3-minimal_3.10.6-1~22.04.1 python3-more-itertools_8.10.0-2 python3-packaging_21.3-1 python3-pkg-resources_59.6.0-1.2ubuntu0.22.04.3 python3-pyparsing_2.4.7-1 python3-roman_3.3-1 python3-setuptools_59.6.0-1.2ubuntu0.22.04.3 python3-six_1.16.0-3ubuntu1 python3-zipp_1.0.0-3ubuntu0.1 python3.10_3.10.12-1~22.04.18 python3.10-minimal_3.10.12-1~22.04.18 readline-common_8.1.2-1 ros-humble-ament-cmake_1.3.14-1jammy.20260226.035055 ros-humble-ament-cmake-core_1.3.14-1jammy.20260224.185609 ros-humble-ament-cmake-export-definitions_1.3.14-1jammy.20260226.010509 ros-humble-ament-cmake-export-dependencies_1.3.14-1jammy.20260226.011144 ros-humble-ament-cmake-export-include-directories_1.3.14-1jammy.20260226.010305 ros-humble-ament-cmake-export-interfaces_1.3.14-1jammy.20260226.005715 ros-humble-ament-cmake-export-libraries_1.3.14-1jammy.20260226.004939 ros-humble-ament-cmake-export-link-flags_1.3.14-1jammy.20260226.010357 ros-humble-ament-cmake-export-targets_1.3.14-1jammy.20260226.005705 ros-humble-ament-cmake-gen-version-h_1.3.14-1jammy.20260226.034234 ros-humble-ament-cmake-include-directories_1.3.14-1jammy.20260226.010650 ros-humble-ament-cmake-libraries_1.3.14-1jammy.20260226.010453 ros-humble-ament-cmake-python_1.3.14-1jammy.20260226.005145 ros-humble-ament-cmake-target-dependencies_1.3.14-1jammy.20260226.013622 ros-humble-ament-cmake-test_1.3.14-1jammy.20260226.013528 ros-humble-ament-cmake-version_1.3.14-1jammy.20260226.010514 ros-humble-ament-package_0.14.2-1jammy.20260213.215617 ros-humble-ros-workspace_1.0.2-2jammy.20260224.185744 rpcsvc-proto_1.4.2-0ubuntu6 sbuild-build-depends-main-dummy_0.invalid.0 sed_4.8-1ubuntu2.1 sensible-utils_0.0.17 sgml-base_1.30 sysvinit-utils_3.01-1ubuntu1 tar_1.34+dfsg-1ubuntu0.1.22.04.6 tzdata_2026c-0ubuntu0.22.04.1 ubuntu-keyring_2021.03.26 util-linux_2.37.2-4ubuntu3.6 xml-core_0.18+nmu1 xz-utils_5.2.5-2ubuntu1.1 zlib1g_1:1.2.11.dfsg-2ubuntu9.2
 
 +------------------------------------------------------------------------------+
-| Build                                        Thu, 12 Feb 2026 12:47:49 +0000 |
+| Build                                        Mon, 14 Sep 2026 13:22:56 +0000 |
 +------------------------------------------------------------------------------+
 
 
@@ -748,22 +748,22 @@ Format: 1.0
 Source: ros-humble-pymoveit2
 Binary: ros-humble-pymoveit2
 Architecture: any
-Version: 0-2026.02.12.12.47
+Version: 4.2.0-25-gb25c9a6-2026.09.14.13.22
 Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
 Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 9.0.0), ros-humble-ament-cmake, ros-humble-ament-cmake-python
 Package-List:
  ros-humble-pymoveit2 deb misc optional arch=any
 Checksums-Sha1:
- 5fae20ebf2f0dd266c986b2e2fc7658dfeabcb18 157803 ros-humble-pymoveit2_0-2026.02.12.12.47.tar.gz
+ 064e6ef4e28e8ba1c5c7fdba39c2c0955e83211d 247039 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22.tar.gz
 Checksums-Sha256:
- f7d5ecc13acc5845cad4bbff7734914540cd99fe37aa42a9cd04259081d79e3a 157803 ros-humble-pymoveit2_0-2026.02.12.12.47.tar.gz
+ 5805fc161b7f19cd5ac775bde705b4fd11df41a30e39e8236c6eccc8a195a9d3 247039 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22.tar.gz
 Files:
- 79b3d25a17feb6bbd08f12c1c3999c77 157803 ros-humble-pymoveit2_0-2026.02.12.12.47.tar.gz
+ e2660fc68a9ba6bae4479556a055b4c6 247039 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22.tar.gz
 
-dpkg-source: warning: extracting unsigned source package (ros-humble-pymoveit2_0-2026.02.12.12.47.dsc)
+dpkg-source: warning: extracting unsigned source package (ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22.dsc)
 dpkg-source: info: extracting ros-humble-pymoveit2 in /<<BUILDDIR>>package
-dpkg-source: info: unpacking ros-humble-pymoveit2_0-2026.02.12.12.47.tar.gz
+dpkg-source: info: unpacking ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22.tar.gz
 
 Check disk space
 ----------------
@@ -791,7 +791,7 @@ dpkg-buildpackage
 
 Command: dpkg-buildpackage --sanitize-env -us -uc -b -rfakeroot
 dpkg-buildpackage: info: source package ros-humble-pymoveit2
-dpkg-buildpackage: info: source version 0-2026.02.12.12.47
+dpkg-buildpackage: info: source version 4.2.0-25-gb25c9a6-2026.09.14.13.22
 dpkg-buildpackage: info: source distribution jammy
 dpkg-buildpackage: info: source changed by Andrej Orsula <orsula.andrej@gmail.com>
  dpkg-source --before-build .
@@ -843,7 +843,7 @@ dh_auto_configure -- \
 -- Check for working CXX compiler: /usr/lib/ccache/c++ - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
--- Found ament_cmake: 1.3.12 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found ament_cmake: 1.3.14 (/opt/ros/humble/share/ament_cmake/cmake)
 -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
 -- Configuring done
 -- Generating done
@@ -973,26 +973,26 @@ Install the project...
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/share/pymoveit2/environment/pythonpath.sh
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/share/pymoveit2/environment/pythonpath.dsv
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/top_level.txt
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/dependency_links.txt
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/PKG-INFO
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/top_level.txt
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/SOURCES.txt
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/dependency_links.txt
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/gripper_command.py
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/utils.py
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/gripper_interface.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/__init__.py
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/crane_x7.py
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/panda.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/__init__.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/ur.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/crane_x7.py
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/lbr.py
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/kinova.py
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/ur.py
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/phantomx_pincher.py
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/__init__.py
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2_servo.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/utils.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/gripper_interface.py
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2_servo.py
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2_gripper.py
--- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/__init__.py
+-- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/gripper_command.py
 Listing '/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2'...
 Can't list '/opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2'
 -- Installing: /<<BUILDDIR>>package/debian/ros-humble-pymoveit2/opt/ros/humble/lib/pymoveit2/ex_allow_collisions.py
@@ -1072,15 +1072,15 @@ dpkg-gencontrol: warning: Depends field of package ros-humble-pymoveit2: substit
 	chown 0:0 -- debian/ros-humble-pymoveit2/DEBIAN/md5sums
    dh_builddeb -O-v -O--buildsystem=cmake -O--builddirectory=.obj-x86_64-linux-gnu
 	dpkg-deb --build debian/ros-humble-pymoveit2 ..
-dpkg-deb: building package 'ros-humble-pymoveit2' in '../ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb'.
- dpkg-genbuildinfo --build=binary -O../ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.buildinfo
- dpkg-genchanges --build=binary -O../ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.changes
+dpkg-deb: building package 'ros-humble-pymoveit2' in '../ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.deb'.
+ dpkg-genbuildinfo --build=binary -O../ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.buildinfo
+ dpkg-genchanges --build=binary -O../ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.changes
 dpkg-genchanges: info: binary-only upload (no source code included)
  dpkg-source --after-build .
 dpkg-source: info: using options from package/debian/source/options: --auto-commit
 dpkg-buildpackage: info: binary-only upload (no source included)
 --------------------------------------------------------------------------------
-Build finished at 2026-02-12T12:47:54Z
+Build finished at 2026-09-14T13:23:01Z
 
 Finished
 --------
@@ -1088,20 +1088,20 @@ Finished
 I: Built successfully
 
 +------------------------------------------------------------------------------+
-| Changes                                      Thu, 12 Feb 2026 12:47:55 +0000 |
+| Changes                                      Mon, 14 Sep 2026 13:23:01 +0000 |
 +------------------------------------------------------------------------------+
 
 
-ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.changes:
-------------------------------------------------------
+ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.changes:
+----------------------------------------------------------------------
 
 Format: 1.8
-Date: Thu, 12 Feb 2026 12:47:23 -0000
+Date: Mon, 14 Sep 2026 13:22:28 -0000
 Source: ros-humble-pymoveit2
 Binary: ros-humble-pymoveit2
 Built-For-Profiles: noudeb
 Architecture: amd64
-Version: 0-2026.02.12.12.47
+Version: 4.2.0-25-gb25c9a6-2026.09.14.13.22
 Distribution: jammy
 Urgency: high
 Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
@@ -1109,37 +1109,37 @@ Changed-By: Andrej Orsula <orsula.andrej@gmail.com>
 Description:
  ros-humble-pymoveit2 - Basic Python interface for MoveIt 2 built on top of ROS 2 actions
 Changes:
- ros-humble-pymoveit2 (0-2026.02.12.12.47) jammy; urgency=high
+ ros-humble-pymoveit2 (4.2.0-25-gb25c9a6-2026.09.14.13.22) jammy; urgency=high
  .
    * Autogenerated, no changelog for this version found in CHANGELOG.rst.
 Checksums-Sha1:
- cad25aadc3b3ef5d063dcaf8a15fdcb5a6154ae2 9263 ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.buildinfo
- 2d023a8ca7c15548a56b701e7ab8e8d199b360b2 27820 ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb
+ 9477311383f25fcfd0d043296cdbedf3200adeac 9349 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.buildinfo
+ b73423f2aa838151252f566160cc3f183a621eff 27878 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.deb
 Checksums-Sha256:
- a4885c90b699e3a1e522b1aa8da2e5984eda33ea65c08507a33c779211069e9e 9263 ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.buildinfo
- 00d87a61307520e1bea1d151870cb7ce68d294955104908727b5dabf05a34969 27820 ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb
+ b4f6f58c1531bfeb37a0a00d76183c6f3927fc0bfeaafe81911ce0cf2f5cb9ea 9349 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.buildinfo
+ 0a8f19d5789848bf1fb3ea1756cf18be7093411925c9804157c5483852868f0a 27878 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.deb
 Files:
- 1a05b5b3e5545f9b09265ca85359b6f9 9263 misc optional ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.buildinfo
- a5d0974292f8b1231bf7503d3c199ca4 27820 misc optional ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb
+ fdc79b9d2bb0dcc3bff9227ccc5c6ef2 9349 misc optional ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.buildinfo
+ 1960edca6dea5073a0826f4b39e1516d 27878 misc optional ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.deb
 
 +------------------------------------------------------------------------------+
-| Buildinfo                                    Thu, 12 Feb 2026 12:47:55 +0000 |
+| Buildinfo                                    Mon, 14 Sep 2026 13:23:02 +0000 |
 +------------------------------------------------------------------------------+
 
 Format: 1.0
 Source: ros-humble-pymoveit2
 Binary: ros-humble-pymoveit2
 Architecture: amd64
-Version: 0-2026.02.12.12.47
+Version: 4.2.0-25-gb25c9a6-2026.09.14.13.22
 Checksums-Md5:
- a5d0974292f8b1231bf7503d3c199ca4 27820 ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb
+ 1960edca6dea5073a0826f4b39e1516d 27878 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.deb
 Checksums-Sha1:
- 2d023a8ca7c15548a56b701e7ab8e8d199b360b2 27820 ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb
+ b73423f2aa838151252f566160cc3f183a621eff 27878 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.deb
 Checksums-Sha256:
- 00d87a61307520e1bea1d151870cb7ce68d294955104908727b5dabf05a34969 27820 ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb
+ 0a8f19d5789848bf1fb3ea1756cf18be7093411925c9804157c5483852868f0a 27878 ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.deb
 Build-Origin: Ubuntu
 Build-Architecture: amd64
-Build-Date: Thu, 12 Feb 2026 12:47:54 +0000
+Build-Date: Mon, 14 Sep 2026 13:23:01 +0000
 Build-Path: /<<BUILDDIR>>package
 Installed-Build-Depends:
  autoconf (= 2.71-2),
@@ -1152,15 +1152,15 @@ Installed-Build-Depends:
  binutils (= 2.38-4ubuntu2.12),
  binutils-common (= 2.38-4ubuntu2.12),
  binutils-x86-64-linux-gnu (= 2.38-4ubuntu2.12),
- bsdextrautils (= 2.37.2-4ubuntu3.4),
- bsdutils (= 1:2.37.2-4ubuntu3.4),
+ bsdextrautils (= 2.37.2-4ubuntu3.6),
+ bsdutils (= 1:2.37.2-4ubuntu3.6),
  build-essential (= 12.9ubuntu3),
- bzip2 (= 1.0.8-5build1),
+ bzip2 (= 1.0.8-5ubuntu0.1),
  cmake (= 3.22.1-1ubuntu1.22.04.2),
  cmake-data (= 3.22.1-1ubuntu1.22.04.2),
- coreutils (= 8.32-4.1ubuntu1.2),
+ coreutils (= 8.32-4.1ubuntu1.4),
  cpp (= 4:11.2.0-1ubuntu1),
- cpp-11 (= 11.4.0-1ubuntu1~22.04.2),
+ cpp-11 (= 11.4.0-1ubuntu1~22.04.3),
  dash (= 0.5.11+git20210903+057cd650a4ed-3build1),
  debconf (= 1.5.79ubuntu1),
  debhelper (= 13.6ubuntu1),
@@ -1169,7 +1169,7 @@ Installed-Build-Depends:
  dh-autoreconf (= 20),
  dh-elpa-helper (= 2.0.9ubuntu1),
  dh-strip-nondeterminism (= 1.13.0-1),
- diffutils (= 1:3.8-0ubuntu2),
+ diffutils (= 1:3.8-0ubuntu2.1),
  docutils-common (= 0.17.1+dfsg-2),
  dpkg (= 1.21.1ubuntu2.6),
  dpkg-dev (= 1.21.1ubuntu2.6),
@@ -1178,44 +1178,44 @@ Installed-Build-Depends:
  file (= 1:5.41-3ubuntu0.1),
  findutils (= 4.8.0-1ubuntu3),
  g++ (= 4:11.2.0-1ubuntu1),
- g++-11 (= 11.4.0-1ubuntu1~22.04.2),
+ g++-11 (= 11.4.0-1ubuntu1~22.04.3),
  gcc (= 4:11.2.0-1ubuntu1),
- gcc-11 (= 11.4.0-1ubuntu1~22.04.2),
- gcc-11-base (= 11.4.0-1ubuntu1~22.04.2),
- gcc-12-base (= 12.3.0-1ubuntu1~22.04.2),
+ gcc-11 (= 11.4.0-1ubuntu1~22.04.3),
+ gcc-11-base (= 11.4.0-1ubuntu1~22.04.3),
+ gcc-12-base (= 12.3.0-1ubuntu1~22.04.3),
  gettext (= 0.21-4ubuntu4),
  gettext-base (= 0.21-4ubuntu4),
  grep (= 3.7-1build1),
  groff-base (= 1.22.4-8build1),
- gzip (= 1.10-4ubuntu4.1),
+ gzip (= 1.10-4ubuntu4.2),
  hostname (= 3.23ubuntu2),
  init-system-helpers (= 1.62),
  intltool-debian (= 0.35.0+20060710.5),
  libacl1 (= 2.3.1-1),
  libarchive-zip-perl (= 1.68-1),
- libarchive13 (= 3.6.0-1ubuntu1.5),
- libasan6 (= 11.4.0-1ubuntu1~22.04.2),
- libatomic1 (= 12.3.0-1ubuntu1~22.04.2),
- libattr1 (= 1:2.5.1-1build1),
+ libarchive13 (= 3.6.0-1ubuntu1.8),
+ libasan6 (= 11.4.0-1ubuntu1~22.04.3),
+ libatomic1 (= 12.3.0-1ubuntu1~22.04.3),
+ libattr1 (= 1:2.5.1-1ubuntu0.1),
  libaudit-common (= 1:3.0.7-1build1),
  libaudit1 (= 1:3.0.7-1build1),
  libbinutils (= 2.38-4ubuntu2.12),
- libblkid1 (= 2.37.2-4ubuntu3.4),
+ libblkid1 (= 2.37.2-4ubuntu3.6),
  libbrotli1 (= 1.0.9-2build6),
- libbz2-1.0 (= 1.0.8-5build1),
- libc-bin (= 2.35-0ubuntu3.13),
- libc-dev-bin (= 2.35-0ubuntu3.13),
- libc6 (= 2.35-0ubuntu3.13),
- libc6-dev (= 2.35-0ubuntu3.13),
+ libbz2-1.0 (= 1.0.8-5ubuntu0.1),
+ libc-bin (= 2.35-0ubuntu3.15),
+ libc-dev-bin (= 2.35-0ubuntu3.15),
+ libc6 (= 2.35-0ubuntu3.15),
+ libc6-dev (= 2.35-0ubuntu3.15),
  libcap-ng0 (= 0.7.9-2.2build3),
- libcap2 (= 1:2.44-1ubuntu0.22.04.2),
- libcc1-0 (= 12.3.0-1ubuntu1~22.04.2),
+ libcap2 (= 1:2.44-1ubuntu0.22.04.3),
+ libcc1-0 (= 12.3.0-1ubuntu1~22.04.3),
  libcom-err2 (= 1.46.5-2ubuntu1.2),
  libcrypt-dev (= 1:4.4.27-1),
  libcrypt1 (= 1:4.4.27-1),
  libctf-nobfd0 (= 2.38-4ubuntu2.12),
  libctf0 (= 2.38-4ubuntu2.12),
- libcurl4 (= 7.81.0-1ubuntu1.21),
+ libcurl4 (= 7.81.0-1ubuntu1.27),
  libdb5.3 (= 5.3.28+dfsg1-0.8ubuntu3),
  libdebconfclient0 (= 0.261ubuntu1),
  libdebhelper-perl (= 13.6ubuntu1),
@@ -1225,57 +1225,57 @@ Installed-Build-Depends:
  libexpat1 (= 2.4.7-1ubuntu0.7),
  libffi8 (= 3.4.2-4),
  libfile-stripnondeterminism-perl (= 1.13.0-1),
- libgcc-11-dev (= 11.4.0-1ubuntu1~22.04.2),
- libgcc-s1 (= 12.3.0-1ubuntu1~22.04.2),
- libgcrypt20 (= 1.9.4-3ubuntu3),
+ libgcc-11-dev (= 11.4.0-1ubuntu1~22.04.3),
+ libgcc-s1 (= 12.3.0-1ubuntu1~22.04.3),
+ libgcrypt20 (= 1.9.4-3ubuntu3.3),
  libgdbm-compat4 (= 1.23-1),
  libgdbm6 (= 1.23-1),
  libgmp10 (= 2:6.2.1+dfsg-3ubuntu1),
- libgnutls30 (= 3.7.3-4ubuntu1.7),
- libgomp1 (= 12.3.0-1ubuntu1~22.04.2),
+ libgnutls30 (= 3.7.3-4ubuntu1.9),
+ libgomp1 (= 12.3.0-1ubuntu1~22.04.3),
  libgpg-error0 (= 1.43-3),
- libgssapi-krb5-2 (= 1.19.2-2ubuntu0.7),
+ libgssapi-krb5-2 (= 1.19.2-2ubuntu0.8),
  libhogweed6 (= 3.7.3-1build2),
  libicu70 (= 70.1-2),
  libidn2-0 (= 2.3.2-2build1),
  libisl23 (= 0.24-2build1),
- libitm1 (= 12.3.0-1ubuntu1~22.04.2),
+ libitm1 (= 12.3.0-1ubuntu1~22.04.3),
  libjsoncpp25 (= 1.9.5-3),
- libk5crypto3 (= 1.19.2-2ubuntu0.7),
+ libk5crypto3 (= 1.19.2-2ubuntu0.8),
  libkeyutils1 (= 1.6.1-2ubuntu3),
- libkrb5-3 (= 1.19.2-2ubuntu0.7),
- libkrb5support0 (= 1.19.2-2ubuntu0.7),
+ libkrb5-3 (= 1.19.2-2ubuntu0.8),
+ libkrb5support0 (= 1.19.2-2ubuntu0.8),
  libldap-2.5-0 (= 2.5.20+dfsg-0ubuntu0.22.04.1),
- liblsan0 (= 12.3.0-1ubuntu1~22.04.2),
+ liblsan0 (= 12.3.0-1ubuntu1~22.04.3),
  liblz4-1 (= 1.9.3-2build2),
- liblzma5 (= 5.2.5-2ubuntu1),
+ liblzma5 (= 5.2.5-2ubuntu1.1),
  libmagic-mgc (= 1:5.41-3ubuntu0.1),
  libmagic1 (= 1:5.41-3ubuntu0.1),
- libmount1 (= 2.37.2-4ubuntu3.4),
+ libmount1 (= 2.37.2-4ubuntu3.6),
  libmpc3 (= 1.2.1-2build1),
  libmpdec3 (= 2.5.1-2build2),
  libmpfr6 (= 4.1.0-3build3),
- libncurses6 (= 6.3-2ubuntu0.1),
- libncursesw6 (= 6.3-2ubuntu0.1),
+ libncurses6 (= 6.3-2ubuntu0.3),
+ libncursesw6 (= 6.3-2ubuntu0.3),
  libnettle8 (= 3.7.3-1build2),
- libnghttp2-14 (= 1.43.0-1ubuntu0.2),
+ libnghttp2-14 (= 1.43.0-1ubuntu0.4),
  libnsl-dev (= 1.3.0-2build2),
  libnsl2 (= 1.3.0-2build2),
- libp11-kit0 (= 0.24.0-6build1),
- libpam-modules (= 1.4.0-11ubuntu2.6),
- libpam-modules-bin (= 1.4.0-11ubuntu2.6),
- libpam-runtime (= 1.4.0-11ubuntu2.6),
- libpam0g (= 1.4.0-11ubuntu2.6),
+ libp11-kit0 (= 0.24.0-6ubuntu0.1),
+ libpam-modules (= 1.4.0-11ubuntu2.8),
+ libpam-modules-bin (= 1.4.0-11ubuntu2.8),
+ libpam-runtime (= 1.4.0-11ubuntu2.8),
+ libpam0g (= 1.4.0-11ubuntu2.8),
  libpcre2-8-0 (= 10.39-3ubuntu0.1),
  libpcre3 (= 2:8.39-13ubuntu0.22.04.1),
- libperl5.34 (= 5.34.0-3ubuntu1.5),
+ libperl5.34 (= 5.34.0-3ubuntu1.9),
  libpipeline1 (= 1.5.5-1),
  libprocps8 (= 2:3.3.17-6ubuntu2.1),
  libpsl5 (= 0.21.0-1.2build2),
  libpython3-stdlib (= 3.10.6-1~22.04.1),
- libpython3.10-minimal (= 3.10.12-1~22.04.14),
- libpython3.10-stdlib (= 3.10.12-1~22.04.14),
- libquadmath0 (= 12.3.0-1ubuntu1~22.04.2),
+ libpython3.10-minimal (= 3.10.12-1~22.04.18),
+ libpython3.10-stdlib (= 3.10.12-1~22.04.18),
+ libquadmath0 (= 12.3.0-1ubuntu1~22.04.3),
  libreadline8 (= 8.1.2-1),
  librhash0 (= 1.4.2-1ubuntu1),
  librtmp1 (= 2.4+20151223.gitfa8646d.1-2build4),
@@ -1284,30 +1284,30 @@ Installed-Build-Depends:
  libseccomp2 (= 2.5.3-2ubuntu3~22.04.1),
  libselinux1 (= 3.3-1build2),
  libsigsegv2 (= 2.13-1ubuntu3),
- libsmartcols1 (= 2.37.2-4ubuntu3.4),
- libsqlite3-0 (= 3.37.2-2ubuntu0.5),
- libssh-4 (= 0.9.6-2ubuntu0.22.04.5),
- libssl3 (= 3.0.2-0ubuntu1.21),
- libstdc++-11-dev (= 11.4.0-1ubuntu1~22.04.2),
- libstdc++6 (= 12.3.0-1ubuntu1~22.04.2),
+ libsmartcols1 (= 2.37.2-4ubuntu3.6),
+ libsqlite3-0 (= 3.37.2-2ubuntu0.7),
+ libssh-4 (= 0.9.6-2ubuntu0.22.04.8),
+ libssl3 (= 3.0.2-0ubuntu1.29),
+ libstdc++-11-dev (= 11.4.0-1ubuntu1~22.04.3),
+ libstdc++6 (= 12.3.0-1ubuntu1~22.04.3),
  libsub-override-perl (= 0.09-2),
- libsystemd0 (= 249.11-0ubuntu3.17),
+ libsystemd0 (= 249.11-0ubuntu3.22),
  libtasn1-6 (= 4.18.0-4ubuntu0.2),
- libtinfo6 (= 6.3-2ubuntu0.1),
+ libtinfo6 (= 6.3-2ubuntu0.3),
  libtirpc-common (= 1.3.2-2ubuntu0.1),
  libtirpc-dev (= 1.3.2-2ubuntu0.1),
  libtirpc3 (= 1.3.2-2ubuntu0.1),
  libtool (= 2.4.6-15build2),
- libtsan0 (= 11.4.0-1ubuntu1~22.04.2),
- libubsan1 (= 12.3.0-1ubuntu1~22.04.2),
+ libtsan0 (= 11.4.0-1ubuntu1~22.04.3),
+ libubsan1 (= 12.3.0-1ubuntu1~22.04.3),
  libuchardet0 (= 0.0.7-1build2),
- libudev1 (= 249.11-0ubuntu3.17),
+ libudev1 (= 249.11-0ubuntu3.22),
  libunistring2 (= 1.0-1),
- libuuid1 (= 2.37.2-4ubuntu3.4),
+ libuuid1 (= 2.37.2-4ubuntu3.6),
  libuv1 (= 1.43.0-1ubuntu0.1),
- libxml2 (= 2.9.13+dfsg-1ubuntu0.11),
+ libxml2 (= 2.9.13+dfsg-1ubuntu0.12),
  libzstd1 (= 1.4.8+dfsg-3build1),
- linux-libc-dev (= 5.15.0-170.180),
+ linux-libc-dev (= 5.15.0-191.201),
  login (= 1:4.8.1-2ubuntu2.2),
  lsb-base (= 11.1.0ubuntu4),
  lto-disabled-list (= 24),
@@ -1316,16 +1316,16 @@ Installed-Build-Depends:
  man-db (= 2.10.2-1),
  mawk (= 1.3.4.20200120-3),
  media-types (= 7.0.0),
- ncurses-base (= 6.3-2ubuntu0.1),
- ncurses-bin (= 6.3-2ubuntu0.1),
+ ncurses-base (= 6.3-2ubuntu0.3),
+ ncurses-bin (= 6.3-2ubuntu0.3),
  patch (= 2.7.6-7build2),
- perl (= 5.34.0-3ubuntu1.5),
- perl-base (= 5.34.0-3ubuntu1.5),
- perl-modules-5.34 (= 5.34.0-3ubuntu1.5),
+ perl (= 5.34.0-3ubuntu1.9),
+ perl-base (= 5.34.0-3ubuntu1.9),
+ perl-modules-5.34 (= 5.34.0-3ubuntu1.9),
  po-debconf (= 1.0.21+nmu1),
  procps (= 2:3.3.17-6ubuntu2.1),
  python3 (= 3.10.6-1~22.04.1),
- python3-catkin-pkg-modules (= 1.1.0-2),
+ python3-catkin-pkg-modules (= 1.1.1-1),
  python3-dateutil (= 2.8.1-6),
  python3-distutils (= 3.10.8-1~22.04),
  python3-docutils (= 0.17.1+dfsg-2),
@@ -1340,37 +1340,37 @@ Installed-Build-Depends:
  python3-setuptools (= 59.6.0-1.2ubuntu0.22.04.3),
  python3-six (= 1.16.0-3ubuntu1),
  python3-zipp (= 1.0.0-3ubuntu0.1),
- python3.10 (= 3.10.12-1~22.04.14),
- python3.10-minimal (= 3.10.12-1~22.04.14),
+ python3.10 (= 3.10.12-1~22.04.18),
+ python3.10-minimal (= 3.10.12-1~22.04.18),
  readline-common (= 8.1.2-1),
- ros-humble-ament-cmake (= 1.3.12-1jammy.20250701.021045),
- ros-humble-ament-cmake-core (= 1.3.12-1jammy.20250701.005441),
- ros-humble-ament-cmake-export-definitions (= 1.3.12-1jammy.20250701.011358),
- ros-humble-ament-cmake-export-dependencies (= 1.3.12-1jammy.20250701.011607),
- ros-humble-ament-cmake-export-include-directories (= 1.3.12-1jammy.20250701.011607),
- ros-humble-ament-cmake-export-interfaces (= 1.3.12-1jammy.20250701.011817),
- ros-humble-ament-cmake-export-libraries (= 1.3.12-1jammy.20250701.011611),
- ros-humble-ament-cmake-export-link-flags (= 1.3.12-1jammy.20250701.011612),
- ros-humble-ament-cmake-export-targets (= 1.3.12-1jammy.20250701.011836),
- ros-humble-ament-cmake-gen-version-h (= 1.3.12-1jammy.20250701.012952),
- ros-humble-ament-cmake-include-directories (= 1.3.12-1jammy.20250701.011618),
- ros-humble-ament-cmake-libraries (= 1.3.12-1jammy.20250701.011511),
- ros-humble-ament-cmake-python (= 1.3.12-1jammy.20250701.011622),
- ros-humble-ament-cmake-target-dependencies (= 1.3.12-1jammy.20250701.011815),
- ros-humble-ament-cmake-test (= 1.3.12-1jammy.20250701.011837),
- ros-humble-ament-cmake-version (= 1.3.12-1jammy.20250701.011519),
- ros-humble-ament-package (= 0.14.1-1jammy.20250522.030837),
- ros-humble-ros-workspace (= 1.0.2-2jammy.20250701.005808),
+ ros-humble-ament-cmake (= 1.3.14-1jammy.20260226.035055),
+ ros-humble-ament-cmake-core (= 1.3.14-1jammy.20260224.185609),
+ ros-humble-ament-cmake-export-definitions (= 1.3.14-1jammy.20260226.010509),
+ ros-humble-ament-cmake-export-dependencies (= 1.3.14-1jammy.20260226.011144),
+ ros-humble-ament-cmake-export-include-directories (= 1.3.14-1jammy.20260226.010305),
+ ros-humble-ament-cmake-export-interfaces (= 1.3.14-1jammy.20260226.005715),
+ ros-humble-ament-cmake-export-libraries (= 1.3.14-1jammy.20260226.004939),
+ ros-humble-ament-cmake-export-link-flags (= 1.3.14-1jammy.20260226.010357),
+ ros-humble-ament-cmake-export-targets (= 1.3.14-1jammy.20260226.005705),
+ ros-humble-ament-cmake-gen-version-h (= 1.3.14-1jammy.20260226.034234),
+ ros-humble-ament-cmake-include-directories (= 1.3.14-1jammy.20260226.010650),
+ ros-humble-ament-cmake-libraries (= 1.3.14-1jammy.20260226.010453),
+ ros-humble-ament-cmake-python (= 1.3.14-1jammy.20260226.005145),
+ ros-humble-ament-cmake-target-dependencies (= 1.3.14-1jammy.20260226.013622),
+ ros-humble-ament-cmake-test (= 1.3.14-1jammy.20260226.013528),
+ ros-humble-ament-cmake-version (= 1.3.14-1jammy.20260226.010514),
+ ros-humble-ament-package (= 0.14.2-1jammy.20260213.215617),
+ ros-humble-ros-workspace (= 1.0.2-2jammy.20260224.185744),
  rpcsvc-proto (= 1.4.2-0ubuntu6),
- sed (= 4.8-1ubuntu2),
+ sed (= 4.8-1ubuntu2.1),
  sensible-utils (= 0.0.17),
  sgml-base (= 1.30),
  sysvinit-utils (= 3.01-1ubuntu1),
- tar (= 1.34+dfsg-1ubuntu0.1.22.04.2),
- tzdata (= 2025b-0ubuntu0.22.04.1),
- util-linux (= 2.37.2-4ubuntu3.4),
+ tar (= 1.34+dfsg-1ubuntu0.1.22.04.6),
+ tzdata (= 2026c-0ubuntu0.22.04.1),
+ util-linux (= 2.37.2-4ubuntu3.6),
  xml-core (= 0.18+nmu1),
- xz-utils (= 5.2.5-2ubuntu1),
+ xz-utils (= 5.2.5-2ubuntu1.1),
  zlib1g (= 1:1.2.11.dfsg-2ubuntu9.2)
 Environment:
  DEB_BUILD_OPTIONS="nocheck parallel=4"
@@ -1378,23 +1378,23 @@ Environment:
  LANG="C.UTF-8"
  LC_ALL="C.UTF-8"
  LC_COLLATE="C.UTF-8"
- SOURCE_DATE_EPOCH="1770900443"
+ SOURCE_DATE_EPOCH="1789392148"
 
 
 +------------------------------------------------------------------------------+
-| Package contents                             Thu, 12 Feb 2026 12:47:55 +0000 |
+| Package contents                             Mon, 14 Sep 2026 13:23:02 +0000 |
 +------------------------------------------------------------------------------+
 
 
-ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb
--------------------------------------------------
+ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22_amd64.deb
+-----------------------------------------------------------------
 
  new Debian package, version 2.0.
- size 27820 bytes: control archive=1902 bytes.
-     496 bytes,     9 lines      control              
+ size 27878 bytes: control archive=1913 bytes.
+     512 bytes,     9 lines      control              
     4690 bytes,    48 lines      md5sums              
  Package: ros-humble-pymoveit2
- Version: 0-2026.02.12.12.47
+ Version: 4.2.0-25-gb25c9a6-2026.09.14.13.22
  Architecture: amd64
  Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
  Installed-Size: 245
@@ -1403,113 +1403,113 @@ ros-humble-pymoveit2_0-2026.02.12.12.47_amd64.deb
  Priority: optional
  Description: Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services
 
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/lib/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/lib/pymoveit2/
--rwxr-xr-x root/root      2007 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_allow_collisions.py
--rwxr-xr-x root/root      3152 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_clear_planning_scene.py
--rwxr-xr-x root/root      4573 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_collision_mesh.py
--rwxr-xr-x root/root      4558 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_collision_primitive.py
--rwxr-xr-x root/root      2635 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_fk.py
--rwxr-xr-x root/root      2428 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_gripper.py
--rwxr-xr-x root/root      2604 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_ik.py
--rwxr-xr-x root/root      4177 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_joint_goal.py
--rwxr-xr-x root/root      4445 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_orientation_path_constraint.py
--rwxr-xr-x root/root      5531 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_pose_goal.py
--rwxr-xr-x root/root      1310 2026-02-12 12:46 ./opt/ros/humble/lib/pymoveit2/ex_servo.py
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/local/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/local/lib/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/dist-packages/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/
--rw-r--r-- root/root       134 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/PKG-INFO
--rw-r--r-- root/root       513 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/SOURCES.txt
--rw-r--r-- root/root         1 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/dependency_links.txt
--rw-r--r-- root/root        10 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/top_level.txt
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/
--rw-r--r-- root/root       240 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/__init__.py
--rw-r--r-- root/root     13758 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/gripper_command.py
--rw-r--r-- root/root      8102 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/gripper_interface.py
--rw-r--r-- root/root     95771 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2.py
--rw-r--r-- root/root     10143 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2_gripper.py
--rw-r--r-- root/root      9921 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2_servo.py
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/
--rw-r--r-- root/root        20 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/__init__.py
--rw-r--r-- root/root      1008 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/crane_x7.py
--rw-r--r-- root/root      1134 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/kinova.py
--rw-r--r-- root/root       301 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/lbr.py
--rw-r--r-- root/root       787 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/panda.py
--rw-r--r-- root/root       847 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/phantomx_pincher.py
--rw-r--r-- root/root       760 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/ur.py
--rw-r--r-- root/root       879 2026-02-12 12:46 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/utils.py
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/ament_index/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/ament_index/resource_index/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/ament_index/resource_index/package_run_dependencies/
--rw-r--r-- root/root       104 2026-02-12 12:47 ./opt/ros/humble/share/ament_index/resource_index/package_run_dependencies/pymoveit2
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/ament_index/resource_index/packages/
--rw-r--r-- root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/ament_index/resource_index/packages/pymoveit2
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/ament_index/resource_index/parent_prefix_path/
--rw-r--r-- root/root         8 2026-02-12 12:47 ./opt/ros/humble/share/ament_index/resource_index/parent_prefix_path/pymoveit2
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/cmake/
--rw-r--r-- root/root       432 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/cmake/pymoveit2Config-version.cmake
--rw-r--r-- root/root      1242 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/cmake/pymoveit2Config.cmake
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/environment/
--rw-r--r-- root/root        41 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/environment/ament_prefix_path.dsv
--rw-r--r-- root/root       160 2025-06-27 17:50 ./opt/ros/humble/share/pymoveit2/environment/ament_prefix_path.sh
--rw-r--r-- root/root        41 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/environment/path.dsv
--rw-r--r-- root/root       185 2025-06-27 17:50 ./opt/ros/humble/share/pymoveit2/environment/path.sh
--rw-r--r-- root/root        68 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/environment/pythonpath.dsv
--rw-r--r-- root/root       172 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/environment/pythonpath.sh
--rw-r--r-- root/root      1594 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/local_setup.bash
--rw-r--r-- root/root       148 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/local_setup.dsv
--rw-r--r-- root/root      5092 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/local_setup.sh
--rw-r--r-- root/root      1957 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/local_setup.zsh
--rw-r--r-- root/root       156 2026-02-12 12:47 ./opt/ros/humble/share/pymoveit2/package.dsv
--rw-r--r-- root/root       945 2026-02-12 12:46 ./opt/ros/humble/share/pymoveit2/package.xml
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./usr/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./usr/share/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./usr/share/doc/
-drwxr-xr-x root/root         0 2026-02-12 12:47 ./usr/share/doc/ros-humble-pymoveit2/
--rw-r--r-- root/root       198 2026-02-12 12:47 ./usr/share/doc/ros-humble-pymoveit2/changelog.Debian.gz
--rw-r--r-- root/root       278 2026-02-12 12:47 ./usr/share/doc/ros-humble-pymoveit2/copyright
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/lib/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/lib/pymoveit2/
+-rwxr-xr-x root/root      2007 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_allow_collisions.py
+-rwxr-xr-x root/root      3152 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_clear_planning_scene.py
+-rwxr-xr-x root/root      4573 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_collision_mesh.py
+-rwxr-xr-x root/root      4558 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_collision_primitive.py
+-rwxr-xr-x root/root      2635 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_fk.py
+-rwxr-xr-x root/root      2428 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_gripper.py
+-rwxr-xr-x root/root      2604 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_ik.py
+-rwxr-xr-x root/root      4177 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_joint_goal.py
+-rwxr-xr-x root/root      4445 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_orientation_path_constraint.py
+-rwxr-xr-x root/root      5531 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_pose_goal.py
+-rwxr-xr-x root/root      1310 2026-09-14 13:21 ./opt/ros/humble/lib/pymoveit2/ex_servo.py
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/local/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/local/lib/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/dist-packages/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/
+-rw-r--r-- root/root       134 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/PKG-INFO
+-rw-r--r-- root/root       513 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/SOURCES.txt
+-rw-r--r-- root/root         1 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/dependency_links.txt
+-rw-r--r-- root/root        10 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2-4.2.0-py3.10.egg-info/top_level.txt
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/
+-rw-r--r-- root/root       240 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/__init__.py
+-rw-r--r-- root/root     13758 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/gripper_command.py
+-rw-r--r-- root/root      8102 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/gripper_interface.py
+-rw-r--r-- root/root     95869 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2.py
+-rw-r--r-- root/root     10143 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2_gripper.py
+-rw-r--r-- root/root      9921 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/moveit2_servo.py
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/
+-rw-r--r-- root/root        20 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/__init__.py
+-rw-r--r-- root/root      1008 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/crane_x7.py
+-rw-r--r-- root/root      1134 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/kinova.py
+-rw-r--r-- root/root       301 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/lbr.py
+-rw-r--r-- root/root       787 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/panda.py
+-rw-r--r-- root/root       847 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/phantomx_pincher.py
+-rw-r--r-- root/root       760 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/robots/ur.py
+-rw-r--r-- root/root       879 2026-09-14 13:21 ./opt/ros/humble/local/lib/python3.10/dist-packages/pymoveit2/utils.py
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/ament_index/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/ament_index/resource_index/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/ament_index/resource_index/package_run_dependencies/
+-rw-r--r-- root/root       104 2026-09-14 13:22 ./opt/ros/humble/share/ament_index/resource_index/package_run_dependencies/pymoveit2
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/ament_index/resource_index/packages/
+-rw-r--r-- root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/ament_index/resource_index/packages/pymoveit2
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/ament_index/resource_index/parent_prefix_path/
+-rw-r--r-- root/root         8 2026-09-14 13:22 ./opt/ros/humble/share/ament_index/resource_index/parent_prefix_path/pymoveit2
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/cmake/
+-rw-r--r-- root/root       432 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/cmake/pymoveit2Config-version.cmake
+-rw-r--r-- root/root      1242 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/cmake/pymoveit2Config.cmake
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/environment/
+-rw-r--r-- root/root        41 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/environment/ament_prefix_path.dsv
+-rw-r--r-- root/root       160 2026-02-23 19:27 ./opt/ros/humble/share/pymoveit2/environment/ament_prefix_path.sh
+-rw-r--r-- root/root        41 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/environment/path.dsv
+-rw-r--r-- root/root       185 2026-02-23 19:27 ./opt/ros/humble/share/pymoveit2/environment/path.sh
+-rw-r--r-- root/root        68 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/environment/pythonpath.dsv
+-rw-r--r-- root/root       172 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/environment/pythonpath.sh
+-rw-r--r-- root/root      1594 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/local_setup.bash
+-rw-r--r-- root/root       148 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/local_setup.dsv
+-rw-r--r-- root/root      5092 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/local_setup.sh
+-rw-r--r-- root/root      1957 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/local_setup.zsh
+-rw-r--r-- root/root       156 2026-09-14 13:22 ./opt/ros/humble/share/pymoveit2/package.dsv
+-rw-r--r-- root/root       945 2026-09-14 13:21 ./opt/ros/humble/share/pymoveit2/package.xml
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./usr/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./usr/share/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./usr/share/doc/
+drwxr-xr-x root/root         0 2026-09-14 13:22 ./usr/share/doc/ros-humble-pymoveit2/
+-rw-r--r-- root/root       213 2026-09-14 13:22 ./usr/share/doc/ros-humble-pymoveit2/changelog.Debian.gz
+-rw-r--r-- root/root       278 2026-09-14 13:22 ./usr/share/doc/ros-humble-pymoveit2/copyright
 
 
 +------------------------------------------------------------------------------+
-| Post Build                                   Thu, 12 Feb 2026 12:47:56 +0000 |
+| Post Build                                   Mon, 14 Sep 2026 13:23:03 +0000 |
 +------------------------------------------------------------------------------+
 
 
 +------------------------------------------------------------------------------+
-| Cleanup                                      Thu, 12 Feb 2026 12:47:56 +0000 |
+| Cleanup                                      Mon, 14 Sep 2026 13:23:03 +0000 |
 +------------------------------------------------------------------------------+
 
 Purging /<<BUILDDIR>>
 Not cleaning session: cloned chroot in use
 
 +------------------------------------------------------------------------------+
-| Summary                                      Thu, 12 Feb 2026 12:47:57 +0000 |
+| Summary                                      Mon, 14 Sep 2026 13:23:04 +0000 |
 +------------------------------------------------------------------------------+
 
 Build Architecture: amd64
 Build Type: binary
-Build-Space: 2360
+Build-Space: 2240
 Build-Time: 4
 Distribution: jammy
 Host Architecture: amd64
-Install-Time: 13
-Job: /home/runner/work/pymoveit2/pymoveit2/ros-humble-pymoveit2_0-2026.02.12.12.47.dsc
+Install-Time: 14
+Job: /home/runner/work/pymoveit2/pymoveit2/ros-humble-pymoveit2_4.2.0-25-gb25c9a6-2026.09.14.13.22.dsc
 Machine Architecture: amd64
 Package: ros-humble-pymoveit2
-Package-Time: 29
-Source-Version: 0-2026.02.12.12.47
-Space: 2360
+Package-Time: 32
+Source-Version: 4.2.0-25-gb25c9a6-2026.09.14.13.22
+Space: 2240
 Status: successful
-Version: 0-2026.02.12.12.47
+Version: 4.2.0-25-gb25c9a6-2026.09.14.13.22
 --------------------------------------------------------------------------------
-Finished at 2026-02-12T12:47:54Z
-Build needed 00:00:29, 2360k disk space
+Finished at 2026-09-14T13:23:01Z
+Build needed 00:00:32, 2240k disk space
