@@ -1746,7 +1746,10 @@ class MoveIt2:
 
         msg.meshes.append(
             Mesh(
-                triangles=[MeshTriangle(vertex_indices=face) for face in mesh.faces],
+                triangles=[
+                    MeshTriangle(vertex_indices=np.array(face, dtype=np.uint32, subok=False))
+                    for face in mesh.faces
+                ],
                 vertices=[
                     Point(x=vert[0], y=vert[1], z=vert[2]) for vert in mesh.vertices
                 ],
