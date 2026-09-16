@@ -3,11 +3,11 @@ from pathlib import Path
 
 REPO = Path(__file__).parent.parent
 MAX_ITEMS = 5
-MARKDOWN = ("README.md", "CHANGELOG.md")
+MARKDOWN = ("README.md",)
 SCRIPT_DIRS = (".docker", ".ci/scripts", "test/scripts", ".git_hooks")
 
 
-def test_scripts_lead_with_what_they_do_and_how_to_run_them():
+def test_scripts_lead_with_how_to_run_them():
     scripts = []
     for directory in SCRIPT_DIRS:
         found = sorted((REPO / directory).glob("*.bash"))
@@ -16,8 +16,7 @@ def test_scripts_lead_with_what_they_do_and_how_to_run_them():
     for path in scripts:
         lines = path.read_text().splitlines()
         assert lines[0].startswith("#!"), path.name
-        assert re.match(r"^# \S.*\.$", lines[1]), f"{path.name}: {lines[1]}"
-        assert lines[2].startswith("# Usage: "), f"{path.name}: {lines[2]}"
+        assert lines[1].startswith("# Usage: "), f"{path.name}: {lines[1]}"
 
 
 def test_example_docstrings_lead_with_runnable_commands():

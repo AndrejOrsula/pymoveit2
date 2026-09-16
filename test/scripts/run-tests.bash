@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Usage: test/scripts/run-tests.bash [distro]    (default: lyrical; one of humble|jazzy|lyrical|rolling)
 
 set -u -o pipefail
 

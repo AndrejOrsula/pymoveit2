@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Usage: test/scripts/run-integration.bash [humble|jazzy] [-- pytest arguments ...]
 
 set -Eeuo pipefail
 
