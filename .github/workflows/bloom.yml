@@ -1,0 +1,151 @@
+name: bloom
+
+on:
+  workflow_dispatch:
+    inputs:
+      ros_distro:
+        description: Distribution to release
+        type: choice
+        default: all
+        options: [all, humble, jazzy, lyrical, rolling]
+      pretend:
+        description: Dry run - generate everything, push nothing, open no pull request
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+env:
+  BLOOM_VERSION: "0.14.4"
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Select the distributions to release
+        id: matrix
+        env:
+          ROS_DISTRO_INPUT: ${{ inputs.ros_distro }}
+        run: |
+          set -euo pipefail
+          if [ "${ROS_DISTRO_INPUT}" = "all" ]; then
+            matrix='["humble","jazzy","lyrical","rolling"]'
+          else
+            matrix="[\"${ROS_DISTRO_INPUT}\"]"
+          fi
+          echo "matrix=${matrix}" >> "${GITHUB_OUTPUT}"
+          echo "Releasing: ${matrix}"
+
+      - name: Assert the version tag exists
+        id: version
+        run: |
+          set -euo pipefail
+          version="$(python3 -c "import xml.etree.ElementTree as ET; print(ET.parse('package.xml').getroot().findtext('version').strip())")"
+          echo "package.xml declares ${version}"
+          if ! git ls-remote --exit-code --tags origin "refs/tags/${version}" >/dev/null 2>&1; then
+            echo "::error::package.xml is at ${version} but no matching tag exists. Tag the release first, or bloom will look for a tag that is not there."
+            exit 1
+          fi
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
+  bloom:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        ros: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    steps:
+      - name: Require bloom credentials
+        env:
+          BLOOM_GITHUB_USER: ${{ secrets.BLOOM_GITHUB_USER }}
+          BLOOM_GITHUB_TOKEN: ${{ secrets.BLOOM_GITHUB_TOKEN }}
+        run: |
+          if [ -z "${BLOOM_GITHUB_USER}" ] || [ -z "${BLOOM_GITHUB_TOKEN}" ]; then
+            echo "::error::BLOOM_GITHUB_USER and BLOOM_GITHUB_TOKEN are not set. The token needs push access to the release repository and permission to open a pull request against ros/rosdistro."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install bloom
+        run: |
+          set -euo pipefail
+          python3 -m venv "${HOME}/bloom-venv"
+          "${HOME}/bloom-venv/bin/python" -m pip install --quiet --upgrade pip
+          "${HOME}/bloom-venv/bin/python" -m pip install --quiet \
+            "bloom==${BLOOM_VERSION}" rosdep
+          echo "${HOME}/bloom-venv/bin" >> "${GITHUB_PATH}"
+
+      - name: Prime the rosdep cache
+        run: |
+          set -euo pipefail
+          sudo "${HOME}/bloom-venv/bin/rosdep" init
+          rosdep update
+
+      - name: Configure git and bloom
+        env:
+          BLOOM_GITHUB_USER: ${{ secrets.BLOOM_GITHUB_USER }}
+          BLOOM_GITHUB_TOKEN: ${{ secrets.BLOOM_GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "::add-mask::${BLOOM_GITHUB_TOKEN}"
+          git config --global user.name "${BLOOM_GITHUB_USER}"
+          git config --global user.email "${BLOOM_GITHUB_USER}@users.noreply.github.com"
+          git config --global tag.gpgsign false
+          git config --global commit.gpgsign false
+          umask 077
+          python3 - <<'PY'
+          import json
+          import os
+
+          path = os.path.expanduser("~/.config/bloom")
+          os.makedirs(os.path.dirname(path), exist_ok=True)
+          with open(path, "w", encoding="utf-8") as handle:
+              json.dump(
+                  {
+                      "github_user": os.environ["BLOOM_GITHUB_USER"],
+                      "oauth_token": os.environ["BLOOM_GITHUB_TOKEN"],
+                  },
+                  handle,
+              )
+          PY
+
+      - name: Release ${{ matrix.ros }}
+        env:
+          ROS_DISTRO_NAME: ${{ matrix.ros }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          PRETEND: ${{ inputs.pretend }}
+          BLOOM_SKIP_ROSDEP_UPDATE: "1"
+        run: |
+          set -euo pipefail
+          args=(--no-web -y --rosdistro "${ROS_DISTRO_NAME}" --track "${ROS_DISTRO_NAME}")
+          if [ "${PRETEND}" = "true" ]; then
+            echo "::notice::Dry run for ${ROS_DISTRO_NAME} ${VERSION}: nothing will be pushed."
+            args+=(--pretend)
+          fi
+          bloom-release "${args[@]}" pymoveit2 </dev/null
+
+      - name: Remove the bloom credentials
+        if: ${{ always() }}
+        run: rm -f "${HOME}/.config/bloom"
