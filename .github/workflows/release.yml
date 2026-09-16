@@ -131,3 +131,51 @@ jobs:
           if [ -n "${id}" ]; then
             docker image rm -f "${id}" 2>/dev/null || true
           fi
+
+  pypi:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Build and check the distributions
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet build twine
+          python -m build
+          python -m twine check --strict dist/*
+          test -f "dist/pymoveit2-${VERSION}.tar.gz"
+          test -f "dist/pymoveit2-${VERSION}-py3-none-any.whl"
+
+      - name: Upload the distributions as build evidence
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: pypi-distributions
+          path: dist
+          if-no-files-found: error
+
+      - name: Require a PyPI token
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          if [ -z "${PYPI_TOKEN}" ]; then
+            echo "::error::PYPI_TOKEN is not set, so this release cannot be published to PyPI."
+            exit 1
+          fi
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.14.2
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          print-hash: true
