@@ -1,17 +1,20 @@
-name: Dependabot automation
-on: pull_request
+name: dependabot
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 jobs:
   dependabot_automation:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
+    if: ${{ github.actor == 'dependabot[bot]' && github.repository == 'AndrejOrsula/pymoveit2' && github.event.pull_request.base.ref == 'main' }}
+    permissions:
+      contents: write
+      pull-requests: write
     env:
-      GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      PR_URL: ${{github.event.pull_request.html_url}}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_URL: ${{ github.event.pull_request.html_url }}
     steps:
       - name: Fetch metadata
         id: metadata
@@ -19,7 +22,9 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Approve the PR
+        if: ${{ contains(fromJSON('["version-update:semver-patch", "version-update:semver-minor"]'), steps.metadata.outputs.update-type) }}
         run: gh pr review --approve "$PR_URL"
         continue-on-error: true
       - name: Enable auto-merge for the PR
+        if: ${{ contains(fromJSON('["version-update:semver-patch", "version-update:semver-minor"]'), steps.metadata.outputs.update-type) }}
         run: gh pr merge --auto --squash "$PR_URL"
