@@ -1,5 +1,5 @@
 artifact_smoke=passed
-source_revision=1e03a1b8d02d7ba0abbb1e285026146c61b74e20
+source_revision=89efdce3e35255c9dff3472cc0c1fc91463f9ccd
 ros_distro=lyrical
 deb_distro=resolute
 ros_testing=false
@@ -8,11 +8,11 @@ ros_repository=http://packages.ros.org/ros2/ubuntu resolute main
 base_image=ros:lyrical-ros-base-resolute
 base_image_digest=ros@sha256:0c19f326a339ed770ef1d4c0646a8b53bdb49dd5ff74b6de41ebdb8ac21e1806
 builder_action_sha=aacb5111976551aee90170dafa2cc615bc16760f
-package_file=ros-lyrical-pymoveit2_5.0.1-2026.09.16.15.34_amd64.deb
-package_sha256=9000d2d41c119b0b3f753a20b6624c62bd21ae883e5f18f86df146d29dbacb8c
+package_file=ros-lyrical-pymoveit2_5.0.0-2026.09.16.15.42_amd64.deb
+package_sha256=97fdf033c40e2abc5648d7c0fd01becbbd39ff5622ba259f2b041d8de233c822
 package=ros-lyrical-pymoveit2
-package_version=5.0.1-2026.09.16.15.34
-expected_version_prefix=5.0.1
+package_version=5.0.0-2026.09.16.15.42
+expected_version_prefix=5.0.0
 python_version=Python 3.14.4
 ros2_version=unavailable
 rosdep_version=0.27.0
@@ -21,10 +21,10 @@ optional_trimesh=unavailable
 optional_trimesh_bound=trimesh
 apt_resolved_versions<<EOF
 ros-lyrical-pymoveit2:
-  Installed: 5.0.1-2026.09.16.15.34
-  Candidate: 5.0.1-2026.09.16.15.34
+  Installed: 5.0.0-2026.09.16.15.42
+  Candidate: 5.0.0-2026.09.16.15.42
   Version table:
- *** 5.0.1-2026.09.16.15.34 100
+ *** 5.0.0-2026.09.16.15.42 100
         100 /var/lib/dpkg/status
      4.2.0-3resolute.20260814.181605 500
         500 http://packages.ros.org/ros2/ubuntu resolute/main amd64 Packages
@@ -505,7 +505,7 @@ ros-lyrical-nav-msgs=5.9.3-1resolute.20260811.232935
 ros-lyrical-object-recognition-msgs=2.0.0-6resolute.20260811.234429
 ros-lyrical-octomap-msgs=2.0.1-3resolute.20260811.233803
 ros-lyrical-pluginlib=5.8.4-3resolute.20260728.212925
-ros-lyrical-pymoveit2=5.0.1-2026.09.16.15.34
+ros-lyrical-pymoveit2=5.0.0-2026.09.16.15.42
 ros-lyrical-rcl=10.4.4-1resolute.20260812.012321
 ros-lyrical-rcl-action=10.4.4-1resolute.20260812.012801
 ros-lyrical-rcl-interfaces=2.4.5-1resolute.20260811.234851
