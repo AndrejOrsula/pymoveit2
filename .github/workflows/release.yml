@@ -1,0 +1,133 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+env:
+  DEFAULT_ROS_DISTRO: jazzy
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Assert the tag, package.xml and pyproject.toml agree
+        id: version
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          manifest="$(python3 -c "import xml.etree.ElementTree as ET; print(ET.parse('package.xml').getroot().findtext('version').strip())")"
+          project="$(python3 - <<'PY'
+          import re
+
+          text = open("pyproject.toml", encoding="utf-8").read()
+          table = re.search(r"^\[project\]$(.*?)(?=^\[|\Z)", text, re.M | re.S).group(1)
+          print(re.search(r'^version = "([^"]+)"$', table, re.M).group(1))
+          PY
+          )"
+          echo "tag=${version} package.xml=${manifest} pyproject.toml=${project}"
+          if [ "${version}" != "${manifest}" ] || [ "${version}" != "${project}" ]; then
+            echo "::error::Release tag '${RELEASE_TAG}' does not match package.xml (${manifest}) and pyproject.toml (${project})."
+            exit 1
+          fi
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+
+  docker:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        ros: [humble, jazzy, lyrical, rolling]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Require Docker Hub credentials
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          if [ -z "${DOCKERHUB_USERNAME}" ] || [ -z "${DOCKERHUB_TOKEN}" ]; then
+            echo "::error::DOCKERHUB_USERNAME and DOCKERHUB_TOKEN (or DOCKERHUB_PASSWORD) are not set, so this release cannot be published to Docker Hub."
+            exit 1
+          fi
+
+      - name: Log in to the GitHub container registry
+        uses: docker/login-action@v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Extract image metadata
+        id: metadata
+        uses: docker/metadata-action@v6.2.0
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+            docker.io/andrejorsula/pymoveit2
+          flavor: latest=false
+          tags: |
+            type=raw,value=${{ matrix.ros }}
+            type=raw,value=${{ needs.verify.outputs.version }}-${{ matrix.ros }}
+            type=raw,value=latest,enable=${{ matrix.ros == env.DEFAULT_ROS_DISTRO }}
+            type=raw,value=${{ needs.verify.outputs.version }},enable=${{ matrix.ros == env.DEFAULT_ROS_DISTRO }}
+          labels: |
+            org.opencontainers.image.version=${{ needs.verify.outputs.version }}
+            org.opencontainers.image.documentation=https://github.com/${{ github.repository }}#docker
+
+      - name: Publish the release image
+        id: publish
+        uses: docker/build-push-action@v7.3.0
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          platforms: linux/amd64
+          build-args: |
+            ROS_DISTRO=${{ matrix.ros }}
+            SOURCE_ID=${{ github.sha }}
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+
+      - name: Verify the published image runs the package
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}:${{ needs.verify.outputs.version }}-${{ matrix.ros }}
+        run: |
+          set -euo pipefail
+          docker run --rm --entrypoint bash "${IMAGE,,}" -lc \
+            'source "${WS_INSTALL_DIR}/local_setup.bash" && python3 -c "import pymoveit2; print(pymoveit2.__file__)"'
+
+      - name: Remove local image state
+        if: ${{ always() }}
+        run: |
+          id="${{ steps.publish.outputs.imageid }}"
+          if [ -n "${id}" ]; then
+            docker image rm -f "${id}" 2>/dev/null || true
+          fi
