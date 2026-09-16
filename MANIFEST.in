@@ -1,7 +1,6 @@
 include LICENSE
 include README.md
-include CONTRIBUTING.md
-include CHANGELOG.rst
+include CHANGELOG.md
 include package.xml
 include CMakeLists.txt
 recursive-include examples *.py

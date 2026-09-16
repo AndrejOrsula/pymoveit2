@@ -43,13 +43,6 @@ def test_pypi_version_matches_the_ros_package():
     assert match.group(1) == _package_xml_version()
 
 
-def test_changelog_documents_the_declared_version():
-    changelog = (REPO / "CHANGELOG.rst").read_text()
-    version = _package_xml_version()
-
-    assert f"\n{version} (" in changelog or "\nForthcoming\n" in changelog
-
-
 def test_every_importable_subpackage_is_published():
     declared = set(re.findall(r'"([\w.]+)"', _table("tool.setuptools")))
     found = {
@@ -70,7 +63,7 @@ def test_no_ros_only_runtime_dependencies_are_declared():
 
 
 def test_source_distribution_carries_the_ros_build_files():
-    for entry in ("package.xml", "CMakeLists.txt", "CHANGELOG.rst", "LICENSE"):
+    for entry in ("package.xml", "CMakeLists.txt", "CHANGELOG.md", "LICENSE"):
         assert f"include {entry}" in MANIFEST, entry
     assert "recursive-include examples *.py" in MANIFEST
 

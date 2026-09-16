@@ -3,7 +3,7 @@ from pathlib import Path
 
 REPO = Path(__file__).parent.parent
 MAX_ITEMS = 5
-MARKDOWN = ("README.md", "CONTRIBUTING.md")
+MARKDOWN = ("README.md", "CHANGELOG.md")
 SCRIPT_DIRS = (".docker", ".ci/scripts", "test/scripts", ".git_hooks")
 
 

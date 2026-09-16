@@ -33,7 +33,7 @@ mesh = ["trimesh"]
 [project.urls]
 Homepage = "https://github.com/AndrejOrsula/pymoveit2"
 Repository = "https://github.com/AndrejOrsula/pymoveit2"
-Changelog = "https://github.com/AndrejOrsula/pymoveit2/blob/main/CHANGELOG.rst"
+Changelog = "https://github.com/AndrejOrsula/pymoveit2/blob/main/CHANGELOG.md"
 Issues = "https://github.com/AndrejOrsula/pymoveit2/issues"
 
 [tool.setuptools]
