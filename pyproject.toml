@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pymoveit2"
-version = "5.0.0"
+version = "5.0.1"
 description = "Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services"
 readme = "README.md"
 requires-python = ">=3.10"
