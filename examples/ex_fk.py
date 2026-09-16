@@ -1,90 +1,130 @@
 #!/usr/bin/env python3
 """
-Example of computing Forward Kinematics.
-- ros2 run pymoveit2 ex_fk.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]"
-- ros2 run pymoveit2 ex_fk.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]" -p synchronous:=False
+Compute forward kinematics: joint positions in, end effector pose out.
+- ros2 run pymoveit2 ex_fk.py
+- ros2 run pymoveit2 ex_fk.py --ros-args -p joint_positions:="[0.0, 1.0]" -p synchronous:=False
 """
 
+import sys
+import time
 from threading import Thread
 
 import rclpy
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 
-from pymoveit2 import MoveIt2, MoveIt2State
-from pymoveit2.robots import panda as robot
+from pymoveit2 import MoveIt2
+from pymoveit2._example_utils import (
+    RobotConfiguration,
+    cleanup,
+    declare_robot_parameters,
+    wait_for_future,
+)
+
+_wait_for_future = wait_for_future
 
 
-def main():
+def main() -> int:
     rclpy.init()
+    node = None
+    moveit2 = None
+    executor = None
+    executor_thread = None
+    status = 1
 
-    # Create node for this example
-    node = Node("ex_fk")
+    try:
+        # Node for this example
+        node = Node("ex_fk")
 
-    # Declare parameter for joint positions
-    node.declare_parameter(
-        "joint_positions",
-        [
-            0.0,
-            0.0,
-            0.0,
-            -0.7853981633974483,
-            0.0,
-            1.5707963267948966,
-            0.7853981633974483,
-        ],
-    )
-    node.declare_parameter("synchronous", True)
+        # Target joint positions. Without them, a group state of the SRDF is used.
+        node.declare_parameter("joint_positions", Parameter.Type.DOUBLE_ARRAY)
+        node.declare_parameter("synchronous", True)
+        node.declare_parameter("timeout_sec", 10.0)
 
-    # Create callback group that allows execution of callbacks in parallel without restrictions
-    callback_group = ReentrantCallbackGroup()
+        # Let callbacks run in parallel, so a blocking call does not stall its own reply
+        callback_group = ReentrantCallbackGroup()
 
-    # Create MoveIt 2 interface
-    moveit2 = MoveIt2(
-        node=node,
-        joint_names=robot.joint_names(),
-        base_link_name=robot.base_link_name(),
-        end_effector_name=robot.end_effector_name(),
-        group_name=robot.MOVE_GROUP_ARM,
-        callback_group=callback_group,
-    )
+        # The robot configuration comes from the URDF and SRDF that `move_group` is
+        # running with. Every value can still be set as a ROS parameter.
+        declare_robot_parameters(node)
 
-    # Spin the node in background thread(s) and wait a bit for initialization
-    executor = rclpy.executors.MultiThreadedExecutor(2)
-    executor.add_node(node)
-    executor_thread = Thread(target=executor.spin, daemon=True, args=())
-    executor_thread.start()
-    node.create_rate(1.0).sleep()
+        # Spin the node in the background. Discovery below needs it.
+        executor = rclpy.executors.MultiThreadedExecutor(2)
+        executor.add_node(node)
+        executor_thread = Thread(target=executor.spin, daemon=True, args=())
+        executor_thread.start()
 
-    # Get parameters
-    joint_positions = (
-        node.get_parameter("joint_positions").get_parameter_value().double_array_value
-    )
-    synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
+        # Build the interface from what was discovered
+        robot = RobotConfiguration(node, callback_group=callback_group)
+        moveit2 = MoveIt2(
+            node=node,
+            callback_group=callback_group,
+            **robot.moveit2_kwargs(),
+        )
 
-    # Move to joint configuration
-    node.get_logger().info(
-        f"Computing FK for {{joint_positions: {list(joint_positions)}}}"
-    )
-    retval = None
-    if synchronous:
-        retval = moveit2.compute_fk(joint_positions)
-    else:
-        future = moveit2.compute_fk_async(joint_positions)
-        if future is not None:
-            rate = node.create_rate(10)
-            while not future.done():
-                rate.sleep()
-            retval = moveit2.get_compute_fk_result(future)
-    if retval is None:
-        print("Failed.")
-    else:
-        print("Succeeded. Result: " + str(retval))
+        # Get parameters
+        joint_positions = robot.joint_positions()
+        synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
+        timeout_sec = node.get_parameter("timeout_sec").value
 
-    rclpy.shutdown()
-    executor_thread.join()
-    exit(0)
+        # Move to joint configuration
+        node.get_logger().info(
+            f"Computing FK for {{joint_positions: {list(joint_positions)}}}"
+        )
+        timeout_sec = max(0.0, float(timeout_sec))
+        deadline = time.monotonic() + timeout_sec
+        if synchronous:
+            retval = moveit2.compute_fk(
+                joint_positions,
+                timeout_sec=max(0.0, deadline - time.monotonic()),
+            )
+        else:
+            future = moveit2.compute_fk_async(
+                joint_positions,
+                wait_for_server_timeout_sec=max(0.0, deadline - time.monotonic()),
+            )
+            if future is None:
+                retval = None
+            elif not _wait_for_future(future, deadline - time.monotonic()):
+                node.get_logger().error("Timed out while waiting for the FK result")
+                retval = None
+            else:
+                try:
+                    retval = moveit2.get_compute_fk_result(future)
+                except Exception as error:
+                    node.get_logger().error(
+                        f"Failed to process the FK result: {type(error).__name__}: {error}"
+                    )
+                    retval = None
+        if retval is None:
+            node.get_logger().error("Failed to compute FK")
+            print("Failed.")
+        else:
+            print("Succeeded. Result: " + str(retval))
+            status = 0
+    except Exception as error:
+        if node is not None:
+            node.get_logger().error(
+                f"FK example failed: {type(error).__name__}: {error}"
+            )
+        else:
+            print(
+                f"FK example failed: {type(error).__name__}: {error}", file=sys.stderr
+            )
+    finally:
+        if cleanup(
+            moveit2,
+            executor,
+            executor_thread,
+            "FK",
+            node=node,
+            ros_ok=rclpy.ok,
+            ros_shutdown=rclpy.shutdown,
+        ):
+            status = 1
+    return status
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

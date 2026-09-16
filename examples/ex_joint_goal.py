@@ -1,121 +1,164 @@
 #!/usr/bin/env python3
 """
-Example of moving to a joint configuration.
-- ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]"
-- ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]" -p synchronous:=False -p cancel_after_secs:=1.0
-- ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[1.57, -1.57, 0.0, -1.57, 0.0, 1.57, 0.7854]" -p synchronous:=False -p cancel_after_secs:=0.0
+Move to a joint configuration.
+- ros2 run pymoveit2 ex_joint_goal.py
+- ros2 run pymoveit2 ex_joint_goal.py --ros-args -p joint_positions:="[0.0, 1.0]"
+- ros2 run pymoveit2 ex_joint_goal.py --ros-args -p synchronous:=False -p cancel_after_secs:=1.0
 """
 
+import sys
+import time
 from threading import Thread
 
 import rclpy
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 
 from pymoveit2 import MoveIt2, MoveIt2State
-from pymoveit2.robots import panda as robot
+from pymoveit2._example_utils import (
+    RobotConfiguration,
+    cleanup,
+    declare_robot_parameters,
+)
+from pymoveit2._example_utils import wait_for_motion as _wait_for_motion_impl
 
 
-def main():
+def _wait_for_motion(
+    moveit2,
+    cancel_after_secs: float,
+    timeout_sec: float,
+    node,
+    *,
+    deadline=None,
+) -> bool:
+    return _wait_for_motion_impl(
+        moveit2,
+        cancel_after_secs,
+        timeout_sec,
+        node,
+        MoveIt2State.IDLE,
+        deadline=deadline,
+    )
+
+
+def main() -> int:
     rclpy.init()
+    node = None
+    moveit2 = None
+    executor = None
+    executor_thread = None
+    status = 1
 
-    # Create node for this example
-    node = Node("ex_joint_goal")
+    try:
+        # Node for this example
+        node = Node("ex_joint_goal")
 
-    # Declare parameter for joint positions
-    node.declare_parameter(
-        "joint_positions",
-        [
+        # Target joint positions. Without them, a group state of the SRDF is used.
+        node.declare_parameter("joint_positions", Parameter.Type.DOUBLE_ARRAY)
+        node.declare_parameter("synchronous", True)
+        # If non-positive, don't cancel. Only used if synchronous is False
+        node.declare_parameter("cancel_after_secs", 0.0)
+        # Total budget for planning, execution and cancellation
+        node.declare_parameter("timeout_sec", 30.0)
+        # Planner ID. Empty uses the default planner of `move_group`.
+        node.declare_parameter("planner_id", "")
+
+        # Let callbacks run in parallel, so a blocking call does not stall its own reply
+        callback_group = ReentrantCallbackGroup()
+
+        # The robot configuration comes from the URDF and SRDF that `move_group` is
+        # running with. Every value can still be set as a ROS parameter.
+        declare_robot_parameters(node)
+
+        # Spin the node in the background. Discovery below needs it.
+        executor = rclpy.executors.MultiThreadedExecutor(2)
+        executor.add_node(node)
+        executor_thread = Thread(target=executor.spin, daemon=True, args=())
+        executor_thread.start()
+
+        # Build the interface from what was discovered
+        robot = RobotConfiguration(node, callback_group=callback_group)
+        moveit2 = MoveIt2(
+            node=node,
+            callback_group=callback_group,
+            **robot.moveit2_kwargs(),
+        )
+        planner_id = node.get_parameter("planner_id").get_parameter_value().string_value
+        if planner_id:
+            moveit2.planner_id = planner_id
+
+        # Scale down velocity and acceleration of joints (percentage of maximum)
+        moveit2.max_velocity = 0.5
+        moveit2.max_acceleration = 0.5
+
+        # Get parameters
+        joint_positions = robot.joint_positions()
+        synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
+        cancel_after_secs = (
+            node.get_parameter("cancel_after_secs").get_parameter_value().double_value
+        )
+        timeout_sec = max(
             0.0,
-            0.0,
-            0.0,
-            -0.7853981633974483,
-            0.0,
-            1.5707963267948966,
-            0.7853981633974483,
-        ],
-    )
-    node.declare_parameter("synchronous", True)
-    # If non-positive, don't cancel. Only used if synchronous is False
-    node.declare_parameter("cancel_after_secs", 0.0)
-    # Planner ID
-    node.declare_parameter("planner_id", "RRTConnectkConfigDefault")
+            float(node.get_parameter("timeout_sec").get_parameter_value().double_value),
+        )
 
-    # Create callback group that allows execution of callbacks in parallel without restrictions
-    callback_group = ReentrantCallbackGroup()
-
-    # Create MoveIt 2 interface
-    moveit2 = MoveIt2(
-        node=node,
-        joint_names=robot.joint_names(),
-        base_link_name=robot.base_link_name(),
-        end_effector_name=robot.end_effector_name(),
-        group_name=robot.MOVE_GROUP_ARM,
-        callback_group=callback_group,
-    )
-    moveit2.planner_id = (
-        node.get_parameter("planner_id").get_parameter_value().string_value
-    )
-
-    # Spin the node in background thread(s) and wait a bit for initialization
-    executor = rclpy.executors.MultiThreadedExecutor(2)
-    executor.add_node(node)
-    executor_thread = Thread(target=executor.spin, daemon=True, args=())
-    executor_thread.start()
-    node.create_rate(1.0).sleep()
-
-    # Scale down velocity and acceleration of joints (percentage of maximum)
-    moveit2.max_velocity = 0.5
-    moveit2.max_acceleration = 0.5
-
-    # Get parameters
-    joint_positions = (
-        node.get_parameter("joint_positions").get_parameter_value().double_array_value
-    )
-    synchronous = node.get_parameter("synchronous").get_parameter_value().bool_value
-    cancel_after_secs = (
-        node.get_parameter("cancel_after_secs").get_parameter_value().double_value
-    )
-
-    # Move to joint configuration
-    node.get_logger().info(f"Moving to {{joint_positions: {list(joint_positions)}}}")
-    moveit2.move_to_configuration(joint_positions)
-    if synchronous:
-        # Note: the same functionality can be achieved by setting
-        # `synchronous:=false` and `cancel_after_secs` to a negative value.
-        moveit2.wait_until_executed()
-    else:
-        # Wait for the request to get accepted (i.e., for execution to start)
-        print("Current State: " + str(moveit2.query_state()))
-        rate = node.create_rate(10)
-        while moveit2.query_state() != MoveIt2State.EXECUTING:
-            rate.sleep()
-
-        # Get the future
-        print("Current State: " + str(moveit2.query_state()))
-        future = moveit2.get_execution_future()
-
-        # Cancel the goal
-        if cancel_after_secs > 0.0:
-            # Sleep for the specified time
-            sleep_time = node.create_rate(cancel_after_secs)
-            sleep_time.sleep()
-            # Cancel the goal
-            print("Cancelling goal")
-            moveit2.cancel_execution()
-
-        # Wait until the future is done
-        while not future.done():
-            rate.sleep()
-
-        # Print the result
-        print("Result status: " + str(future.result().status))
-        print("Result error code: " + str(future.result().result.error_code))
-
-    rclpy.shutdown()
-    executor_thread.join()
-    exit(0)
+        # Move to joint configuration
+        node.get_logger().info(
+            f"Moving to {{joint_positions: {list(joint_positions)}}}"
+        )
+        deadline = time.monotonic() + timeout_sec
+        submitted = moveit2.move_to_configuration(
+            joint_positions,
+            timeout_sec=max(0.0, deadline - time.monotonic()),
+        )
+        if not submitted:
+            node.get_logger().error("Failed to submit joint motion")
+        elif synchronous:
+            # Note: the same functionality can be achieved by setting
+            # `synchronous:=false` and `cancel_after_secs` to a negative value.
+            status = int(
+                not moveit2.wait_until_executed(
+                    timeout_sec=max(0.0, deadline - time.monotonic())
+                )
+            )
+        else:
+            status = int(
+                not _wait_for_motion(
+                    moveit2,
+                    cancel_after_secs,
+                    timeout_sec,
+                    node,
+                    deadline=deadline,
+                )
+            )
+        if status == 0:
+            node.get_logger().info("Joint motion completed successfully")
+        else:
+            node.get_logger().error("Joint motion failed")
+    except Exception as error:
+        if node is not None:
+            node.get_logger().error(
+                f"Joint-goal example failed: {type(error).__name__}: {error}"
+            )
+        else:
+            print(
+                f"Joint-goal example failed: {type(error).__name__}: {error}",
+                file=sys.stderr,
+            )
+    finally:
+        if cleanup(
+            moveit2,
+            executor,
+            executor_thread,
+            "joint-goal",
+            node=node,
+            ros_ok=rclpy.ok,
+            ros_shutdown=rclpy.shutdown,
+        ):
+            status = 1
+    return status
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
