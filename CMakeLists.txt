@@ -15,6 +15,7 @@ install(PROGRAMS
     ${EXAMPLES_DIR}/ex_clear_planning_scene.py
     ${EXAMPLES_DIR}/ex_collision_mesh.py
     ${EXAMPLES_DIR}/ex_collision_primitive.py
+    ${EXAMPLES_DIR}/ex_doctor.py
     ${EXAMPLES_DIR}/ex_fk.py
     ${EXAMPLES_DIR}/ex_gripper.py
     ${EXAMPLES_DIR}/ex_ik.py
