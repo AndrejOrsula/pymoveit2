@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# This script setups git hooks for this repository.
+# Usage: .git_hooks/setup.bash
 
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" &>/dev/null && pwd)"
 REPO_DIR="$(dirname "${SCRIPT_DIR}")"
