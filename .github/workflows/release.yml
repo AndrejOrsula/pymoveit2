@@ -121,8 +121,8 @@ jobs:
           IMAGE: ghcr.io/${{ github.repository }}:${{ needs.verify.outputs.version }}-${{ matrix.ros }}
         run: |
           set -euo pipefail
-          docker run --rm --entrypoint bash "${IMAGE,,}" -lc \
-            'source "${WS_INSTALL_DIR}/local_setup.bash" && python3 -c "import pymoveit2; print(pymoveit2.__file__)"'
+          docker run --rm "${IMAGE,,}" \
+            python3 -c "import pymoveit2; print(pymoveit2.__file__)"
 
       - name: Remove local image state
         if: ${{ always() }}
