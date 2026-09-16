@@ -9,8 +9,8 @@ from xml.etree import ElementTree
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
-CHECK = REPO / "ci" / "scripts" / "check-debian-package.bash"
-BUILD = REPO / "ci" / "scripts" / "build-debian-package.bash"
+CHECK = REPO / ".ci" / "scripts" / "check-debian-package.bash"
+BUILD = REPO / ".ci" / "scripts" / "build-debian-package.bash"
 EXECUTABLES = (
     "ex_allow_collisions.py",
     "ex_clear_planning_scene.py",

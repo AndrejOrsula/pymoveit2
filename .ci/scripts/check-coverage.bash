@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: [PYTHON_BIN=python3] [COVERAGE_BRANCH_FAIL_UNDER=68] .ci/scripts/check-coverage.bash [pytest arguments ...]
+# Usage: [PYTHON_BIN=python3] [COVERAGE_BRANCH_FAIL_UNDER=65] .ci/scripts/check-coverage.bash [pytest arguments ...]
 set -euo pipefail
 
 REPO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"

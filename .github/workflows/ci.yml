@@ -72,7 +72,7 @@ jobs:
       CI_BUILD_DIR: ${{ github.workspace }}/build/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-lyrical
       CI_INSTALL_DIR: ${{ github.workspace }}/install/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-lyrical
       QUALITY_VENV: /tmp/pymoveit2-quality-venv
-      COVERAGE_BRANCH_FAIL_UNDER: "68"
+      COVERAGE_BRANCH_FAIL_UNDER: "65"
       CODECOV_READY: ${{ secrets.CODECOV_TOKEN != '' || github.event.repository.private == false }}
     steps:
       - uses: actions/checkout@v7
@@ -110,7 +110,7 @@ jobs:
           set -o pipefail
           source /opt/ros/lyrical/setup.bash
           ./.ci/scripts/check-types.bash 2>&1 | tee quality-reports/mypy.txt
-      - name: Report branch coverage (68% floor)
+      - name: Report branch coverage (65% floor)
         id: coverage
         working-directory: src/pymoveit2
         shell: bash

@@ -32,5 +32,5 @@ comment:
 ignore:
   - "examples/**"
   - "test/**"
-  - "ci/**"
+  - ".ci/**"
   - ".docker/**"
