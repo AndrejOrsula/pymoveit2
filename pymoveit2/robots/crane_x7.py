@@ -1,3 +1,5 @@
+"""Preset kinematic/config values for the RT Corporation CRANE-X7 7-DOF arm and its two-finger gripper."""
+
 from typing import List
 
 MOVE_GROUP_ARM: str = "arm"

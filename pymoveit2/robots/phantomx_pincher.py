@@ -1,3 +1,5 @@
+"""Preset kinematic/config values for the Trossen Robotics PhantomX Pincher 4-DOF arm and its two-finger gripper."""
+
 from typing import List
 
 MOVE_GROUP_ARM: str = "arm"

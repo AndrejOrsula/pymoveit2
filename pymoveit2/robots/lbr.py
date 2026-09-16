@@ -1,13 +1,12 @@
-from typing import List
+"""Preset kinematic/config values for the KUKA LBR iiwa 7-joint arm (matches lbr_fri_ros2_stack)."""
 
-# Documentation:
-# https://github.com/lbr-stack/lbr_fri_ros2_stack/
+from typing import List
 
 MOVE_GROUP_ARM: str = "arm"
 
 
-def joint_names() -> List[str]:
-    return [f"A{i}" for i in range(8)]
+def joint_names(prefix: str = "") -> List[str]:
+    return [prefix + f"A{i}" for i in range(1, 8)]
 
 
 def base_link_name() -> str:

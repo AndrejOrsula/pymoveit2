@@ -1,3 +1,5 @@
+"""Preset kinematic/config values for the Franka Emika Panda 7-DOF arm and gripper (matches panda_moveit_config)."""
+
 from typing import List
 
 MOVE_GROUP_ARM: str = "arm"

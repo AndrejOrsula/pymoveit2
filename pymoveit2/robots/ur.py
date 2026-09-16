@@ -1,12 +1,10 @@
+"""Preset kinematic/config values for Universal Robots e-Series 6-DOF arms (matches ur_moveit_config, e.g. UR3e/UR5e/UR10e)."""
+
 from typing import List
 
 MOVE_GROUP_ARM: str = "ur_manipulator"
-MOVE_GROUP_GRIPPER: str = "gripper"
 
 prefix: str = ""
-
-OPEN_GRIPPER_JOINT_POSITIONS: List[float] = [0.04, 0.04]
-CLOSED_GRIPPER_JOINT_POSITIONS: List[float] = [0.0, 0.0]
 
 
 def joint_names(prefix: str = prefix) -> List[str]:
@@ -26,7 +24,3 @@ def base_link_name(prefix: str = prefix) -> str:
 
 def end_effector_name(prefix: str = prefix) -> str:
     return prefix + "tool0"
-
-
-def gripper_joint_names(prefix: str = prefix) -> List[str]:
-    return []
