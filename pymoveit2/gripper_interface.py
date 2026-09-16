@@ -36,13 +36,11 @@ class GripperInterface:
         open_gripper_joint_positions: Union[float, List[float]],
         closed_gripper_joint_positions: Union[float, List[float]],
         gripper_group_name: str = "gripper",
-        execute_via_moveit: bool = False,
         ignore_new_calls_while_executing: bool = False,
         skip_planning: bool = False,
         skip_planning_fixed_motion_duration: float = 0.5,
         max_effort: float = 0.0,
         callback_group: Optional[CallbackGroup] = None,
-        follow_joint_trajectory_action_name: Optional[str] = None,
         gripper_command_action_name: str = "gripper_action_controller/gripper_cmd",
         use_move_group_action: bool = False,
         interface: Optional[Type[GripperBackend]] = None,
@@ -75,15 +73,6 @@ class GripperInterface:
             discovery_timeout_sec, "discovery_timeout_sec", minimum=0.0
         )
 
-        if execute_via_moveit:
-            node.get_logger().warning(
-                "Parameter `execute_via_moveit` is deprecated; use `use_move_group_action` instead."
-            )
-            use_move_group_action = True
-        if follow_joint_trajectory_action_name is not None:
-            node.get_logger().warning(
-                "Parameter `follow_joint_trajectory_action_name` is deprecated. `MoveIt2` uses the `execute_trajectory` action instead."
-            )
         if interface is not None and interface not in (GripperCommand, MoveIt2Gripper):
             raise ValueError(
                 "`interface` must be `GripperCommand`, `MoveIt2Gripper` or `None`!"

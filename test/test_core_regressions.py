@@ -150,25 +150,6 @@ def test_mixed_cartesian_constraints_rejected_before_send(moveit2, mismatch):
     assert not client.requests
 
 
-@pytest.mark.parametrize("synchronous", [False, True])
-def test_explicit_canonical_default_wins_alias(moveit2, synchronous):
-    client = FakeServiceClient("compute_cartesian_path")
-    moveit2._plan_cartesian_path_service = client
-    method = moveit2.plan if synchronous else moveit2.plan_async
-
-    kwargs = {"timeout_sec": 1.0} if synchronous else {}
-    method(
-        position=(0.3, 0.0, 0.5),
-        quat_xyzw=(0.0, 0.0, 0.0, 1.0),
-        cartesian=True,
-        start_joint_state=[0.0] * 7,
-        max_step=0.02,
-        cartesian_max_step=0.0025,
-        **kwargs,
-    )
-    assert client.requests[-1].max_step == 0.0025
-
-
 def test_plan_recomputes_discovery_budget_after_joint_wait(moveit2, monkeypatch):
     clock = [100.0]
     monkeypatch.setattr("pymoveit2.moveit2.time.monotonic", lambda: clock[0])

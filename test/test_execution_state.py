@@ -1,6 +1,5 @@
 import time
 
-import pytest
 from action_msgs.msg import GoalStatus
 from conftest import complete
 from moveit_msgs.action import ExecuteTrajectory
@@ -89,16 +88,6 @@ def test_no_stale_success_when_server_missing(moveit2, fake_execute_client):
 def test_motion_succeeded_property(moveit2):
     moveit2.motion_succeeded = True
     assert moveit2.motion_succeeded is True
-
-
-def test_motion_suceeded_deprecated_alias_still_works_and_warns(
-    moveit2,
-):
-    with pytest.warns(DeprecationWarning):
-        moveit2.motion_suceeded = True
-    assert moveit2.motion_succeeded is True
-    with pytest.warns(DeprecationWarning):
-        assert moveit2.motion_suceeded is True
 
 
 def test_fast_completion_before_wait_is_reported_once(moveit2, fake_execute_client):

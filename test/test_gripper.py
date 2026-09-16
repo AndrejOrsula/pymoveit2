@@ -382,14 +382,6 @@ def test_gripper_command_rejects_malformed_observations(rclpy_node, positions, e
     gc.destroy()
 
 
-def test_gripper_command_deprecated_alias(rclpy_node):
-    gc = make_gripper_command(rclpy_node)
-    with pytest.warns(DeprecationWarning):
-        gc.motion_suceeded = True
-    assert gc.motion_succeeded is True
-    gc.destroy()
-
-
 def test_gripper_interface_without_servers_is_safe(rclpy_node):
     gi = make_interface(rclpy_node)
     assert gi.backend is None
@@ -605,11 +597,3 @@ def test_gripper_interface_motion_succeeded_updated_by_gripper_command_path(rclp
 def test_gripper_interface_rejects_unknown_interface(rclpy_node):
     with pytest.raises(ValueError):
         make_interface(rclpy_node, interface=int)
-
-
-def test_gripper_interface_deprecated_alias(rclpy_node):
-    gi = make_interface(rclpy_node, interface=GripperCommand)
-    with pytest.warns(DeprecationWarning):
-        gi.motion_suceeded = True
-    assert gi.backend.motion_succeeded is True
-    gi.destroy()

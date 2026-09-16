@@ -179,3 +179,18 @@ def test_joint_state_callback_updates_state(moveit2):
     partial.name = ["panda_joint1"]
     moveit2._MoveIt2__joint_state_callback(partial)
     assert moveit2.joint_state == message
+
+
+def test_plan_async_accepts_cartesian_max_step(moveit2, monkeypatch):
+    captured = {}
+
+    def fake_plan_cartesian_path(max_step, frame_id=None, **kwargs):
+        captured["max_step"] = max_step
+        return None
+
+    monkeypatch.setattr(moveit2, "_plan_cartesian_path", fake_plan_cartesian_path)
+    moveit2.set_pose_goal(position=(0.3, 0.0, 0.5), quat_xyzw=(0.0, 0.0, 0.0, 1.0))
+    moveit2.plan_async(
+        cartesian=True, cartesian_max_step=0.01, start_joint_state=[0.0] * 7
+    )
+    assert captured["max_step"] == 0.01

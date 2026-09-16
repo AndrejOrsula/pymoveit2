@@ -611,10 +611,9 @@ class MoveIt2:
         weight_joint_position: float = 1.0,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         cartesian: bool = False,
-        max_step: Optional[float] = None,
         cartesian_fraction_threshold: float = 0.0,
         timeout_sec: Optional[float] = None,
-        cartesian_max_step: Optional[float] = None,
+        cartesian_max_step: float = 0.0025,
     ) -> Optional[JointTrajectory]:
         """
         Call `plan_async()` and wait for the result.
@@ -636,7 +635,6 @@ class MoveIt2:
             weight_joint_position=weight_joint_position,
             start_joint_state=start_joint_state,
             cartesian=cartesian,
-            max_step=max_step,
             cartesian_max_step=cartesian_max_step,
             wait_for_server_timeout_sec=deadline.remaining(
                 DEFAULT_WAIT_FOR_SERVER_TIMEOUT_SEC
@@ -695,7 +693,7 @@ class MoveIt2:
         weight_joint_position: float = 1.0,
         start_joint_state: Optional[Union[JointState, List[float]]] = None,
         cartesian: bool = False,
-        cartesian_max_step: Optional[float] = 0.0025,
+        cartesian_max_step: float = 0.0025,
         wait_for_server_timeout_sec: Optional[
             float
         ] = DEFAULT_WAIT_FOR_SERVER_TIMEOUT_SEC,
