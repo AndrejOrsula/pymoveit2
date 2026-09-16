@@ -24,6 +24,7 @@ EXECUTABLES = (
     "ex_orientation_path_constraint.py",
     "ex_pose_goal.py",
     "ex_servo.py",
+    "ex_session.py",
 )
 
 

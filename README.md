@@ -58,7 +58,7 @@ source install/local_setup.bash
 
 ```bash
 cd $WS
-git clone https://github.com/AndrejOrsula/pymoveit2.git pymoveit2
+git clone https://github.com/AndrejOrsula/pymoveit2.git
 pymoveit2/.docker/run.bash $ROS_DISTRO --network-host --ipc-host --gui
 ```
 
@@ -110,6 +110,13 @@ ros2 run pymoveit2 ex_servo.py
 ros2 run pymoveit2 ex_gripper.py --ros-args -p action:="toggle"
 ```
 
+### Session
+
+```bash
+# Move the robot through `RobotSession` (initialized via `connect()`)
+ros2 run pymoveit2 ex_session.py --ros-args -p position:="[0.3, 0.0, 0.3]" -p quat_xyzw:="[0.0, 0.0, 0.0, 1.0]"
+```
+
 ### Planning scene
 
 ```bash
@@ -147,12 +154,14 @@ with connect() as robot:
 
 The `robot` object represents a `RobotSession` that manages:
 
-1. ROS 2 node: `robot.node`
-1. ROS 2 executor: `robot.executor`
-1. Robot description (automatically discovered): `robot.description`
-1. MoveIt 2 interface for the motion planning: `robot.arm`
-1. (optional) MoveIt 2 Gripper interface: `robot.gripper`
-1. (optional) MoveIt 2 Servo interface: `robot.servo`
+| Attribute | Manages |
+| :------------------ | :------------------------------------------- |
+| `robot.node` | ROS 2 node |
+| `robot.executor` | ROS 2 executor |
+| `robot.description` | Robot description (automatically discovered) |
+| `robot.arm` | MoveIt 2 interface for the motion planning |
+| `robot.gripper` | MoveIt 2 Gripper interface (optional) |
+| `robot.servo` | MoveIt 2 Servo interface (optional) |
 
 ### RobotDescription + MoveIt2 + GripperInterface + MoveIt2Servo
 

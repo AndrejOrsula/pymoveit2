@@ -29,10 +29,17 @@ def test_example_docstrings_reference_existing_executables():
             ), f"{path.name} references unknown executable {name}"
 
 
+def _uses_session(text):
+    return "connect(" in text
+
+
 def test_examples_discover_the_robot_configuration():
     for path in (REPO / "examples").glob("ex_*.py"):
         text = path.read_text()
         assert "from pymoveit2.robots import" not in text, path.name
+        if _uses_session(text):
+            assert "declare_robot_parameters(" not in text, path.name
+            continue
         assert "declare_robot_parameters(node" in text, path.name
         if "MoveIt2Servo" in text:
             assert "frame_id=True" in text, path.name
@@ -72,6 +79,8 @@ def test_only_the_presets_name_a_robot():
 def test_examples_start_the_executor_before_discovery():
     for path in (REPO / "examples").glob("ex_*.py"):
         text = path.read_text()
+        if _uses_session(text):
+            continue
         spin = text.index("executor_thread.start()")
         resolve = text.index("RobotConfiguration(node")
         assert spin < resolve, path.name
