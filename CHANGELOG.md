@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- CI: Use default entrypoint in the Docker verification step ([89efdce](https://github.com/AndrejOrsula/pymoveit2/commit/89efdce3e35255c9dff3472cc0c1fc91463f9ccd)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+- Update README badges ([cfa4fdc](https://github.com/AndrejOrsula/pymoveit2/commit/cfa4fdc5b4f9096b4c4c788a9a1e3352c2fbc475)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+
 ## [5.0.0] - 2026-09-16
 
 ### Added
@@ -27,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update CHANGELOG for 5.0.0 (release) ([98db391](https://github.com/AndrejOrsula/pymoveit2/commit/98db391d1b5e050947a449110a742f46538e1592)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
 - Docker: Update .dockerignore to allow helper scripts ([e0d2194](https://github.com/AndrejOrsula/pymoveit2/commit/e0d2194c6a00278e7a27c306fb7faf2200c6b24f)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
 - Build(deps): bump actions/upload-artifact from 4.6.2 to 7.0.1 ([e5edd27](https://github.com/AndrejOrsula/pymoveit2/commit/e5edd27e2f41cfc19125bb48ad8ed2cb5e210358)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#135](https://github.com/AndrejOrsula/pymoveit2/pull/135)
 - Build(deps): bump actions/download-artifact from 4.3.0 to 8.0.1 ([60842da](https://github.com/AndrejOrsula/pymoveit2/commit/60842da0d67cde728ee098a2bfe02d0db54b9870)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#137](https://github.com/AndrejOrsula/pymoveit2/pull/137)
@@ -324,3 +332,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [4.1.1]: https://github.com/AndrejOrsula/pymoveit2/compare/4.1.0..4.1.1
 [4.2.0]: https://github.com/AndrejOrsula/pymoveit2/compare/4.1.1..4.2.0
 [5.0.0]: https://github.com/AndrejOrsula/pymoveit2/compare/4.2.0..5.0.0
+[unreleased]: https://github.com/AndrejOrsula/pymoveit2/compare/5.0.0..HEAD

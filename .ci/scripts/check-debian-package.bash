@@ -30,7 +30,7 @@ source "${ros_setup_file}"
 set -u
 
 expected_package="ros-${ros_distro}-pymoveit2"
-expected_version_prefix="${EXPECTED_PACKAGE_VERSION_PREFIX:-5.0.0}"
+expected_version_prefix="${EXPECTED_PACKAGE_VERSION_PREFIX:-5.0.1}"
 expected_diagnostic="${PYMOVEIT2_EXPECTED_FK_DIAGNOSTIC:-FK example failed:}"
 fk_timeout="${PYMOVEIT2_FK_TIMEOUT:-30s}"
 
