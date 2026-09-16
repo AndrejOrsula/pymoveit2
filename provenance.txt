@@ -1,5 +1,5 @@
 artifact_smoke=passed
-source_revision=1e03a1b8d02d7ba0abbb1e285026146c61b74e20
+source_revision=89efdce3e35255c9dff3472cc0c1fc91463f9ccd
 ros_distro=humble
 deb_distro=jammy
 ros_testing=false
@@ -8,11 +8,11 @@ ros_repository=http://packages.ros.org/ros2/ubuntu jammy main
 base_image=ros:humble-ros-base-jammy
 base_image_digest=ros@sha256:1813d3c85d7f96ff7d3012d865204583255740182db5d0065f8f8cd029a83138
 builder_action_sha=aacb5111976551aee90170dafa2cc615bc16760f
-package_file=ros-humble-pymoveit2_5.0.1-2026.09.16.15.34_amd64.deb
-package_sha256=8e9637f3008fe5431d68b2233780b01a18225b07b1ebc57919d65774ee016495
+package_file=ros-humble-pymoveit2_5.0.0-2026.09.16.15.42_amd64.deb
+package_sha256=b70b8ae4ac3e127274650c2e14239d6155bc5dc16d0c8e448c1df75df4267f85
 package=ros-humble-pymoveit2
-package_version=5.0.1-2026.09.16.15.34
-expected_version_prefix=5.0.1
+package_version=5.0.0-2026.09.16.15.42
+expected_version_prefix=5.0.0
 python_version=Python 3.10.12
 ros2_version=unavailable
 rosdep_version=0.26.0
@@ -21,10 +21,10 @@ optional_trimesh=unavailable
 optional_trimesh_bound=trimesh<4
 apt_resolved_versions<<EOF
 ros-humble-pymoveit2:
-  Installed: 5.0.1-2026.09.16.15.34
-  Candidate: 5.0.1-2026.09.16.15.34
+  Installed: 5.0.0-2026.09.16.15.42
+  Candidate: 5.0.0-2026.09.16.15.42
   Version table:
- *** 5.0.1-2026.09.16.15.34 100
+ *** 5.0.0-2026.09.16.15.42 100
         100 /var/lib/dpkg/status
      4.2.0-1jammy.20260908.071541 500
         500 http://packages.ros.org/ros2/ubuntu jammy/main amd64 Packages
@@ -485,7 +485,7 @@ ros-humble-orocos-kdl-vendor=0.2.5-1jammy.20260304.201339
 ros-humble-osrf-pycommon=2.1.6-1jammy.20260226.011505
 ros-humble-pluginlib=5.1.4-1jammy.20260717.234837
 ros-humble-pybind11-vendor=2.4.2-1jammy.20260304.195023
-ros-humble-pymoveit2=5.0.1-2026.09.16.15.34
+ros-humble-pymoveit2=5.0.0-2026.09.16.15.42
 ros-humble-python-cmake-module=0.10.0-2jammy.20260304.202554
 ros-humble-python-orocos-kdl-vendor=0.2.5-1jammy.20260304.202632
 ros-humble-rcl=5.3.13-1jammy.20260724.003904
