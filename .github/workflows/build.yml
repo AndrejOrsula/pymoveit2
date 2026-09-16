@@ -1,61 +1,229 @@
 name: build
 
 on:
+  pull_request:
   push:
     branches:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build_testing:
-    runs-on: ubuntu-24.04
+    env:
+      ARTIFACT_DIR: ${{ github.workspace }}/artifacts/${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.ros }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { deb: jammy, ros: humble }
-          - { deb: noble, ros: jazzy }
-          - { deb: noble, ros: rolling }
+          - {
+              arch: amd64,
+              deb: jammy,
+              image: humble-ros-base-jammy,
+              ros: humble,
+              ros_testing: false,
+            }
+          - {
+              arch: amd64,
+              deb: noble,
+              image: jazzy-ros-base-noble,
+              ros: jazzy,
+              ros_testing: false,
+            }
+          - {
+              arch: amd64,
+              deb: resolute,
+              image: lyrical-ros-base-resolute,
+              ros: lyrical,
+              ros_testing: false,
+            }
+          - {
+              arch: amd64,
+              deb: resolute,
+              image: rolling-ros-base-resolute,
+              ros: rolling,
+              ros_testing: true,
+            }
     steps:
-      - name: Build for ROS ${{ matrix.ros_distro }}
-        uses: jspricke/ros-deb-builder-action@main
+      - uses: actions/checkout@v7
         with:
+          path: repo
+          persist-credentials: false
+
+      - name: Check the checkout revision
+        run: test "$(git -C repo rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Build the package in a throwaway sbuild environment
+        env:
           ROS_DISTRO: ${{ matrix.ros }}
           DEB_DISTRO: ${{ matrix.deb }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Runner Codename
+          DEB_ARCH: ${{ matrix.arch }}
+          ROS_TESTING: ${{ matrix.ros_testing }}
         run: |
-          echo "CODENAME=$(lsb_release -cs)" >> $GITHUB_ENV
+          set -euo pipefail
+          mkdir -p "$ARTIFACT_DIR"
+          docker run --rm --privileged \
+            -e ROS_DISTRO -e DEB_DISTRO -e DEB_ARCH -e ROS_TESTING \
+            -e OUTPUT_UID="$(id -u)" -e OUTPUT_GID="$(id -g)" \
+            -v "$PWD/repo:/candidate:ro" -v "$ARTIFACT_DIR:/out" \
+            ubuntu:24.04@sha256:4fbb8e6a8395de5a7550b33509421a2bafbc0aab6c06ba2cef9ebffbc7092d90 \
+            bash -e -o pipefail -c '
+              export DEBIAN_FRONTEND=noninteractive
+              apt-get update -qq
+              apt-get install -y --no-install-recommends ca-certificates curl sudo git python3 apt-utils
+              mkdir -p /action /workspace/repo
+              curl -fsSL https://github.com/jspricke/ros-deb-builder-action/archive/aacb5111976551aee90170dafa2cc615bc16760f.tar.gz \
+                | tar -xz --strip-components=1 -C /action
+              cp -a /candidate/. /workspace/repo/
+              printf "root:100000:65536\n" >/etc/subuid
+              printf "root:100000:65536\n" >/etc/subgid
+              cd /workspace
+              /action/prepare -d "$DEB_DISTRO" -a "$DEB_ARCH"
+              repo/.ci/scripts/build-debian-package.bash "$ROS_DISTRO" "$DEB_DISTRO" "$DEB_ARCH"
+              cp -a apt_repo/. /out/
+              chown -R "$OUTPUT_UID:$OUTPUT_GID" /out
+            '
 
-      - name: Remove Conflicting Debian Packages
-        if: ${{ matrix.deb == env.CODENAME }}
+      - name: Check the exact Debian artifact
+        env:
+          BASE_IMAGE: ros:${{ matrix.image }}
+          BUILDER_ACTION_SHA: aacb5111976551aee90170dafa2cc615bc16760f
+          DEB_DISTRO: ${{ matrix.deb }}
+          ROS_TESTING: ${{ matrix.ros_testing }}
+          ROS_APT_SOURCE_SHA: 38f7b0941bd184cc7bb4c77f3a5a5c15bbe647ca
+          SOURCE_REVISION: ${{ github.sha }}
         run: |
-          sudo apt -y autoremove --purge python3-catkin-pkg python3-rospkg python3-rosdistro vcstool
+          set -euo pipefail
+          image="ros:${{ matrix.image }}"
+          docker pull "$image"
+          base_image_digest="$(docker image inspect --format '{{index .RepoDigests 0}}' "$image")"
+          package_version="$(python3 -c 'import sys, xml.etree.ElementTree as ET; print(ET.parse(sys.argv[1]).getroot().findtext("version") or "")' repo/package.xml)"
+          test -n "$package_version"
+          mkdir -p provenance
+          docker run --rm \
+            -e BASE_IMAGE="$BASE_IMAGE" \
+            -e BASE_IMAGE_DIGEST="$base_image_digest" \
+            -e BUILDER_ACTION_SHA="$BUILDER_ACTION_SHA" \
+            -e DEB_DISTRO="$DEB_DISTRO" \
+            -e EXPECTED_PACKAGE_VERSION_PREFIX="$package_version" \
+            -e PYMOVEIT2_PROVENANCE_FILE=/provenance/provenance.txt \
+            -e ROS_DISTRO=${{ matrix.ros }} \
+            -e ROS_APT_SOURCE_SHA="$ROS_APT_SOURCE_SHA" \
+            -e ROS_TESTING="$ROS_TESTING" \
+            -e SOURCE_REVISION="$SOURCE_REVISION" \
+            -v "$ARTIFACT_DIR:/apt_repo:ro" \
+            -v "$PWD/provenance:/provenance:rw" \
+            -v "$PWD/repo/.ci/scripts/check-debian-package.bash:/check-debian-package.bash:ro" \
+            "$image" \
+            bash -ec '/check-debian-package.bash "$ROS_DISTRO" /apt_repo'
+          test -s provenance/provenance.txt
+          cp provenance/provenance.txt "$ARTIFACT_DIR/provenance.txt"
 
-      - uses: ros-tooling/setup-ros@v0.7
-        if: ${{ matrix.deb == env.CODENAME }}
+      - name: Upload the checked Debian artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          if-no-files-found: error
+          name: debian-${{ matrix.deb }}-${{ matrix.ros }}-${{ matrix.arch }}
+          path: |
+            ${{ env.ARTIFACT_DIR }}/*.deb
+            ${{ env.ARTIFACT_DIR }}/Packages
+            ${{ env.ARTIFACT_DIR }}/Release
+            ${{ env.ARTIFACT_DIR }}/provenance.txt
+          retention-days: 7
 
-      - name: Install pymoveit2 Debian Packages
-        if: ${{ matrix.deb == env.CODENAME }}
+  publish:
+    env:
+      PUBLISH_DIR: ${{ github.workspace }}/publish/${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.ros }}
+    if: ${{ needs.build_testing.result == 'success' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+    needs: build_testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { arch: amd64, deb: jammy, ros: humble }
+          - { arch: amd64, deb: noble, ros: jazzy }
+          - { arch: amd64, deb: resolute, ros: lyrical }
+          - { arch: amd64, deb: resolute, ros: rolling }
+    concurrency:
+      group: pymoveit2-package-${{ matrix.deb }}-${{ matrix.ros }}-${{ matrix.arch }}
+      cancel-in-progress: false
+    steps:
+      - name: Download the checked artifact
+        uses: actions/download-artifact@v4.3.0
+        with:
+          name: debian-${{ matrix.deb }}-${{ matrix.ros }}-${{ matrix.arch }}
+          path: ${{ env.PUBLISH_DIR }}
+
+      - name: Verify artifact provenance
+        working-directory: ${{ env.PUBLISH_DIR }}
         run: |
-          sudo apt -y install ./apt_repo/ros-*-pymoveit2_*.deb
+          set -euo pipefail
+          test -f provenance.txt
+          grep -Fxq 'artifact_smoke=passed' provenance.txt
+          grep -Fxq 'builder_action_sha=aacb5111976551aee90170dafa2cc615bc16760f' provenance.txt
+          grep -Fxq 'ros_apt_source_sha=38f7b0941bd184cc7bb4c77f3a5a5c15bbe647ca' provenance.txt
+          source_revision="$(awk -F= '$1 == "source_revision" { print $2 }' provenance.txt)"
+          test "$source_revision" = "$GITHUB_SHA"
+          package_file="$(awk -F= '$1 == "package_file" { print $2 }' provenance.txt)"
+          package_sha256="$(awk -F= '$1 == "package_sha256" { print $2 }' provenance.txt)"
+          test -n "$package_file" -a -n "$package_sha256"
+          test "$(sha256sum "$package_file" | awk '{print $1}')" = "$package_sha256"
 
-      - name: Install ROS 2 CLI Packages
-        if: ${{ matrix.deb == env.CODENAME }}
+      - name: Publish the artifact
+        working-directory: ${{ env.PUBLISH_DIR }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sudo apt -y install ros-${{ matrix.ros }}-ros2cli-common-extensions
-
-      - name: Run 'ex_pose_goal' example
-        if: ${{ matrix.deb == env.CODENAME }}
-        run: |
-          . /opt/ros/${{ matrix.ros }}/setup.bash
-          # do not exit on first failure to allow processing the timeout exit code
-          set +e
-          timeout --preserve-status 5s ros2 run pymoveit2 ex_pose_goal.py
-          status=$?
-          set -e
-          echo "timeout status: " $status
-          # success on timeout or command success
-          # 143 = 128 + SIGTERM
-          [ $status -eq 0 ] || [ $status -eq 143 ] || exit $status
+          set -euo pipefail
+          branch="${{ matrix.deb }}-${{ matrix.ros }}-${{ matrix.arch }}"
+          git init -b "$branch"
+          basic_credential="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          echo "::add-mask::$basic_credential"
+          auth_header="AUTHORIZATION: basic $basic_credential"
+          repository_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          git remote add origin "$repository_url"
+          if ! main_revision="$(git -c http.extraheader="$auth_header" \
+              ls-remote "$repository_url" refs/heads/main | awk 'NF { print $1; exit }')"; then
+            echo "::error::Could not read the current main revision before publication."
+            exit 1
+          fi
+          if [[ "$main_revision" != "$GITHUB_SHA" ]]; then
+            echo "::error::Publication artifact is stale: expected main $GITHUB_SHA, found ${main_revision:-missing}."
+            exit 1
+          fi
+          if ! git -c http.extraheader="$auth_header" fetch origin "$branch"; then
+            if git -c http.extraheader="$auth_header" \
+                ls-remote --exit-code origin "refs/heads/$branch" >/dev/null; then
+              echo "::error::Failed to fetch the existing package destination $branch."
+              exit 1
+            else
+              branch_probe_status=$?
+              if (( branch_probe_status != 2 )); then
+                echo "::error::Could not determine whether the package destination $branch exists."
+                exit 1
+              fi
+            fi
+          else
+            git reset --soft FETCH_HEAD
+          fi
+          git add --all
+          short_sha="$(printf '%.7s' "$GITHUB_SHA")"
+          git -c user.name=Github -c user.email=none \
+            commit --message="Generated from $short_sha"
+          if ! current_main_revision="$(git -c http.extraheader="$auth_header" \
+              ls-remote origin refs/heads/main | awk 'NF { print $1; exit }')"; then
+            echo "::error::Could not recheck the current main revision before publication."
+            exit 1
+          fi
+          if [[ "$current_main_revision" != "$GITHUB_SHA" ]]; then
+            echo "::error::Main advanced during publication, so the destination is preserved."
+            exit 1
+          fi
+          git -c http.extraheader="$auth_header" \
+            push origin "$branch"
