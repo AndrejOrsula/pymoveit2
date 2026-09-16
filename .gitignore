@@ -1,7 +1,25 @@
-# Colcon
+## Colcon
 **/build
 **/install
 **/log
 
-# Python
+## Python
 **/__pycache__
+**/*.py[oc]
+**/*.py[cod]
+**/build
+**/dist
+**/wheels
+**/*.egg-info
+
+## Cache
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+
+## Reports
+**/.coverage
+**/coverage.xml
+**/junit.xml
+**/report
+**/reports
