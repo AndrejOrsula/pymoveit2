@@ -1,0 +1,11 @@
+include LICENSE
+include README.md
+include CONTRIBUTING.md
+include CHANGELOG.rst
+include package.xml
+include CMakeLists.txt
+recursive-include examples *.py
+recursive-include examples/assets *
+recursive-include test *.py
+prune test/__pycache__
+global-exclude *.py[cod]

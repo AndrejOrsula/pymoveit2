@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pymoveit2"
+version = "5.0.0"
+description = "Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+authors = [{ name = "Andrej Orsula", email = "orsula.andrej@gmail.com" }]
+maintainers = [{ name = "Andrej Orsula", email = "orsula.andrej@gmail.com" }]
+keywords = ["ros2", "moveit2", "robotics", "manipulation", "motion-planning"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Robot Framework :: Library",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = ["numpy"]
+
+[project.optional-dependencies]
+mesh = ["trimesh"]
+
+[project.urls]
+Homepage = "https://github.com/AndrejOrsula/pymoveit2"
+Repository = "https://github.com/AndrejOrsula/pymoveit2"
+Changelog = "https://github.com/AndrejOrsula/pymoveit2/blob/main/CHANGELOG.rst"
+Issues = "https://github.com/AndrejOrsula/pymoveit2/issues"
+
+[tool.setuptools]
+packages = ["pymoveit2", "pymoveit2.robots"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+extend-exclude = ["build", "install", "log"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "C90"]
+ignore = ["E501"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.per-file-ignores]
+"test/*" = ["B011", "B017"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+addopts = "-p no:cacheprovider"
+
+[tool.coverage.run]
+branch = true
+source = ["pymoveit2"]
+parallel = false
+relative_files = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "pragma: no cover",
+]
+
+[tool.mypy]
+python_version = "3.10"
+files = [
+    "pymoveit2/_action_lifecycle.py",
+    "pymoveit2/_joint_helpers.py",
+    "pymoveit2/_mesh.py",
+    "pymoveit2/_request_builders.py",
+    "pymoveit2/_validation.py",
+    "test/typecheck/typed_calls.py",
+]
+strict = true
+follow_imports = "skip"
+warn_unused_configs = true
+show_error_codes = true
+pretty = true
+
+[[tool.mypy.overrides]]
+module = [
+    "action_msgs.*",
+    "geometry_msgs.*",
+    "moveit_msgs.*",
+    "shape_msgs.*",
+]
+ignore_missing_imports = true
