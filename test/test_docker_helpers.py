@@ -22,10 +22,13 @@ def _write_executable(path: Path, contents: str) -> None:
 
 
 def _dockerignore_matches(path: str, pattern: str) -> bool:
-    pattern = pattern.lstrip("/")
-    if pattern.endswith("/"):
-        pattern += "**"
-    return fnmatch.fnmatch(path, pattern)
+    pattern = pattern.strip("/")
+    segments = path.split("/")
+    candidates = ["/".join(segments[: index + 1]) for index in range(len(segments))]
+    if pattern.startswith("**/"):
+        bare = pattern[3:]
+        return any(fnmatch.fnmatch(name, bare) for name in segments)
+    return any(fnmatch.fnmatch(candidate, pattern) for candidate in candidates)
 
 
 def _context_includes(path: str) -> bool:
