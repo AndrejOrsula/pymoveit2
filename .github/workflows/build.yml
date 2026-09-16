@@ -123,7 +123,7 @@ jobs:
           cp provenance/provenance.txt "$ARTIFACT_DIR/provenance.txt"
 
       - name: Upload the checked Debian artifact
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v7.0.1
         with:
           if-no-files-found: error
           name: debian-${{ matrix.deb }}-${{ matrix.ros }}-${{ matrix.arch }}
