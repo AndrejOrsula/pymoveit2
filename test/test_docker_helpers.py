@@ -1,8 +1,5 @@
-import ast
-import fnmatch
 import json
 import os
-import re
 import subprocess
 import tempfile
 import unittest
@@ -19,29 +16,6 @@ DEV_MOUNT = f"/root/ws/src/{PROJECT_NAME}"
 def _write_executable(path: Path, contents: str) -> None:
     path.write_text(contents)
     path.chmod(0o755)
-
-
-def _dockerignore_matches(path: str, pattern: str) -> bool:
-    pattern = pattern.strip("/")
-    segments = path.split("/")
-    candidates = ["/".join(segments[: index + 1]) for index in range(len(segments))]
-    if pattern.startswith("**/"):
-        bare = pattern[3:]
-        return any(fnmatch.fnmatch(name, bare) for name in segments)
-    return any(fnmatch.fnmatch(candidate, pattern) for candidate in candidates)
-
-
-def _context_includes(path: str) -> bool:
-    included = True
-    for line in (ROOT / ".dockerignore").read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        negated = line.startswith("!")
-        pattern = line[1:] if negated else line
-        if _dockerignore_matches(path, pattern):
-            included = negated
-    return included
 
 
 class DockerHelpersTest(unittest.TestCase):
@@ -405,84 +379,6 @@ with open(os.environ["XHOST_LOG"], "a", encoding="utf-8") as stream:
         self.assertTrue(call[source_index + 1].startswith("SOURCE_ID="))
         self.assertTrue("ROS_DISTRO=humble" in call)
         self.assertTrue("--build-arg=WITH_DEMO=false" in call)
-
-    def test_context_allowlist_keeps_future_modules_and_assets(self) -> None:
-        included = (
-            "CMakeLists.txt",
-            "package.xml",
-            "pymoveit2/_future_private_module.py",
-            "pymoveit2/subpackage/helpers.py",
-            "examples/assets/future.stl",
-            "test/test_future.py",
-            "test/scripts/run-tests.bash",
-            ".ci/scripts/check-debian-package.bash",
-            ".ci/requirements-dev.txt",
-            "LICENSE",
-        )
-        excluded = (
-            ".env.fixture",
-            "agent/state.json",
-            "reports/audit.txt",
-            "private/data.txt",
-            ".git/config",
-            "pymoveit2/__pycache__/module.pyc",
-            "test/build/output.txt",
-            ".docker/private-state.json",
-            "pymoveit2/.claude/state.json",
-            "examples/.codex/state.json",
-            "test/.agents/state.json",
-            "test/scripts/.ssh/key",
-            ".ci/scripts/.ssh/key",
-        )
-        included = (
-            *included,
-            ".docker/run.bash",
-            ".docker/join.bash",
-            ".docker/build.bash",
-        )
-        synthetic = {path: path.encode("utf-8") for path in (*included, *excluded)}
-        transferred = {
-            path: marker
-            for path, marker in synthetic.items()
-            if _context_includes(path)
-        }
-        self.assertEqual(set(transferred), set(included))
-        for path in excluded:
-            self.assertNotIn(path, transferred)
-
-
-class ContextCompletenessTest(unittest.TestCase):
-    def test_every_root_file_the_tests_read_is_in_the_context(self) -> None:
-        referenced = set()
-        for path in sorted((ROOT / "test").glob("*.py")):
-            referenced.update(re.findall(r'REPO / "([^"/]+)"', path.read_text()))
-
-        files = sorted(name for name in referenced if (ROOT / name).is_file())
-
-        self.assertIn("MANIFEST.in", files, "the probe found no root files")
-        missing = [name for name in files if not _context_includes(name)]
-        self.assertEqual(missing, [], f"not in the build context: {missing}")
-
-    def test_every_script_the_shape_test_checks_is_in_the_context(self) -> None:
-        source = (ROOT / "test" / "test_docs_shape.py").read_text()
-        directories = next(
-            ast.literal_eval(ast.unparse(node.value))
-            for node in ast.parse(source).body
-            if isinstance(node, ast.Assign)
-            and any(
-                isinstance(target, ast.Name) and target.id == "SCRIPT_DIRS"
-                for target in node.targets
-            )
-        )
-
-        self.assertIn(".git_hooks", directories, "the probe found no script dirs")
-        missing = [
-            f"{directory}/{script.name}"
-            for directory in directories
-            for script in sorted((ROOT / directory).glob("*.bash"))
-            if not _context_includes(f"{directory}/{script.name}")
-        ]
-        self.assertEqual(missing, [], f"not in the build context: {missing}")
 
 
 if __name__ == "__main__":

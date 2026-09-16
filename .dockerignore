@@ -27,10 +27,15 @@
 ## Dev Container
 .devcontainer
 
+## Environment
+**/.env
+**/.env.*
+
 ## Docker
 Dockerfile*
-.docker
 .dockerignore
+.docker/*
+!.docker/*.bash
 
 ## Git
 .git
@@ -41,5 +46,6 @@ Dockerfile*
 .github
 
 ## Pre-commit
-.git_hooks
+.git_hooks/*
+!.git_hooks/*.bash
 .pre-commit-config.yaml
