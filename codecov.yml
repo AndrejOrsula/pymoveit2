@@ -1,0 +1,36 @@
+codecov:
+  branch: main
+  require_ci_to_pass: true
+  notify:
+    wait_for_ci: true
+
+coverage:
+  precision: 2
+  round: down
+  range: "65...90"
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: 80%
+        threshold: 0%
+
+flags:
+  unit:
+    paths:
+      - pymoveit2/
+    carryforward: false
+
+comment:
+  layout: "condensed_header, diff, flags, files, condensed_footer"
+  behavior: default
+  require_changes: true
+
+ignore:
+  - "examples/**"
+  - "test/**"
+  - "ci/**"
+  - ".docker/**"

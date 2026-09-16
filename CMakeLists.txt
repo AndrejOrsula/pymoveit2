@@ -25,5 +25,20 @@ install(PROGRAMS
     DESTINATION lib/${PROJECT_NAME}
 )
 
+# Install example assets (e.g. default mesh for ex_collision_mesh.py)
+install(DIRECTORY ${EXAMPLES_DIR}/assets
+    DESTINATION lib/${PROJECT_NAME}
+)
+
+# Testing
+if(BUILD_TESTING)
+    find_package(ament_cmake_pytest REQUIRED)
+    ament_add_pytest_test(pymoveit2_tests test
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        ENV PYTEST_ADDOPTS=--ignore=${CMAKE_CURRENT_SOURCE_DIR}/test/integration
+        TIMEOUT 300
+    )
+endif()
+
 # Setup the project
 ament_package()

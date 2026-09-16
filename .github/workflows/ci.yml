@@ -1,0 +1,390 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CI_BUILD_DIR: ${{ github.workspace }}/build/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ matrix.ros }}
+      CI_INSTALL_DIR: ${{ github.workspace }}/install/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ matrix.ros }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ros: [humble, jazzy, lyrical, rolling]
+    container:
+      image: ros:${{ matrix.ros }}-ros-base
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: src/pymoveit2
+      - name: Install dependencies
+        shell: bash
+        run: |
+          apt-get update -qq
+          rosdep update --rosdistro ${{ matrix.ros }} || rosdep update
+          rosdep install -y --from-paths src --ignore-src --rosdistro ${{ matrix.ros }}
+      - name: Build
+        shell: bash
+        run: |
+          source /opt/ros/${{ matrix.ros }}/setup.bash
+          colcon build --base-paths src --symlink-install \
+            --build-base "${CI_BUILD_DIR}" --install-base "${CI_INSTALL_DIR}"
+      - name: Test
+        shell: bash
+        run: |
+          source /opt/ros/${{ matrix.ros }}/setup.bash
+          colcon test --base-paths src --build-base "${CI_BUILD_DIR}" \
+            --install-base "${CI_INSTALL_DIR}" --event-handlers console_direct+ --return-code-on-test-failure
+          colcon test-result --test-result-base "${CI_BUILD_DIR}" --verbose
+      - name: Check the installed package layout
+        shell: bash
+        run: |
+          source /opt/ros/${{ matrix.ros }}/setup.bash
+          source "${CI_INSTALL_DIR}/setup.bash"
+          python3 -c "import pymoveit2; print(pymoveit2.__file__)"
+          expected=$(find src/pymoveit2/examples -maxdepth 1 -name "ex_*.py" | wc -l)
+          actual=$(ros2 pkg executables pymoveit2 | wc -l)
+          echo "executables: ${actual} (expected ${expected})"
+          [ "${actual}" -eq "${expected}" ]
+          test -f "$(ros2 pkg prefix pymoveit2)/lib/pymoveit2/assets/suzanne.stl"
+          for exe in $(ros2 pkg executables pymoveit2 | awk '{print $2}'); do
+            python3 -m py_compile "$(ros2 pkg prefix pymoveit2)/lib/pymoveit2/${exe}"
+          done
+
+  quality:
+    runs-on: ubuntu-latest
+    container:
+      image: ros:lyrical-ros-base
+    env:
+      CI_BUILD_DIR: ${{ github.workspace }}/build/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-lyrical
+      CI_INSTALL_DIR: ${{ github.workspace }}/install/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-lyrical
+      QUALITY_VENV: /tmp/pymoveit2-quality-venv
+      COVERAGE_BRANCH_FAIL_UNDER: "68"
+      CODECOV_READY: ${{ secrets.CODECOV_TOKEN != '' || github.event.repository.private == false }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: src/pymoveit2
+      - name: Install ROS and the coverage and type tools
+        shell: bash
+        run: |
+          timeout --foreground --kill-after=10s 180s apt-get update -qq
+          timeout --foreground --kill-after=10s 180s apt-get install -y -qq \
+            python3-venv curl gnupg git
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}/src/pymoveit2"
+          if ! timeout --foreground --kill-after=10s 180s rosdep update --rosdistro lyrical; then
+            timeout --foreground --kill-after=10s 180s rosdep update
+          fi
+          timeout --foreground --kill-after=10s 300s \
+            rosdep install -y --from-paths src --ignore-src --rosdistro lyrical
+          python3 -m venv --system-site-packages "${QUALITY_VENV}"
+          "${QUALITY_VENV}/bin/python" -m pip install \
+            --disable-pip-version-check --no-cache-dir --timeout 20 --retries 1 \
+            -r src/pymoveit2/.ci/requirements-dev.txt
+          mkdir -p src/pymoveit2/quality-reports
+      - name: Build
+        shell: bash
+        run: |
+          source /opt/ros/lyrical/setup.bash
+          colcon build --base-paths src --symlink-install \
+            --build-base "${CI_BUILD_DIR}" --install-base "${CI_INSTALL_DIR}"
+      - name: Run mypy on the typed helpers
+        working-directory: src/pymoveit2
+        shell: bash
+        env:
+          PYTHON_BIN: /tmp/pymoveit2-quality-venv/bin/python
+        run: |
+          set -o pipefail
+          source /opt/ros/lyrical/setup.bash
+          ./.ci/scripts/check-types.bash 2>&1 | tee quality-reports/mypy.txt
+      - name: Report branch coverage (68% floor)
+        id: coverage
+        working-directory: src/pymoveit2
+        shell: bash
+        env:
+          PYTHON_BIN: /tmp/pymoveit2-quality-venv/bin/python
+          COVERAGE_REPORT_DIR: coverage-report
+        run: |
+          source /opt/ros/lyrical/setup.bash
+          ./.ci/scripts/check-coverage.bash
+      - name: Upload coverage to Codecov
+        if: ${{ !cancelled() && contains(fromJSON('["success", "failure"]'), steps.coverage.outcome) && env.CODECOV_READY == 'true' }}
+        uses: codecov/codecov-action@v7.0.0
+        with:
+          working-directory: src/pymoveit2
+          files: coverage-report/coverage.xml
+          disable_search: true
+          flags: unit
+          name: unit-lyrical
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() && contains(fromJSON('["success", "failure"]'), steps.coverage.outcome) && env.CODECOV_READY == 'true' }}
+        uses: codecov/test-results-action@v1.2.1
+        with:
+          working-directory: src/pymoveit2
+          files: coverage-report/junit.xml
+          disable_search: true
+          flags: unit
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+      - name: Upload the coverage and type reports
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: quality-reports
+          path: |
+            src/pymoveit2/coverage-report
+            src/pymoveit2/quality-reports
+          if-no-files-found: warn
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: pymoveit2
+      - name: Build image
+        working-directory: pymoveit2
+        run: .docker/build.bash --build-arg ROS_DISTRO=jazzy --build-arg WITH_DEMO=false
+      - name: Run the test suite inside the image
+        run: |
+          docker run --rm andrejorsula/pymoveit2 \
+            bash -c 'cd "${WS_SRC_DIR}/pymoveit2" && python3 -m pytest test --ignore=test/integration -q'
+
+  integration:
+    runs-on: ubuntu-latest
+    env:
+      CI_BUILD_DIR: ${{ github.workspace }}/build/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ matrix.ros }}
+      CI_INSTALL_DIR: ${{ github.workspace }}/install/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ matrix.ros }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { ros: humble, trimesh: "trimesh<4" }
+          - { ros: jazzy, trimesh: "trimesh" }
+    container:
+      image: ros:${{ matrix.ros }}-ros-base
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: src/pymoveit2
+      - name: Install dependencies
+        shell: bash
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq \
+            ros-${{ matrix.ros }}-moveit \
+            ros-${{ matrix.ros }}-moveit-resources-panda-moveit-config \
+            ros-${{ matrix.ros }}-controller-manager \
+            ros-${{ matrix.ros }}-ros2-controllers \
+            ros-${{ matrix.ros }}-ros2controlcli \
+            python3-pytest \
+            python3-pip
+          rosdep update --rosdistro ${{ matrix.ros }} || rosdep update
+          rosdep install -y --from-paths src --ignore-src --rosdistro ${{ matrix.ros }}
+      - name: Build
+        shell: bash
+        run: |
+          source /opt/ros/${{ matrix.ros }}/setup.bash
+          colcon build --base-paths src --symlink-install \
+            --build-base "${CI_BUILD_DIR}" --install-base "${CI_INSTALL_DIR}"
+      - name: Run the live tests and the installed examples against the Panda demo
+        shell: bash
+        run: |
+          source /opt/ros/${{ matrix.ros }}/setup.bash
+          source "${CI_INSTALL_DIR}/setup.bash"
+          ros2 launch moveit_resources_panda_moveit_config demo.launch.py use_rviz:=false > demo.log 2>&1 &
+          DEMO_PID=$!
+          trap 'kill $DEMO_PID 2>/dev/null || true' EXIT
+          ready=0
+          for _ in $(seq 1 120); do
+            actions="$(ros2 action list 2>/dev/null || true)"
+            services="$(ros2 service list 2>/dev/null || true)"
+            controllers="$(ros2 control list_controllers 2>/dev/null || true)"
+            if [[ "${actions}" == *move_action* &&
+                  "${services}" == *compute_fk* &&
+                  "${services}" == *get_planning_scene* &&
+                  "${controllers}" == *panda_arm_controller*active* ]] &&
+               timeout 5 ros2 topic echo --once /joint_states >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "${ready}" -ne 1 ]; then
+            echo "::error::The demo did not become ready (move_action, planning services, controllers, joint_states)."
+            echo "--- ros2 node list ---"; ros2 node list || true
+            echo "--- ros2 action list ---"; ros2 action list || true
+            echo "--- ros2 service list ---"; ros2 service list || true
+            echo "--- ros2 control list_controllers ---"; ros2 control list_controllers || true
+            echo "--- demo.log (tail) ---"; tail -n 100 demo.log || true
+            exit 1
+          fi
+          PYMOVEIT2_INTEGRATION=1 python3 -m pytest src/pymoveit2/test/integration -v -p no:cacheprovider
+
+          echo "::group::installed examples"
+          ros2 run pymoveit2 ex_doctor.py
+          ros2 run pymoveit2 ex_fk.py
+          ros2 run pymoveit2 ex_ik.py --ros-args -p position:="[0.4, 0.0, 0.4]" -p quat_xyzw:="[1.0, 0.0, 0.0, 0.0]"
+          ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p shape:="sphere" -p position:="[0.5, 0.0, 0.5]" -p dimensions:="[0.04]"
+          ros2 run pymoveit2 ex_allow_collisions.py --ros-args -p id:="sphere" -p allow:=true
+          ros2 run pymoveit2 ex_collision_primitive.py --ros-args -p action:="remove" -p shape:="sphere"
+          if ros2 run pymoveit2 ex_collision_mesh.py; then
+            echo "::error::ex_collision_mesh.py must exit non-zero without trimesh."
+            exit 1
+          fi
+          python3 -m pip install --quiet --break-system-packages "${{ matrix.trimesh }}" 2>/dev/null \
+            || python3 -m pip install --quiet "${{ matrix.trimesh }}"
+          ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="add"
+          ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="remove"
+          ros2 run pymoveit2 ex_clear_planning_scene.py
+          echo "::endgroup::"
+
+  servo-live:
+    name: Live MoveIt Servo (${{ matrix.ros }}/${{ matrix.interface }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {
+              ros: humble,
+              interface: legacy,
+              domain: 181,
+              launch: "ros2 launch moveit_servo servo_example.launch.py",
+            }
+          - {
+              ros: jazzy,
+              interface: modern,
+              domain: 182,
+              launch: "ros2 launch moveit_servo demo_ros_api.launch.py launch_as_standalone_node:=true",
+            }
+    container:
+      image: ros:${{ matrix.ros }}-ros-base
+    env:
+      CI_BUILD_DIR: ${{ github.workspace }}/build/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ matrix.ros }}
+      CI_INSTALL_DIR: ${{ github.workspace }}/install/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-${{ matrix.ros }}
+      PYMOVEIT2_INTEGRATION_DOMAIN_ID: ${{ matrix.domain }}
+      PYMOVEIT2_INTEGRATION_LOG_DIR: /tmp/pymoveit2-servo-live
+      PYMOVEIT2_REQUIRE_SERVO: "1"
+      PYMOVEIT2_SERVO_INTERFACE: ${{ matrix.interface }}
+      PYMOVEIT2_SERVO_LAUNCH: ${{ matrix.launch }}
+      PYMOVEIT2_SERVO_ONLY: "1"
+      DISPLAY: ""
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: src/pymoveit2
+      - name: Install the Servo backend and the test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --foreground --kill-after=15s 180s apt-get update -qq
+          timeout --foreground --kill-after=15s 300s apt-get install -y -qq \
+            ros-${{ matrix.ros }}-moveit-servo \
+            ros-${{ matrix.ros }}-moveit-resources-panda-moveit-config \
+            ros-${{ matrix.ros }}-controller-manager \
+            ros-${{ matrix.ros }}-ros2-controllers \
+            ros-${{ matrix.ros }}-ros2controlcli \
+            ros-${{ matrix.ros }}-rviz2 \
+            python3-pytest \
+            python3-pip
+          timeout --foreground --kill-after=15s 180s \
+            rosdep update --rosdistro "${{ matrix.ros }}" || \
+            timeout --foreground --kill-after=15s 180s rosdep update
+          timeout --foreground --kill-after=15s 300s \
+            rosdep install -y --from-paths src --ignore-src --rosdistro "${{ matrix.ros }}"
+      - name: Build package
+        shell: bash
+        run: |
+          set -eo pipefail
+          source /opt/ros/${{ matrix.ros }}/setup.bash
+          set -u
+          colcon build --base-paths src --symlink-install \
+            --build-base "${CI_BUILD_DIR}" --install-base "${CI_INSTALL_DIR}"
+      - name: Run the live Servo tests
+        working-directory: src/pymoveit2
+        shell: bash
+        run: |
+          set -eo pipefail
+          source /opt/ros/${{ matrix.ros }}/setup.bash
+          source "${CI_INSTALL_DIR}/setup.bash"
+          set -u
+          timeout --foreground --kill-after=15s 600s \
+            bash test/scripts/run-integration.bash "${{ matrix.ros }}" -- -k live_servo -rs
+      - name: Upload Servo launch logs
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: servo-live-${{ matrix.ros }}-${{ matrix.interface }}
+          path: /tmp/pymoveit2-servo-live
+          if-no-files-found: warn
+
+  packaging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          path: packaging
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Build and check the distributions
+        working-directory: packaging
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet build twine
+          python -m build
+          python -m twine check --strict dist/*
+      - name: Assert the wheel carries the package and nothing else
+        working-directory: packaging
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib
+          import zipfile
+
+          wheel = next(pathlib.Path("dist").glob("*.whl"))
+          roots = {name.split("/")[0] for name in zipfile.ZipFile(wheel).namelist()}
+          unexpected = roots - {"pymoveit2"} - {r for r in roots if r.endswith(".dist-info")}
+          assert not unexpected, f"unexpected wheel contents: {sorted(unexpected)}"
+          print("wheel contents:", sorted(roots))
+          PY
+      - name: Upload the distributions
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: distributions
+          path: packaging/dist
+          if-no-files-found: warn
+
+  workflow-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: workflow-lint
+      - name: Lint the workflows
+        working-directory: workflow-lint
+        run: |
+          docker run --rm -v "${PWD}:/repo" -w /repo \
+            rhysd/actionlint@sha256:887a259a5a534f3c4f36cb02dca341673c6089431057242cdc931e9f133147e9 -color
+      - name: Check that package.xml parses
+        working-directory: workflow-lint
+        run: python3 -c "import xml.dom.minidom as m; m.parse('package.xml')"
