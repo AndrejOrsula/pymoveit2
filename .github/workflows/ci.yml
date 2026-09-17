@@ -122,7 +122,7 @@ jobs:
           ./.ci/scripts/check-coverage.bash
       - name: Upload coverage to Codecov
         if: ${{ !cancelled() && contains(fromJSON('["success", "failure"]'), steps.coverage.outcome) && env.CODECOV_READY == 'true' }}
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.0
         with:
           working-directory: src/pymoveit2
           files: coverage-report/coverage.xml
