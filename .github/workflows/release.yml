@@ -104,7 +104,7 @@ jobs:
 
       - name: Publish the release image
         id: publish
-        uses: docker/build-push-action@v7.3.0
+        uses: docker/build-push-action@v7.4.0
         with:
           context: .
           file: Dockerfile
