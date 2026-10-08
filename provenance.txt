@@ -1,17 +1,17 @@
 artifact_smoke=passed
-source_revision=89efdce3e35255c9dff3472cc0c1fc91463f9ccd
+source_revision=6363bb11a6e282217e6aaf128e6bb5f11af9c18f
 ros_distro=jazzy
 deb_distro=noble
 ros_testing=false
 ros_apt_source_sha=38f7b0941bd184cc7bb4c77f3a5a5c15bbe647ca
 ros_repository=http://packages.ros.org/ros2/ubuntu noble main
 base_image=ros:jazzy-ros-base-noble
-base_image_digest=ros@sha256:c3706ef0a0aa45413c07803cf433602f543b22e45b4855f6fca955c2d8ecc4e8
+base_image_digest=ros@sha256:066420e07f60aa18262f2479981def87ebcfcec42eefb0c0c57c4a46098348ca
 builder_action_sha=aacb5111976551aee90170dafa2cc615bc16760f
-package_file=ros-jazzy-pymoveit2_5.0.0-2026.09.16.15.42_amd64.deb
-package_sha256=1032859f40371e1d037de3856e3b1a00aa6ca3d2d597260ac95b45aff0b13582
+package_file=ros-jazzy-pymoveit2_5.0.0-2026.10.08.20.56_amd64.deb
+package_sha256=382a29b6c3f90acf701c56a3093d8d49f7fb472c51fd791269772ffe75bad526
 package=ros-jazzy-pymoveit2
-package_version=5.0.0-2026.09.16.15.42
+package_version=5.0.0-2026.10.08.20.56
 expected_version_prefix=5.0.0
 python_version=Python 3.12.3
 ros2_version=unavailable
@@ -21,19 +21,20 @@ optional_trimesh=unavailable
 optional_trimesh_bound=trimesh
 apt_resolved_versions<<EOF
 ros-jazzy-pymoveit2:
-  Installed: 5.0.0-2026.09.16.15.42
-  Candidate: 5.0.0-2026.09.16.15.42
+  Installed: 5.0.0-2026.10.08.20.56
+  Candidate: 5.0.0-2026.10.08.20.56
   Version table:
- *** 5.0.0-2026.09.16.15.42 100
+ *** 5.0.0-2026.10.08.20.56 100
         100 /var/lib/dpkg/status
-     4.2.0-1noble.20260903.070437 500
+     5.0.0-2noble.20260921.025049 500
         500 http://packages.ros.org/ros2/ubuntu noble/main amd64 Packages
 ros-jazzy-ros-base:
   Installed: 0.11.0-1noble.20260903.093452
-  Candidate: 0.11.0-1noble.20260903.093452
+  Candidate: 0.11.0-1noble.20261006.035407
   Version table:
- *** 0.11.0-1noble.20260903.093452 500
+     0.11.0-1noble.20261006.035407 500
         500 http://packages.ros.org/ros2/ubuntu noble/main amd64 Packages
+ *** 0.11.0-1noble.20260903.093452 100
         100 /var/lib/dpkg/status
 EOF
 installed_packages<<EOF
@@ -58,7 +59,7 @@ cpp-13=13.3.0-6ubuntu2~24.04.1
 cpp-13-x86-64-linux-gnu=13.3.0-6ubuntu2~24.04.1
 cpp-x86-64-linux-gnu=4:13.2.0-7ubuntu1
 cppcheck=2.13.0-2ubuntu3
-curl=8.5.0-2ubuntu10.13
+curl=8.5.0-2ubuntu10.15
 dash=0.5.12-6ubuntu5
 debconf=1.5.86ubuntu1
 debianutils=5.17build1
@@ -103,8 +104,8 @@ init-system-helpers=1.66ubuntu1
 keyboxd=2.4.4-2ubuntu17.6
 libacl1:amd64=2.3.2-1build1.1
 libann0=1.1.2+doc-9build1
-libaom3:amd64=3.8.2-2ubuntu0.1
-libapparmor1:amd64=4.0.1really4.0.1-0ubuntu0.24.04.7
+libaom3:amd64=3.8.2-2ubuntu0.2
+libapparmor1:amd64=4.0.1really4.0.1-0ubuntu0.24.04.8
 libapt-pkg6.0t64:amd64=2.8.3
 libarchive13t64:amd64=3.7.2-2ubuntu0.8
 libasan8:amd64=14.2.0-4ubuntu2~24.04.1
@@ -138,8 +139,8 @@ libcrypt-dev:amd64=1:4.4.36-4build1
 libcrypt1:amd64=1:4.4.36-4build1
 libctf-nobfd0:amd64=2.42-4ubuntu2.10
 libctf0:amd64=2.42-4ubuntu2.10
-libcurl3t64-gnutls:amd64=8.5.0-2ubuntu10.13
-libcurl4t64:amd64=8.5.0-2ubuntu10.13
+libcurl3t64-gnutls:amd64=8.5.0-2ubuntu10.15
+libcurl4t64:amd64=8.5.0-2ubuntu10.15
 libdatrie1:amd64=0.2.13-3build1
 libdb5.3t64:amd64=5.3.28+dfsg2-7
 libdbus-1-3:amd64=1.14.10-4ubuntu4.1
@@ -148,8 +149,8 @@ libdeflate0:amd64=1.19-1build1.1
 libdpkg-perl=1.22.6ubuntu6.6
 libeigen3-dev=3.4.0-4build0.1
 liberror-perl=0.17029-2
-libexpat1:amd64=2.6.1-2ubuntu0.4
-libexpat1-dev:amd64=2.6.1-2ubuntu0.4
+libexpat1:amd64=2.6.1-2ubuntu0.6
+libexpat1-dev:amd64=2.6.1-2ubuntu0.6
 libext2fs2t64:amd64=1.47.0-2.4~exp1ubuntu4.1
 libffi8:amd64=3.4.6-1build1
 libfmt-dev:amd64=9.1.0+ds1-2
@@ -164,7 +165,7 @@ libgd3:amd64=2.3.3-9ubuntu5
 libgdbm-compat4t64:amd64=1.23-5.1build1
 libgdbm6t64:amd64=1.23-5.1build1
 libgfortran5:amd64=14.2.0-4ubuntu2~24.04.1
-libglib2.0-0t64:amd64=2.80.0-6ubuntu3.8
+libglib2.0-0t64:amd64=2.80.0-6ubuntu3.9
 libgmp10:amd64=2:6.3.0+dfsg-2ubuntu6.1
 libgnutls30t64:amd64=3.8.3-1.1ubuntu3.6
 libgomp1:amd64=14.2.0-4ubuntu2~24.04.1
@@ -177,8 +178,8 @@ libgts-0.7-5t64:amd64=0.7.6+darcs121130-5.2build1
 libgvc6=2.42.2-9ubuntu0.1
 libgvpr2:amd64=2.42.2-9ubuntu0.1
 libharfbuzz0b:amd64=8.3.0-2build2
-libheif-plugin-aomdec:amd64=1.17.6-1ubuntu4.8
-libheif1:amd64=1.17.6-1ubuntu4.8
+libheif-plugin-aomdec:amd64=1.17.6-1ubuntu4.9
+libheif1:amd64=1.17.6-1ubuntu4.9
 libhogweed6t64:amd64=3.9.1-2.2build1.1
 libhwasan0:amd64=14.2.0-4ubuntu2~24.04.1
 libice6:amd64=2:1.0.10-1build3
@@ -236,7 +237,7 @@ libpangocairo-1.0-0:amd64=1.52.1+ds-1build1
 libpangoft2-1.0-0:amd64=1.52.1+ds-1build1
 libpathplan4:amd64=2.42.2-9ubuntu0.1
 libpcre2-8-0:amd64=10.42-4ubuntu2.1
-libperl5.38t64:amd64=5.38.2-3.2ubuntu0.4
+libperl5.38t64:amd64=5.38.2-3.2ubuntu0.6
 libpixman-1-0:amd64=0.42.2-1build1
 libpkgconf3:amd64=1.8.1-2build1
 libpng16-16t64:amd64=1.6.43-5ubuntu0.6
@@ -266,12 +267,12 @@ libsm6:amd64=2:1.2.3-1build3
 libsmartcols1:amd64=2.39.3-9ubuntu6.6
 libspdlog-dev:amd64=1:1.12.0+ds-2build1
 libspdlog1.12:amd64=1:1.12.0+ds-2build1
-libsqlite3-0:amd64=3.45.1-1ubuntu2.7
-libsqlite3-dev:amd64=3.45.1-1ubuntu2.7
+libsqlite3-0:amd64=3.45.1-1ubuntu2.8
+libsqlite3-dev:amd64=3.45.1-1ubuntu2.8
 libss2:amd64=1.47.0-2.4~exp1ubuntu4.1
 libssh-4:amd64=0.10.6-2ubuntu0.5
-libssl-dev:amd64=3.0.13-0ubuntu3.15
-libssl3t64:amd64=3.0.13-0ubuntu3.15
+libssl-dev:amd64=3.0.13-0ubuntu3.16
+libssl3t64:amd64=3.0.13-0ubuntu3.16
 libstdc++-13-dev:amd64=13.3.0-6ubuntu2~24.04.1
 libstdc++6:amd64=14.2.0-4ubuntu2~24.04.1
 libsystemd0:amd64=255.4-1ubuntu8.17
@@ -300,10 +301,10 @@ libxcb-shm0:amd64=1.15-1ubuntu2
 libxcb1:amd64=1.15-1ubuntu2
 libxdmcp6:amd64=1:1.1.3-0ubuntu6
 libxext6:amd64=2:1.3.4-1build2
-libxml2:amd64=2.9.14+dfsg-1.3ubuntu3.8
-libxml2-utils=2.9.14+dfsg-1.3ubuntu3.8
+libxml2:amd64=2.9.14+dfsg-1.3ubuntu3.9
+libxml2-utils=2.9.14+dfsg-1.3ubuntu3.9
 libxmu6:amd64=2:1.1.3-3build2
-libxpm4:amd64=1:3.5.17-1ubuntu0.24.04.1
+libxpm4:amd64=1:3.5.17-1ubuntu0.24.04.2
 libxrender1:amd64=1:0.9.10-1.1build1
 libxslt1.1:amd64=1.1.39-0exp1ubuntu0.24.04.3
 libxt6t64:amd64=1:1.2.1-1.2build1
@@ -314,7 +315,7 @@ libyaml-cpp0.8:amd64=0.8.0+dfsg-6build1
 libyaml-dev:amd64=0.2.5-1build1
 libzstd-dev:amd64=1.5.5+dfsg2-2build1.1
 libzstd1:amd64=1.5.5+dfsg2-2build1.1
-linux-libc-dev:amd64=6.8.0-139.139
+linux-libc-dev:amd64=6.8.0-146.146
 login=1:4.13+dfsg1-4ubuntu3.2
 logsave=1.47.0-2.4~exp1ubuntu4.1
 lsb-release=12.0-2
@@ -327,12 +328,12 @@ mount=2.39.3-9ubuntu6.6
 ncurses-base=6.4+20240113-1ubuntu2.2
 ncurses-bin=6.4+20240113-1ubuntu2.2
 netbase=6.4
-openssl=3.0.13-0ubuntu3.15
+openssl=3.0.13-0ubuntu3.16
 passwd=1:4.13+dfsg1-4ubuntu3.2
 patch=2.7.6-7build3
-perl=5.38.2-3.2ubuntu0.4
-perl-base=5.38.2-3.2ubuntu0.4
-perl-modules-5.38=5.38.2-3.2ubuntu0.4
+perl=5.38.2-3.2ubuntu0.6
+perl-base=5.38.2-3.2ubuntu0.6
+perl-modules-5.38=5.38.2-3.2ubuntu0.6
 pinentry-curses=1.2.1-3ubuntu5
 pkg-config:amd64=1.8.1-2build1
 pkgconf:amd64=1.8.1-2build1
@@ -349,14 +350,14 @@ python3-colcon-bash=0.5.0-100
 python3-colcon-cd=0.2.1-100
 python3-colcon-cmake=0.2.30+upstream-1
 python3-colcon-common-extensions=0.3.0-100
-python3-colcon-core=0.21.2+upstream-1
+python3-colcon-core=0.21.3+upstream-1
 python3-colcon-defaults=0.2.9+upstream-1
 python3-colcon-devtools=0.3.0-100
 python3-colcon-library-path=0.2.1-100
 python3-colcon-metadata=0.3.1+upstream-1
 python3-colcon-mixin=0.3.2+upstream-1
-python3-colcon-notification=0.3.2+upstream-1
-python3-colcon-output=0.2.14+upstream-1
+python3-colcon-notification=0.3.3+upstream-1
+python3-colcon-output=0.2.15+upstream-1
 python3-colcon-package-information=0.4.1+upstream-1
 python3-colcon-package-selection=0.2.10-100
 python3-colcon-parallel-executor=0.3.0-100
@@ -466,7 +467,7 @@ ros-jazzy-class-loader=2.7.1-1noble.20260604.024917
 ros-jazzy-common-interfaces=5.3.8-1noble.20260902.043650
 ros-jazzy-composition-interfaces=2.0.4-1noble.20260902.024252
 ros-jazzy-console-bridge-vendor=1.7.2-1noble.20260603.150411
-ros-jazzy-control-msgs=5.9.0-1noble.20260902.042746
+ros-jazzy-control-msgs=5.10.0-1noble.20260911.141005
 ros-jazzy-diagnostic-msgs=5.3.8-1noble.20260902.041325
 ros-jazzy-domain-coordinator=0.12.1-1noble.20260603.150342
 ros-jazzy-eigen3-cmake-module=0.3.1-1noble.20260603.150413
@@ -493,15 +494,15 @@ ros-jazzy-libyaml-vendor=1.6.4-2noble.20260603.150356
 ros-jazzy-lifecycle-msgs=2.0.4-1noble.20260902.030832
 ros-jazzy-mcap-vendor=0.26.11-1noble.20260603.151024
 ros-jazzy-message-filters=4.11.17-1noble.20260902.103742
-ros-jazzy-moveit-msgs=2.6.0-1noble.20260902.043510
+ros-jazzy-moveit-msgs=2.6.0-1noble.20260911.142759
 ros-jazzy-nav-msgs=5.3.8-1noble.20260902.041413
-ros-jazzy-object-recognition-msgs=2.0.0-5noble.20260902.043010
-ros-jazzy-octomap-msgs=2.0.1-1noble.20260902.033932
+ros-jazzy-object-recognition-msgs=2.0.0-5noble.20260911.141558
+ros-jazzy-octomap-msgs=2.0.1-1noble.20260911.112828
 ros-jazzy-orocos-kdl-vendor=0.5.2-1noble.20260603.150813
 ros-jazzy-osrf-pycommon=2.1.7-1noble.20260225.055811
 ros-jazzy-pluginlib=5.4.6-1noble.20260831.165748
 ros-jazzy-pybind11-vendor=3.1.3-1noble.20260226.000033
-ros-jazzy-pymoveit2=5.0.0-2026.09.16.15.42
+ros-jazzy-pymoveit2=5.0.0-2026.10.08.20.56
 ros-jazzy-python-cmake-module=0.11.1-2noble.20260226.000327
 ros-jazzy-python-orocos-kdl-vendor=0.5.2-1noble.20260603.151028
 ros-jazzy-rcl=9.2.11-1noble.20260902.044558
@@ -627,7 +628,7 @@ rpcsvc-proto=1.4.2-0ubuntu7
 sed=4.9-2ubuntu0.24.04.1
 sensible-utils=0.0.22
 sgml-base=1.31
-sudo=1.9.15p5-3ubuntu5.24.04.2
+sudo=1.9.15p5-3ubuntu5.24.04.3
 sysvinit-utils=3.08-6ubuntu3
 tar=1.35+dfsg-3ubuntu0.4
 tzdata=2026c-0ubuntu0.24.04.1
