@@ -73,7 +73,9 @@ jobs:
       CI_INSTALL_DIR: ${{ github.workspace }}/install/${{ github.run_id }}-${{ github.run_attempt }}-${{ github.job }}-lyrical
       QUALITY_VENV: /tmp/pymoveit2-quality-venv
       COVERAGE_BRANCH_FAIL_UNDER: "65"
-      CODECOV_READY: ${{ secrets.CODECOV_TOKEN != '' || github.event.repository.private == false }}
+      # Codecov accepts tokenless uploads only from fork PRs to public repos;
+      # in-repo branches without the secret (e.g. Dependabot) skip the upload.
+      CODECOV_READY: ${{ secrets.CODECOV_TOKEN != '' || (github.event.repository.private == false && github.event.pull_request.head.repo.fork == true) }}
     steps:
       - uses: actions/checkout@v7
         with:
