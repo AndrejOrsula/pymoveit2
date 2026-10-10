@@ -1,16 +1,16 @@
 Package: ros-jazzy-pymoveit2
 Architecture: amd64
-Version: 5.0.0-2026.10.10.21.25
+Version: 5.0.1-2026.10.10.23.02
 Priority: optional
 Section: misc
 Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
 Installed-Size: 506
 Depends: python3-numpy, ros-jazzy-action-msgs, ros-jazzy-control-msgs, ros-jazzy-geometry-msgs, ros-jazzy-moveit-msgs, ros-jazzy-rcl-interfaces, ros-jazzy-rclpy, ros-jazzy-sensor-msgs, ros-jazzy-shape-msgs, ros-jazzy-std-msgs, ros-jazzy-std-srvs, ros-jazzy-trajectory-msgs
-Filename: ./ros-jazzy-pymoveit2_5.0.0-2026.10.10.21.25_amd64.deb
-Size: 76234
-MD5sum: ffb0dea540f52e0e672babebb7b85767
-SHA1: 5a413dba621f93b9336924649ca60b2ab924975e
-SHA256: c54ed9390f0fc1bbc12ec41da13d317318df64e2bc6992e8917f31ef99d425c0
-SHA512: d94eb54fbdb1127f5a9546c81ad3f188391c513dd4c124b1bb2bcc1798d83aa70e73415e4efbd4e34bfa140ff9c36db99a982fbcef145f38e3c653620699c571
+Filename: ./ros-jazzy-pymoveit2_5.0.1-2026.10.10.23.02_amd64.deb
+Size: 76264
+MD5sum: c463be969acfde1387f2f100b44aad5a
+SHA1: 11d222b52aa26d9b69b872d9d38fc86d5731bbcd
+SHA256: 923f24e80a93fb1bd227954024769603bcd044a891567671c2f720d2cc09798a
+SHA512: 955dc6b2b1a6ae4ffeacc76f98af01b05c4e078de44188eaa56a7a5ee9cd0578ad6a2ddfdd50698e108054358c6d8750dd1c4191044de6884537e9a2c1e90760
 Description: Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services
 

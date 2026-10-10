@@ -1,5 +1,5 @@
 artifact_smoke=passed
-source_revision=f6dba82d6bf09cbbec61e3110f2319580d50481e
+source_revision=33314af864f86403e33f33d0c47e0c303e81630b
 ros_distro=jazzy
 deb_distro=noble
 ros_testing=false
@@ -8,11 +8,11 @@ ros_repository=http://packages.ros.org/ros2/ubuntu noble main
 base_image=ros:jazzy-ros-base-noble
 base_image_digest=ros@sha256:066420e07f60aa18262f2479981def87ebcfcec42eefb0c0c57c4a46098348ca
 builder_action_sha=aacb5111976551aee90170dafa2cc615bc16760f
-package_file=ros-jazzy-pymoveit2_5.0.0-2026.10.10.21.25_amd64.deb
-package_sha256=c54ed9390f0fc1bbc12ec41da13d317318df64e2bc6992e8917f31ef99d425c0
+package_file=ros-jazzy-pymoveit2_5.0.1-2026.10.10.23.02_amd64.deb
+package_sha256=923f24e80a93fb1bd227954024769603bcd044a891567671c2f720d2cc09798a
 package=ros-jazzy-pymoveit2
-package_version=5.0.0-2026.10.10.21.25
-expected_version_prefix=5.0.0
+package_version=5.0.1-2026.10.10.23.02
+expected_version_prefix=5.0.1
 python_version=Python 3.12.3
 ros2_version=unavailable
 rosdep_version=0.27.0
@@ -21,10 +21,10 @@ optional_trimesh=unavailable
 optional_trimesh_bound=trimesh
 apt_resolved_versions<<EOF
 ros-jazzy-pymoveit2:
-  Installed: 5.0.0-2026.10.10.21.25
-  Candidate: 5.0.0-2026.10.10.21.25
+  Installed: 5.0.1-2026.10.10.23.02
+  Candidate: 5.0.1-2026.10.10.23.02
   Version table:
- *** 5.0.0-2026.10.10.21.25 100
+ *** 5.0.1-2026.10.10.23.02 100
         100 /var/lib/dpkg/status
      5.0.0-2noble.20260921.025049 500
         500 http://packages.ros.org/ros2/ubuntu noble/main amd64 Packages
@@ -502,7 +502,7 @@ ros-jazzy-orocos-kdl-vendor=0.5.2-1noble.20260603.150813
 ros-jazzy-osrf-pycommon=2.1.7-1noble.20260225.055811
 ros-jazzy-pluginlib=5.4.6-1noble.20260831.165748
 ros-jazzy-pybind11-vendor=3.1.3-1noble.20260226.000033
-ros-jazzy-pymoveit2=5.0.0-2026.10.10.21.25
+ros-jazzy-pymoveit2=5.0.1-2026.10.10.23.02
 ros-jazzy-python-cmake-module=0.11.1-2noble.20260226.000327
 ros-jazzy-python-orocos-kdl-vendor=0.5.2-1noble.20260603.151028
 ros-jazzy-rcl=9.2.11-1noble.20260902.044558
