@@ -1,5 +1,5 @@
 artifact_smoke=passed
-source_revision=6363bb11a6e282217e6aaf128e6bb5f11af9c18f
+source_revision=f6dba82d6bf09cbbec61e3110f2319580d50481e
 ros_distro=rolling
 deb_distro=resolute
 ros_testing=true
@@ -8,10 +8,10 @@ ros_repository=http://packages.ros.org/ros2-testing/ubuntu resolute main
 base_image=ros:rolling-ros-base-resolute
 base_image_digest=ros@sha256:77b515a49c60b7e8ab95a2d08948cd2762bac6dd03852efe770a6ddfd52df975
 builder_action_sha=aacb5111976551aee90170dafa2cc615bc16760f
-package_file=ros-rolling-pymoveit2_5.0.0-2026.10.08.20.56_amd64.deb
-package_sha256=97b1962947da744ddf70c4b8d323539f854dbc251a406538ea5d621924836327
+package_file=ros-rolling-pymoveit2_5.0.0-2026.10.10.21.26_amd64.deb
+package_sha256=c6eac6f4e9f6ef485b06e84942ce6e9f4f7946e2ef5a62af075bf220fea73a4c
 package=ros-rolling-pymoveit2
-package_version=5.0.0-2026.10.08.20.56
+package_version=5.0.0-2026.10.10.21.26
 expected_version_prefix=5.0.0
 python_version=Python 3.14.4
 ros2_version=unavailable
@@ -21,18 +21,18 @@ optional_trimesh=unavailable
 optional_trimesh_bound=trimesh
 apt_resolved_versions<<EOF
 ros-rolling-pymoveit2:
-  Installed: 5.0.0-2026.10.08.20.56
-  Candidate: 5.0.0-2026.10.08.20.56
+  Installed: 5.0.0-2026.10.10.21.26
+  Candidate: 5.0.0-2026.10.10.21.26
   Version table:
- *** 5.0.0-2026.10.08.20.56 100
+ *** 5.0.0-2026.10.10.21.26 100
         100 /var/lib/dpkg/status
-     5.0.0-1resolute.20261004.051009 500
+     5.0.0-1resolute.20261010.125442 500
         500 http://packages.ros.org/ros2-testing/ubuntu resolute/main amd64 Packages
 ros-rolling-ros-base:
   Installed: 0.13.0-2resolute.20260916.214802
-  Candidate: 0.13.0-2resolute.20261004.091058
+  Candidate: 0.13.0-2resolute.20261010.162748
   Version table:
-     0.13.0-2resolute.20261004.091058 500
+     0.13.0-2resolute.20261010.162748 500
         500 http://packages.ros.org/ros2-testing/ubuntu resolute/main amd64 Packages
  *** 0.13.0-2resolute.20260916.214802 100
         100 /var/lib/dpkg/status
@@ -478,7 +478,7 @@ ros-rolling-class-loader=3.0.2-1resolute.20260915.133656
 ros-rolling-common-interfaces=5.10.2-1resolute.20260916.035530
 ros-rolling-composition-interfaces=2.5.1-1resolute.20260916.030744
 ros-rolling-console-bridge-vendor=1.10.0-1resolute.20260908.135003
-ros-rolling-control-msgs=6.10.0-1resolute.20261004.031008
+ros-rolling-control-msgs=6.10.0-1resolute.20261010.114848
 ros-rolling-diagnostic-msgs=5.10.2-1resolute.20260916.033714
 ros-rolling-eigen3-cmake-module=0.6.0-1resolute.20260908.135905
 ros-rolling-fastcdr=2.3.6-1resolute.20260908.131319
@@ -501,12 +501,12 @@ ros-rolling-lifecycle-msgs=2.5.1-1resolute.20260916.025503
 ros-rolling-lz4-cmake-module=0.35.0-1resolute.20260916.193101
 ros-rolling-mcap-vendor=0.35.0-1resolute.20260916.194302
 ros-rolling-message-filters=8.0.4-1resolute.20260916.204013
-ros-rolling-moveit-msgs=2.7.2-1resolute.20261004.025707
+ros-rolling-moveit-msgs=2.7.2-1resolute.20261010.113925
 ros-rolling-nav-msgs=5.10.2-1resolute.20260916.033728
-ros-rolling-object-recognition-msgs=2.0.0-5resolute.20261004.025125
-ros-rolling-octomap-msgs=2.0.1-2resolute.20261004.024501
+ros-rolling-object-recognition-msgs=2.0.0-5resolute.20261010.113413
+ros-rolling-octomap-msgs=2.0.1-2resolute.20261010.112421
 ros-rolling-pluginlib=6.0.2-1resolute.20260915.134843
-ros-rolling-pymoveit2=5.0.0-2026.10.08.20.56
+ros-rolling-pymoveit2=5.0.0-2026.10.10.21.26
 ros-rolling-rcl=10.5.2-1resolute.20260916.200521
 ros-rolling-rcl-action=10.5.2-1resolute.20260916.200634
 ros-rolling-rcl-interfaces=2.5.1-1resolute.20260916.025802
