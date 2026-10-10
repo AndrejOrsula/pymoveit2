@@ -26,6 +26,8 @@ __all__ = [
 DEFAULT_DESCRIPTION_NODE_NAME: str = "move_group"
 DEFAULT_URDF_PARAMETER: str = "robot_description"
 DEFAULT_SRDF_PARAMETER: str = "robot_description_semantic"
+# Upper bound on waiting for the latched description topics, also when `timeout_sec` is None
+DESCRIPTION_TOPIC_TIMEOUT_SEC: float = 5.0
 
 OPEN_STATE_NAMES: Tuple[str, ...] = ("open", "opened", "open_gripper", "gripper_open")
 CLOSED_STATE_NAMES: Tuple[str, ...] = (
@@ -121,7 +123,8 @@ class RobotDescription:
     ) -> "RobotDescription":
         """
         Fetch the URDF and SRDF from the parameters of `remote_node_name` (relative to the namespace of `node` unless it is absolute)
-        , or from the latched topics of the same names if it does not have them."""
+        , or from the latched topics of the same names in its namespace if it does not have them.
+        """
 
         deadline = _Deadline(timeout_sec)
         service_name = f"{remote_node_name.rstrip('/')}/get_parameters"
@@ -141,7 +144,12 @@ class RobotDescription:
         except RuntimeError as error:
             # Some configurations (e.g. `ur_moveit_config`) publish them only on topics
             descriptions = _topic_descriptions(
-                node, urdf_parameter, srdf_parameter, callback_group, deadline, error
+                node,
+                _sibling_name(remote_node_name, urdf_parameter),
+                _sibling_name(remote_node_name, srdf_parameter),
+                callback_group,
+                deadline,
+                error,
             )
         return cls(*descriptions)
 
@@ -993,14 +1001,21 @@ def _topic_descriptions(
         return callback
 
     qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
-    subscriptions = [
-        node.create_subscription(
-            String, topic, receive(topic), qos, callback_group=callback_group
-        )
-        for topic in (urdf_topic, srdf_topic)
-    ]
+    subscriptions = []
     try:
-        if not done.wait(timeout=deadline.remaining()):
+        for topic in (urdf_topic, srdf_topic):
+            subscriptions.append(
+                node.create_subscription(
+                    String, topic, receive(topic), qos, callback_group=callback_group
+                )
+            )
+        remaining = deadline.remaining()
+        timeout = (
+            DESCRIPTION_TOPIC_TIMEOUT_SEC
+            if remaining is None
+            else min(remaining, DESCRIPTION_TOPIC_TIMEOUT_SEC)
+        )
+        if not done.wait(timeout=timeout):
             missing = [
                 topic for topic in (urdf_topic, srdf_topic) if topic not in received
             ]
@@ -1014,6 +1029,12 @@ def _topic_descriptions(
                 node.destroy_subscription(subscription)
             except (RuntimeError, AttributeError, TypeError):
                 pass
+
+
+def _sibling_name(node_name: str, name: str) -> str:
+    """`name` in the namespace of `node_name` (`/ns/move_group` -> `/ns/name`)."""
+    namespace, separator, _ = node_name.rstrip("/").rpartition("/")
+    return f"{namespace}{separator}{name}"
 
 
 def _fetch_parameter_response(

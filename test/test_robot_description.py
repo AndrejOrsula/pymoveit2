@@ -623,6 +623,61 @@ def test_from_node_falls_back_to_the_topics(values):
     assert node.subscriptions == []
 
 
+@pytest.mark.parametrize(
+    "remote_node_name, namespace",
+    [
+        ("move_group", ""),
+        ("/move_group", "/"),
+        ("/robot1/move_group", "/robot1/"),
+        ("robot1/move_group", "robot1/"),
+    ],
+)
+def test_from_node_reads_the_topics_in_the_namespace_of_move_group(
+    remote_node_name, namespace
+):
+    node = _FakeNode(
+        _FakeParameterClient([]),
+        topics={
+            f"{namespace}robot_description": URDF,
+            f"{namespace}robot_description_semantic": SRDF,
+        },
+    )
+
+    description = RobotDescription.from_node(
+        node, remote_node_name=remote_node_name, timeout_sec=1.0
+    )
+
+    assert description.arm_group_name == "panda_arm"
+
+
+def test_from_node_bounds_the_topic_wait_without_a_timeout(monkeypatch):
+    monkeypatch.setattr(robot_description_module, "DESCRIPTION_TOPIC_TIMEOUT_SEC", 0.01)
+    node = _FakeNode(_FakeParameterClient([]))
+
+    with pytest.raises(RuntimeError, match="Nothing was received"):
+        RobotDescription.from_node(node, timeout_sec=None)
+
+    assert node.subscriptions == []
+
+
+def test_from_node_cleans_up_when_a_subscription_fails():
+    class _Failure(Exception):
+        pass
+
+    class _FailingNode(_FakeNode):
+        def create_subscription(self, msg_type, topic, *args, **kwargs):
+            if topic == "robot_description_semantic":
+                raise _Failure()
+            return super().create_subscription(msg_type, topic, *args, **kwargs)
+
+    node = _FailingNode(_FakeParameterClient([]))
+
+    with pytest.raises(_Failure):
+        RobotDescription.from_node(node, timeout_sec=1.0)
+
+    assert node.subscriptions == []
+
+
 def test_from_node_reports_both_sources_when_neither_has_the_description():
     node = _FakeNode(_FakeParameterClient([]), topics={"robot_description": URDF})
 
