@@ -8,13 +8,15 @@ import math
 import threading
 import time
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Callable, Dict, List, Optional, Sequence, Tuple
 from xml.etree import ElementTree
 
 from rcl_interfaces.msg import ParameterType
 from rcl_interfaces.srv import GetParameters
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile
+from std_msgs.msg import String
 
 __all__ = [
     "MoveGroupDescription",
@@ -24,6 +26,8 @@ __all__ = [
 DEFAULT_DESCRIPTION_NODE_NAME: str = "move_group"
 DEFAULT_URDF_PARAMETER: str = "robot_description"
 DEFAULT_SRDF_PARAMETER: str = "robot_description_semantic"
+# Upper bound on waiting for the latched description topics, also when `timeout_sec` is None
+DESCRIPTION_TOPIC_TIMEOUT_SEC: float = 5.0
 
 OPEN_STATE_NAMES: Tuple[str, ...] = ("open", "opened", "open_gripper", "gripper_open")
 CLOSED_STATE_NAMES: Tuple[str, ...] = (
@@ -119,7 +123,8 @@ class RobotDescription:
     ) -> "RobotDescription":
         """
         Fetch the URDF and SRDF from the parameters of `remote_node_name` (relative to the namespace of `node` unless it is absolute)
-        ."""
+        , or from the latched topics of the same names in its namespace if it does not have them.
+        """
 
         deadline = _Deadline(timeout_sec)
         service_name = f"{remote_node_name.rstrip('/')}/get_parameters"
@@ -133,26 +138,19 @@ class RobotDescription:
         )
 
         try:
-            values = response.values
-            if response is None or len(values) != 2:
-                raise ValueError
-        except (AttributeError, TypeError, ValueError) as ex:
-            raise RuntimeError(f"Invalid response from '{service_name}'.") from ex
-        descriptions = []
-        for parameter, value in zip(
-            (urdf_parameter, srdf_parameter), values, strict=False
-        ):
-            try:
-                valid = value.type == ParameterType.PARAMETER_STRING and bool(
-                    value.string_value
-                )
-            except AttributeError:
-                valid = False
-            if not valid:
-                raise RuntimeError(
-                    f"Parameter '{parameter}' of '{remote_node_name}' is not set."
-                )
-            descriptions.append(value.string_value)
+            descriptions = _parameter_descriptions(
+                response, service_name, remote_node_name, urdf_parameter, srdf_parameter
+            )
+        except RuntimeError as error:
+            # Some configurations (e.g. `ur_moveit_config`) publish them only on topics
+            descriptions = _topic_descriptions(
+                node,
+                _sibling_name(remote_node_name, urdf_parameter),
+                _sibling_name(remote_node_name, srdf_parameter),
+                callback_group,
+                deadline,
+                error,
+            )
         return cls(*descriptions)
 
     @property
@@ -951,6 +949,92 @@ def _finite_state_value(value: object, state_name: str, joint_name: str) -> floa
             f" joint '{joint_name}'."
         )
     return position
+
+
+def _parameter_descriptions(
+    response: object,
+    service_name: str,
+    remote_node_name: str,
+    urdf_parameter: str,
+    srdf_parameter: str,
+) -> List[str]:
+    try:
+        values = response.values
+        if response is None or len(values) != 2:
+            raise ValueError
+    except (AttributeError, TypeError, ValueError) as ex:
+        raise RuntimeError(f"Invalid response from '{service_name}'.") from ex
+    descriptions = []
+    for parameter, value in zip((urdf_parameter, srdf_parameter), values, strict=False):
+        try:
+            valid = value.type == ParameterType.PARAMETER_STRING and bool(
+                value.string_value
+            )
+        except AttributeError:
+            valid = False
+        if not valid:
+            raise RuntimeError(
+                f"Parameter '{parameter}' of '{remote_node_name}' is not set."
+            )
+        descriptions.append(value.string_value)
+    return descriptions
+
+
+def _topic_descriptions(
+    node: Node,
+    urdf_topic: str,
+    srdf_topic: str,
+    callback_group: Optional[CallbackGroup],
+    deadline: "_Deadline",
+    parameter_error: RuntimeError,
+) -> List[str]:
+    received: Dict[str, str] = {}
+    done = threading.Event()
+
+    def receive(topic: str) -> Callable[[String], None]:
+        def callback(msg: String) -> None:
+            if msg.data:
+                received[topic] = msg.data
+                if len(received) == 2:
+                    done.set()
+
+        return callback
+
+    qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+    subscriptions = []
+    try:
+        for topic in (urdf_topic, srdf_topic):
+            subscriptions.append(
+                node.create_subscription(
+                    String, topic, receive(topic), qos, callback_group=callback_group
+                )
+            )
+        remaining = deadline.remaining()
+        timeout = (
+            DESCRIPTION_TOPIC_TIMEOUT_SEC
+            if remaining is None
+            else min(remaining, DESCRIPTION_TOPIC_TIMEOUT_SEC)
+        )
+        if not done.wait(timeout=timeout):
+            missing = [
+                topic for topic in (urdf_topic, srdf_topic) if topic not in received
+            ]
+            raise RuntimeError(
+                f"{parameter_error} Nothing was received on topics {missing} either."
+            ) from parameter_error
+        return [received[urdf_topic], received[srdf_topic]]
+    finally:
+        for subscription in subscriptions:
+            try:
+                node.destroy_subscription(subscription)
+            except (RuntimeError, AttributeError, TypeError):
+                pass
+
+
+def _sibling_name(node_name: str, name: str) -> str:
+    """`name` in the namespace of `node_name` (`/ns/move_group` -> `/ns/name`)."""
+    namespace, separator, _ = node_name.rstrip("/").rpartition("/")
+    return f"{namespace}{separator}{name}"
 
 
 def _fetch_parameter_response(

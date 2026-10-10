@@ -2,6 +2,7 @@ import pytest
 from rcl_interfaces.msg import ParameterType, ParameterValue
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.task import Future
+from std_msgs.msg import String
 
 import pymoveit2.robot_description as robot_description_module
 from pymoveit2 import MoveIt2, RobotDescription
@@ -512,9 +513,11 @@ class _FakeParameterClient:
 
 
 class _FakeNode:
-    def __init__(self, client):
+    def __init__(self, client, topics=None):
         self.client = client
         self.destroyed = False
+        self.topics = topics or {}
+        self.subscriptions = []
 
     def create_client(self, srv_type, srv_name, callback_group=None):
         self.service_name = srv_name
@@ -522,6 +525,15 @@ class _FakeNode:
 
     def destroy_client(self, client) -> None:
         self.destroyed = True
+
+    def create_subscription(self, msg_type, topic, callback, qos, callback_group=None):
+        self.subscriptions.append(topic)
+        if topic in self.topics:
+            callback(String(data=self.topics[topic]))
+        return topic
+
+    def destroy_subscription(self, subscription) -> None:
+        self.subscriptions.remove(subscription)
 
 
 def _string_value(value: str) -> ParameterValue:
@@ -591,6 +603,90 @@ def test_from_node_rejects_unusable_parameters(client, error, message):
     with pytest.raises(error, match=message):
         RobotDescription.from_node(node, timeout_sec=0.0)
     assert node.destroyed
+    assert node.subscriptions == []
+
+
+@pytest.mark.parametrize(
+    "values",
+    [[], [_string_value(URDF), ParameterValue()]],
+    ids=["undeclared", "unset"],
+)
+def test_from_node_falls_back_to_the_topics(values):
+    node = _FakeNode(
+        _FakeParameterClient(values),
+        topics={"robot_description": URDF, "robot_description_semantic": SRDF},
+    )
+
+    description = RobotDescription.from_node(node, timeout_sec=1.0)
+
+    assert description.arm_group_name == "panda_arm"
+    assert node.subscriptions == []
+
+
+@pytest.mark.parametrize(
+    "remote_node_name, namespace",
+    [
+        ("move_group", ""),
+        ("/move_group", "/"),
+        ("/robot1/move_group", "/robot1/"),
+        ("robot1/move_group", "robot1/"),
+    ],
+)
+def test_from_node_reads_the_topics_in_the_namespace_of_move_group(
+    remote_node_name, namespace
+):
+    node = _FakeNode(
+        _FakeParameterClient([]),
+        topics={
+            f"{namespace}robot_description": URDF,
+            f"{namespace}robot_description_semantic": SRDF,
+        },
+    )
+
+    description = RobotDescription.from_node(
+        node, remote_node_name=remote_node_name, timeout_sec=1.0
+    )
+
+    assert description.arm_group_name == "panda_arm"
+
+
+def test_from_node_bounds_the_topic_wait_without_a_timeout(monkeypatch):
+    monkeypatch.setattr(robot_description_module, "DESCRIPTION_TOPIC_TIMEOUT_SEC", 0.01)
+    node = _FakeNode(_FakeParameterClient([]))
+
+    with pytest.raises(RuntimeError, match="Nothing was received"):
+        RobotDescription.from_node(node, timeout_sec=None)
+
+    assert node.subscriptions == []
+
+
+def test_from_node_cleans_up_when_a_subscription_fails():
+    class _Failure(Exception):
+        pass
+
+    class _FailingNode(_FakeNode):
+        def create_subscription(self, msg_type, topic, *args, **kwargs):
+            if topic == "robot_description_semantic":
+                raise _Failure()
+            return super().create_subscription(msg_type, topic, *args, **kwargs)
+
+    node = _FailingNode(_FakeParameterClient([]))
+
+    with pytest.raises(_Failure):
+        RobotDescription.from_node(node, timeout_sec=1.0)
+
+    assert node.subscriptions == []
+
+
+def test_from_node_reports_both_sources_when_neither_has_the_description():
+    node = _FakeNode(_FakeParameterClient([]), topics={"robot_description": URDF})
+
+    with pytest.raises(RuntimeError) as error:
+        RobotDescription.from_node(node, timeout_sec=0.0)
+
+    assert "Invalid response" in str(error.value)
+    assert "['robot_description_semantic']" in str(error.value)
+    assert node.subscriptions == []
 
 
 class _LogicalClock:
