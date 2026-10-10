@@ -1,5 +1,5 @@
 artifact_smoke=passed
-source_revision=6363bb11a6e282217e6aaf128e6bb5f11af9c18f
+source_revision=f6dba82d6bf09cbbec61e3110f2319580d50481e
 ros_distro=lyrical
 deb_distro=resolute
 ros_testing=false
@@ -8,10 +8,10 @@ ros_repository=http://packages.ros.org/ros2/ubuntu resolute main
 base_image=ros:lyrical-ros-base-resolute
 base_image_digest=ros@sha256:f79cd486fa218596747c45d00ca42101b0303fc6d94ed5adb72145cd6f54b86c
 builder_action_sha=aacb5111976551aee90170dafa2cc615bc16760f
-package_file=ros-lyrical-pymoveit2_5.0.0-2026.10.08.20.56_amd64.deb
-package_sha256=9525c7683bb9cdbd0d260335eba7e462e2bd52f923bda85b3762cfb4616bdc95
+package_file=ros-lyrical-pymoveit2_5.0.0-2026.10.10.21.25_amd64.deb
+package_sha256=46edcb9de0bcd30b89eda0a614f1aa11092748b81c6fe9c7359d8db3307fd69a
 package=ros-lyrical-pymoveit2
-package_version=5.0.0-2026.10.08.20.56
+package_version=5.0.0-2026.10.10.21.25
 expected_version_prefix=5.0.0
 python_version=Python 3.14.4
 ros2_version=unavailable
@@ -21,10 +21,10 @@ optional_trimesh=unavailable
 optional_trimesh_bound=trimesh
 apt_resolved_versions<<EOF
 ros-lyrical-pymoveit2:
-  Installed: 5.0.0-2026.10.08.20.56
-  Candidate: 5.0.0-2026.10.08.20.56
+  Installed: 5.0.0-2026.10.10.21.25
+  Candidate: 5.0.0-2026.10.10.21.25
   Version table:
- *** 5.0.0-2026.10.08.20.56 100
+ *** 5.0.0-2026.10.10.21.25 100
         100 /var/lib/dpkg/status
      5.0.0-1resolute.20260921.005552 500
         500 http://packages.ros.org/ros2/ubuntu resolute/main amd64 Packages
@@ -506,7 +506,7 @@ ros-lyrical-nav-msgs=5.9.3-1resolute.20260915.051911
 ros-lyrical-object-recognition-msgs=2.0.0-6resolute.20260915.052656
 ros-lyrical-octomap-msgs=2.0.1-3resolute.20260915.050516
 ros-lyrical-pluginlib=5.8.5-1resolute.20260831.172534
-ros-lyrical-pymoveit2=5.0.0-2026.10.08.20.56
+ros-lyrical-pymoveit2=5.0.0-2026.10.10.21.25
 ros-lyrical-rcl=10.4.5-1resolute.20260915.060844
 ros-lyrical-rcl-action=10.4.5-1resolute.20260915.061100
 ros-lyrical-rcl-interfaces=2.4.5-1resolute.20260915.045418
