@@ -145,7 +145,7 @@ jobs:
           fail_ci_if_error: true
       - name: Upload the coverage and type reports
         if: always()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: quality-reports
           path: |
@@ -331,7 +331,7 @@ jobs:
             bash test/scripts/run-integration.bash "${{ matrix.ros }}" -- -k live_servo -rs
       - name: Upload Servo launch logs
         if: always()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: servo-live-${{ matrix.ros }}-${{ matrix.interface }}
           path: /tmp/pymoveit2-servo-live
@@ -370,7 +370,7 @@ jobs:
           PY
       - name: Upload the distributions
         if: always()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: distributions
           path: packaging/dist
