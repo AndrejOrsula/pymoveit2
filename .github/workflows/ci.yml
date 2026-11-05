@@ -175,9 +175,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - { ros: humble, trimesh: "trimesh<4" }
-          - { ros: jazzy, trimesh: "trimesh" }
+        ros: [humble, jazzy]
     container:
       image: ros:${{ matrix.ros }}-ros-base
     steps:
@@ -249,8 +247,9 @@ jobs:
             echo "::error::ex_collision_mesh.py must exit non-zero without trimesh."
             exit 1
           fi
-          python3 -m pip install --quiet --break-system-packages "${{ matrix.trimesh }}" 2>/dev/null \
-            || python3 -m pip install --quiet "${{ matrix.trimesh }}"
+          python3 -m pip install --quiet --break-system-packages \
+            -r "${GITHUB_WORKSPACE}/src/pymoveit2/.ci/requirements-trimesh.txt" 2>/dev/null \
+            || python3 -m pip install --quiet -r "${GITHUB_WORKSPACE}/src/pymoveit2/.ci/requirements-trimesh.txt"
           ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="add"
           ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="remove"
           ros2 run pymoveit2 ex_clear_planning_scene.py
