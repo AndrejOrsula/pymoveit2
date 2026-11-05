@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import Any, Optional, Tuple
 
 from control_msgs.msg import JointJog
-from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import TwistStamped, Vector3
 from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
 from rclpy.qos import (
@@ -153,14 +153,8 @@ class MoveIt2Servo:
 
         self.__twist_msg = TwistStamped()
         self.__twist_msg.header.frame_id = frame_id
-        linear_speed = finite_float(linear_speed, "linear_speed")
-        angular_speed = finite_float(angular_speed, "angular_speed")
-        self.__twist_msg.twist.linear.x = linear_speed
-        self.__twist_msg.twist.linear.y = linear_speed
-        self.__twist_msg.twist.linear.z = linear_speed
-        self.__twist_msg.twist.angular.x = angular_speed
-        self.__twist_msg.twist.angular.y = angular_speed
-        self.__twist_msg.twist.angular.z = angular_speed
+        self.__set_speed(self.__twist_msg.twist.linear, "linear_speed", linear_speed)
+        self.__set_speed(self.__twist_msg.twist.angular, "angular_speed", angular_speed)
 
         if enable_at_init:
             self.enable()
@@ -968,11 +962,7 @@ class MoveIt2Servo:
 
     @linear_speed.setter
     def linear_speed(self, value: float) -> None:
-        value = finite_float(value, "linear_speed")
-        with self.__lock:
-            self.__twist_msg.twist.linear.x = value
-            self.__twist_msg.twist.linear.y = value
-            self.__twist_msg.twist.linear.z = value
+        self.__set_speed(self.__twist_msg.twist.linear, "linear_speed", value)
 
     @property
     def angular_speed(self) -> float:
@@ -981,8 +971,9 @@ class MoveIt2Servo:
 
     @angular_speed.setter
     def angular_speed(self, value: float) -> None:
-        value = finite_float(value, "angular_speed")
+        self.__set_speed(self.__twist_msg.twist.angular, "angular_speed", value)
+
+    def __set_speed(self, axes: Vector3, name: str, value: float) -> None:
+        value = finite_float(value, name)
         with self.__lock:
-            self.__twist_msg.twist.angular.x = value
-            self.__twist_msg.twist.angular.y = value
-            self.__twist_msg.twist.angular.z = value
+            axes.x = axes.y = axes.z = value

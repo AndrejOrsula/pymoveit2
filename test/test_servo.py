@@ -609,3 +609,45 @@ def test_wait_until_ready_is_enable_only(rclpy_node):
         is True
     )
     servo.destroy()
+
+
+def _publish_twist(servo, enable, command_type, twist_pub, linear, angular):
+    if not servo.is_enabled:
+        servo.enable()
+        enable.futures[-1].set_result(_lifecycle_response(servo, True))
+    if command_type is not None and servo.active_command_type is None:
+        assert servo(linear=linear, angular=angular) is False
+        command_type.futures[-1].set_result(ServoCommandType.Response(success=True))
+    assert servo(linear=linear, angular=angular) is True
+    twist = twist_pub.messages[-1].twist
+    return [twist.linear.x, twist.linear.y, twist.linear.z], [
+        twist.angular.x,
+        twist.angular.y,
+        twist.angular.z,
+    ]
+
+
+def test_servo_speeds_scale_every_published_axis(rclpy_node):
+    servo = make_servo(rclpy_node, linear_speed=2.0, angular_speed=3)
+    enable, _, command_type, twist_pub, _ = _install_fakes(servo)
+    command = ((0.1, 0.2, 0.3), (0.4, 0.5, 0.6))
+
+    linear, angular = _publish_twist(servo, enable, command_type, twist_pub, *command)
+    assert linear == pytest.approx([0.2, 0.4, 0.6])
+    assert angular == pytest.approx([1.2, 1.5, 1.8])
+
+    servo.linear_speed = 0.5
+    servo.angular_speed = -1
+    assert (servo.linear_speed, servo.angular_speed) == (0.5, -1.0)
+    linear, angular = _publish_twist(servo, enable, command_type, twist_pub, *command)
+    assert linear == pytest.approx([0.05, 0.1, 0.15])
+    assert angular == pytest.approx([-0.4, -0.5, -0.6])
+
+    with pytest.raises(ValueError, match="`linear_speed` must be finite"):
+        servo.linear_speed = math.inf
+    with pytest.raises(ValueError, match="`angular_speed` must be a finite number"):
+        servo.angular_speed = "fast"
+    assert (servo.linear_speed, servo.angular_speed) == (0.5, -1.0)
+    with pytest.raises(ValueError, match="`angular_speed` must be finite"):
+        make_servo(rclpy_node, angular_speed=math.nan)
+    servo.destroy()
