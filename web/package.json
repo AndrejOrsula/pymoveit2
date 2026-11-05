@@ -1,0 +1,22 @@
+{
+  "name": "pymoveit2-web-demo",
+  "private": true,
+  "type": "module",
+  "description": "Browser demo of pymoveit2: a simulated MoveIt 2 with a Franka Emika Panda or an OpenMANIPULATOR-X, driven from Python, a console, or controls.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs --serve",
+    "test": "node --test 'test/unit/*.test.mjs' 'test/app/*.test.mjs'",
+    "test:python": "node --test test/python.test.mjs",
+    "test:ui": "node --test test/ui.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "playwright-core": "1.64.1",
+    "pyodide": "314.0.7",
+    "three": "0.186.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

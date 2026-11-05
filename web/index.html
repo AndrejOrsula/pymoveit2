@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>pymoveit2 playground</title>
+  <meta name="description" content="Move a simulated robot arm with pymoveit2's Python API, in your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="pymoveit2">
+  <meta property="og:url" content="{{SITE_URL}}">
+  <meta property="og:title" content="pymoveit2 playground">
+  <meta property="og:description" content="Move a simulated robot arm with pymoveit2's Python API, in your browser.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="{{SITE_URL}}">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preload" href="fonts/Inter4.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="demo-kit/theme.js"></script>
+  <link rel="stylesheet" href="demo-kit/tokens.css">
+  <!-- The site serves its own copy of Inter, so it depends on no other site. -->
+  <style>
+    @font-face { font-family: 'Inter pymoveit2'; src: url('fonts/Inter4.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+    :root { --demo-font: 'Inter pymoveit2', Inter, Helvetica, Arial, sans-serif; }
+  </style>
+  <link rel="stylesheet" href="app.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <h1 class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
+        <defs><linearGradient id="brand-gradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3776ab"/><stop offset="1" stop-color="#5369c1"/></linearGradient></defs>
+        <rect width="24" height="24" rx="6" fill="url(#brand-gradient)"/>
+        <path d="M6 19h7M8.5 19v-4.5l4-5.5 4.5 2.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12.5" cy="9" r="1.6" fill="#fff"/>
+        <path d="M17 11.5l1.8-1.6M17 11.5l1.4 2" fill="none" stroke="#ffd43b" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">pymoveit2</span>
+      <span class="brand-tag">playground</span>
+    </h1>
+    <label class="robot-picker"><span class="visually-hidden">Robot</span><select id="robot" title="Switch robot"></select></label>
+    <p class="status" id="status" role="status" data-state="loading">
+      <span class="dot" aria-hidden="true"></span><span id="status-text">Loading pymoveit2 playground…</span>
+    </p>
+    <a class="icon-link" href="https://github.com/AndrejOrsula/pymoveit2" target="_blank" rel="noopener" aria-label="pymoveit2 on GitHub" title="pymoveit2 on GitHub">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>
+    </a>
+    <button type="button" class="demo-theme-toggle" data-demo-theme-toggle aria-label="Toggle dark mode" title="Toggle dark/light mode"></button>
+  </header>
+
+  <main class="workspace" id="workspace">
+    <section class="stage" aria-labelledby="stage-title">
+      <h2 class="visually-hidden" id="stage-title">Robot</h2>
+      <div class="viewport" id="viewport">
+        <canvas id="scene" aria-label="A robot arm in a 3D scene; drag to orbit"></canvas>
+        <div class="hud hud-top-left">
+          <span class="chip state-chip" id="state-chip" data-state="idle">IDLE</span>
+          <span class="chip" id="planner-chip" title="Planning pipeline and planner">OMPL · RRTConnect</span>
+        </div>
+        <div class="hud hud-top-right" role="group" aria-label="Show in the scene">
+          <button type="button" class="hud-toggle" data-layer="goal" aria-pressed="true" title="Goal marker and goal state">Goal</button>
+          <button type="button" class="hud-toggle" data-layer="path" aria-pressed="true" title="Planned end-effector path">Path</button>
+          <button type="button" class="hud-toggle" data-layer="tree" aria-pressed="false" title="The planner's search tree">Tree</button>
+          <button type="button" class="hud-toggle" data-layer="spheres" aria-pressed="false" title="Collision spheres the planner checks">Collision</button>
+        </div>
+        <div class="hud hud-bottom-left" id="ee-readout" aria-live="off"></div>
+        <div class="hud hud-bottom-right">
+          <button type="button" class="hud-button" id="gizmo-mode" title="Switch the goal marker between moving and turning (R)">Move</button>
+          <button type="button" class="hud-button" id="view-reset" title="Reset the camera">Reset view</button>
+        </div>
+        <div class="viewport-message" id="viewport-message" hidden></div>
+      </div>
+      <div class="timeline" id="timeline">
+        <div class="timeline-head">
+          <span class="timeline-title" id="timeline-title">Trajectory</span>
+          <div class="segmented small" role="group" aria-label="Plot">
+            <button type="button" data-plot="positions" aria-pressed="true">Positions</button>
+            <button type="button" data-plot="velocities" aria-pressed="false">Velocities</button>
+          </div>
+          <span class="timeline-meta" id="timeline-meta"></span>
+        </div>
+        <canvas class="plot" id="plot" aria-label="Joint positions of the last trajectory over time"></canvas>
+        <input type="range" class="scrubber" id="scrubber" min="0" max="1000" value="0" aria-label="Replay time" hidden>
+      </div>
+      <div class="last-call" id="last-call" aria-live="polite">
+        <div class="last-call-head"><span class="eyebrow">Last call</span><button type="button" class="link-button" id="last-call-copy">Copy</button></div>
+        <pre class="code-line" id="last-call-code"><code>with connect() as robot:</code></pre>
+        <ul class="ros-chips" id="last-call-ros" aria-label="ROS 2 interfaces it used"></ul>
+      </div>
+    </section>
+
+    <aside class="side" aria-label="Lessons and controls">
+      <div class="tabs" role="tablist" aria-label="Panels">
+        <button type="button" role="tab" id="tab-learn" aria-controls="panel-learn" aria-selected="true">Learn</button>
+        <button type="button" role="tab" id="tab-control" aria-controls="panel-control" aria-selected="false" tabindex="-1">Control</button>
+        <button type="button" role="tab" id="tab-console" aria-controls="panel-console" aria-selected="false" tabindex="-1">Console</button>
+        <button type="button" role="tab" id="tab-script" aria-controls="panel-script" aria-selected="false" tabindex="-1">Script</button>
+        <button type="button" role="tab" id="tab-log" aria-controls="panel-log" aria-selected="false" tabindex="-1">ROS&nbsp;2</button>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="panel-learn" aria-labelledby="tab-learn"></div>
+      <div class="tabpanel" role="tabpanel" id="panel-control" aria-labelledby="tab-control" hidden></div>
+      <div class="tabpanel" role="tabpanel" id="panel-console" aria-labelledby="tab-console" hidden></div>
+      <div class="tabpanel" role="tabpanel" id="panel-script" aria-labelledby="tab-script" hidden></div>
+      <div class="tabpanel" role="tabpanel" id="panel-log" aria-labelledby="tab-log" hidden></div>
+    </aside>
+  </main>
+
+  <footer class="foot">
+    <span>pymoveit2 {{PYMOVEIT2_VERSION}}</span>
+    <a href="https://pypi.org/project/pymoveit2/" target="_blank" rel="noopener">PyPI</a>
+    <a href="https://index.ros.org/p/pymoveit2/" target="_blank" rel="noopener">ROS Index</a>
+    <details class="notices">
+      <summary>About</summary>
+      <p>Nothing here talks to ROS: a small JavaScript stand-in for MoveIt&nbsp;2 plans, checks collisions and executes trajectories, so plans and timings differ from a real run. The Python is pymoveit2's real API; on a robot, the same code talks to <code>move_group</code>. The Panda is configured as <code>moveit_resources_panda_moveit_config</code>, the OpenMANIPULATOR-X as in <a href="https://github.com/snt-spacer/open_manipulator-RMinS" target="_blank" rel="noopener">open_manipulator-RMinS</a>.</p>
+      <p>Panda meshes: <a href="https://github.com/frankarobotics/franka_description" target="_blank" rel="noopener">franka_description</a>, Apache-2.0, Copyright 2023 Franka Robotics GmbH; decimated. OpenMANIPULATOR-X meshes, URDF and MoveIt configuration: <a href="https://github.com/snt-spacer/open_manipulator-RMinS" target="_blank" rel="noopener">open_manipulator-RMinS</a>, Apache-2.0, Copyright ROBOTIS CO., LTD.; decimated. 3D rendering: <a href="https://threejs.org/" target="_blank" rel="noopener">three.js</a>, MIT. Python in the browser: <a href="https://pyodide.org/" target="_blank" rel="noopener">Pyodide</a>, MPL-2.0, loaded from jsDelivr only when you run a script. Font: <a href="https://rsms.me/inter/" target="_blank" rel="noopener">Inter</a>, <a href="fonts/OFL-Inter.txt">OFL-1.1</a>. <a href="app.js.LEGAL.txt">Bundled licenses</a>.</p>
+      <p>Robot asset notices: <a href="licenses/franka_description/LICENSE">Panda license</a>, <a href="licenses/franka_description/NOTICE">Panda notice</a>, <a href="licenses/open_manipulator-RMinS/LICENSE">OpenMANIPULATOR-X license</a>, and <a href="licenses/SOURCES.txt">pinned sources</a>.</p>
+      <p class="muted build">build {{COMMIT}}</p>
+    </details>
+  </footer>
+  <div class="fault" id="demo-fault" role="alert" hidden></div>
+</body>
+</html>
