@@ -529,6 +529,8 @@ class MoveIt2:
         Plan and execute motion to a joint configuration goal.
         """
 
+        if self.__lifecycle.refuse_if_disabled():
+            return False
         deadline = _Deadline(timeout_sec)
         try:
             if self.__use_move_group_action:

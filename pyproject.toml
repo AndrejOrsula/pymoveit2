@@ -80,6 +80,8 @@ files = [
     "pymoveit2/_mesh.py",
     "pymoveit2/_request_builders.py",
     "pymoveit2/_validation.py",
+    "pymoveit2/moveit2_gripper.py",
+    "pymoveit2/gripper_command.py",
     "test/typecheck/typed_calls.py",
 ]
 strict = true
@@ -90,9 +92,20 @@ pretty = true
 
 [[tool.mypy.overrides]]
 module = [
+    "pymoveit2._action_lifecycle",
+    "pymoveit2._diagnostics",
+    "pymoveit2._joint_helpers",
+    "pymoveit2.moveit2",
+]
+follow_imports = "silent"
+
+[[tool.mypy.overrides]]
+module = [
     "action_msgs.*",
+    "control_msgs.*",
     "geometry_msgs.*",
     "moveit_msgs.*",
+    "sensor_msgs.*",
     "shape_msgs.*",
 ]
 ignore_missing_imports = true

@@ -3,7 +3,7 @@
 import threading
 from contextlib import contextmanager
 from enum import Enum
-from typing import Any, Callable, Iterator, Optional, cast
+from typing import Any, Callable, Iterator, Optional, Protocol, Tuple, cast
 
 from action_msgs.msg import GoalStatus
 from rclpy.action import ActionClient
@@ -60,6 +60,9 @@ class ActionOperation:
         self.done = threading.Event()
 
 
+_DISABLED = "Interface is disabled. Skipping motion."
+
+
 class ActionLifecycle:
     def __init__(
         self,
@@ -82,6 +85,7 @@ class ActionLifecycle:
         self._last: Optional[ActionOperation] = None
         self._succeeded = False
         self._closed = False
+        self._disabled = False
 
     @property
     def lock(self) -> threading.Lock:
@@ -164,88 +168,108 @@ class ActionLifecycle:
     def admit(self, client: ActionClient, goal: Any) -> Optional[ActionOperation]:
         with self._effect_lock:
             with self._lock:
-                if self._closed:
-                    self._logger.warning("Action lifecycle is closed. Skipping motion.")
-                    return None
-                if self._ignore_new_calls_while_executing and self._current is not None:
-                    self._logger.warning(
-                        "Controller is already following a trajectory. Skipping motion."
-                    )
-                    return None
-
-            try:
-                ready = client.server_is_ready()
-            except Exception as err:
-                self._logger.error(
-                    f"Action server '{client._action_name}' readiness failed: {err}"
-                )
-                with self._lock:
-                    if self._current is not None:
-                        return None
-                    op = self._record_failed_attempt_locked(client)
-                op.done.set()
-                self._notify_settled(op)
+                refusal = self._refusal_locked()
+            if refusal is not None:
+                self._refuse(refusal)
                 return None
+            if not self._server_ready(client):
+                return None
+            with self._lock:
+                refusal = self._refusal_locked()
+                op = None if refusal is not None else self._open_locked(client)
+            if op is None:
+                self._refuse(refusal)
+                return None
+            send_goal_future = self._send_goal(op, client, goal)
+            if send_goal_future is None:
+                return None
+        return op if self._watch_goal_response(op, send_goal_future) else None
 
+    def refuse_if_disabled(self) -> bool:
+        with self._lock:
+            disabled = self._disabled
+        if disabled:
+            self._refuse(_DISABLED)
+        return disabled
+
+    def _refuse(self, refusal: Optional[str]) -> None:
+        self._logger.warning(refusal)
+        if refusal == _DISABLED:
+            self.record_failure(reason=refusal)
+
+    def _refusal_locked(self) -> Optional[str]:
+        if self._closed:
+            return "Action lifecycle is closed. Skipping motion."
+        if self._disabled:
+            return _DISABLED
+        if self._ignore_new_calls_while_executing and self._current is not None:
+            return "Controller is already following a trajectory. Skipping motion."
+        return None
+
+    def _server_ready(self, client: ActionClient) -> bool:
+        try:
+            ready = client.server_is_ready()
+        except Exception as err:
+            self._logger.error(
+                f"Action server '{client._action_name}' readiness failed: {err}"
+            )
+            ready = False
+        else:
             if not ready:
                 self._logger.warning(
                     f"Action server '{client._action_name}' is not yet available. "
                     "Better luck next time!"
                 )
-                with self._lock:
-                    if self._current is not None:
-                        return None
-                    op = self._record_failed_attempt_locked(client)
-                op.done.set()
-                self._notify_settled(op)
-                return None
+        if ready:
+            return True
+        with self._lock:
+            if self._current is not None:
+                return False
+            op = self._record_failed_attempt_locked(client)
+        op.done.set()
+        self._notify_settled(op)
+        return False
 
-            with self._lock:
-                if self._closed:
-                    return None
-                if self._ignore_new_calls_while_executing and self._current is not None:
-                    self._logger.warning(
-                        "Controller is already following a trajectory. Skipping motion."
-                    )
-                    return None
-                self._generation += 1
-                op = ActionOperation(self._generation, client)
-                self._current = op
-                self._last = None
-                self._succeeded = False
+    def _open_locked(self, client: ActionClient) -> ActionOperation:
+        self._generation += 1
+        op = ActionOperation(self._generation, client)
+        self._current = op
+        self._last = None
+        self._succeeded = False
+        return op
 
-            try:
-                send_goal_future = client.send_goal_async(
-                    goal=goal, feedback_callback=None
-                )
-            except Exception as err:
-                self._logger.error(
-                    f"Failed to send goal to '{client._action_name}': {err}"
-                )
-                self._settle(op, succeeded=False)
-                return None
-
-            if send_goal_future is None:
+    def _send_goal(
+        self, op: ActionOperation, client: ActionClient, goal: Any
+    ) -> Optional[Future]:
+        try:
+            future = client.send_goal_async(goal=goal, feedback_callback=None)
+        except Exception as err:
+            self._logger.error(f"Failed to send goal to '{client._action_name}': {err}")
+            future = None
+        else:
+            if future is None:
                 self._logger.error(
                     f"Action '{client._action_name}' returned no goal future."
                 )
-                self._settle(op, succeeded=False)
-                return None
+        if future is None:
+            self._settle(op, succeeded=False)
+            return None
+        with self._lock:
+            op.send_goal_future = future
+        return future
 
-            with self._lock:
-                op.send_goal_future = send_goal_future
-
+    def _watch_goal_response(self, op: ActionOperation, future: Future) -> bool:
         try:
-            send_goal_future.add_done_callback(
+            future.add_done_callback(
                 lambda future, op=op: self._on_goal_response(op, future)
             )
         except Exception as err:
             self._logger.error(
-                f"Action '{client._action_name}' response callback failed: {err}"
+                f"Action '{op.client._action_name}' response callback failed: {err}"
             )
             self._settle(op, succeeded=False)
-            return None
-        return op
+            return False
+        return True
 
     def record_failure(
         self, client: Optional[ActionClient] = None, reason: Optional[str] = None
@@ -272,60 +296,26 @@ class ActionLifecycle:
 
     def _on_goal_response(self, op: ActionOperation, future: Future) -> None:
         name = op.client._action_name
-        goal_handle: Any = None
-        failure: Optional[str] = None
-        if future.cancelled():
-            failure = "the goal request was cancelled before a response arrived"
-        else:
-            try:
-                goal_handle = future.result()
-            except Exception as err:
-                failure = f"the goal request raised {type(err).__name__}: {err}"
-        if failure is None and goal_handle is None:
-            failure = "the goal request returned no goal handle"
-        if failure is None and not goal_handle.accepted:
-            failure = "the goal was rejected"
-
+        goal_handle, failure = self._accepted_goal_handle(future)
         if failure is not None:
             self._logger.warning(f"Action '{name}' was not executed: {failure}.")
             self._settle(op, succeeded=False, reason=failure)
             return
 
         with self._lock:
-            if self._closed or op.abandoned or op.terminal:
+            if self._stale_locked(op):
                 return
             op.goal_handle = goal_handle
 
-        try:
-            result_future = goal_handle.get_result_async()
-        except Exception as err:
-            self._logger.error(f"Action '{name}' result could not be requested: {err}")
-            self._settle(
-                op,
-                succeeded=False,
-                reason=f"the result of '{name}' could not be requested: {err}",
-            )
-            return
-
+        result_future = self._request_result(op, goal_handle)
         if result_future is None:
-            self._logger.error(f"Action '{name}' returned no result future.")
-            self._settle(
-                op,
-                succeeded=False,
-                reason=f"'{name}' accepted the goal but returned no result future",
-            )
             return
 
         with self._lock:
-            if self._closed or op.abandoned or op.terminal:
+            if self._stale_locked(op):
                 return
             op.result_future = result_future
-            cancel_now = (
-                self._current is op
-                and not op.terminal
-                and not op.abandoned
-                and op.cancel_requested
-            )
+            cancel_now = self._current is op and op.cancel_requested
 
         if cancel_now:
             self._request_cancel(op)
@@ -341,61 +331,109 @@ class ActionLifecycle:
                 reason=f"the result callback of '{name}' failed: {err}",
             )
 
+    @staticmethod
+    def _accepted_goal_handle(future: Future) -> Tuple[Any, Optional[str]]:
+        if future.cancelled():
+            return None, "the goal request was cancelled before a response arrived"
+        try:
+            goal_handle = future.result()
+        except Exception as err:
+            return None, f"the goal request raised {type(err).__name__}: {err}"
+        if goal_handle is None:
+            return None, "the goal request returned no goal handle"
+        if not goal_handle.accepted:
+            return None, "the goal was rejected"
+        return goal_handle, None
+
+    def _stale_locked(self, op: ActionOperation) -> bool:
+        return self._closed or op.abandoned or op.terminal
+
+    def _request_result(
+        self, op: ActionOperation, goal_handle: Any
+    ) -> Optional[Future]:
+        name = op.client._action_name
+        try:
+            result_future = goal_handle.get_result_async()
+        except Exception as err:
+            self._logger.error(f"Action '{name}' result could not be requested: {err}")
+            self._settle(
+                op,
+                succeeded=False,
+                reason=f"the result of '{name}' could not be requested: {err}",
+            )
+            return None
+
+        if result_future is None:
+            self._logger.error(f"Action '{name}' returned no result future.")
+            self._settle(
+                op,
+                succeeded=False,
+                reason=f"'{name}' accepted the goal but returned no result future",
+            )
+        return result_future
+
     def _on_result(self, op: ActionOperation, future: Future) -> None:
         name = op.client._action_name
-        status: Optional[int] = None
-        result: Any = None
-        reason: Optional[str] = None
-        succeeded = False
         if future.cancelled():
-            reason = f"the result of '{name}' was cancelled before it arrived"
             self._logger.warning(
                 f"Action '{name}' result future was cancelled before completion."
             )
-        else:
-            try:
-                wrapped = future.result()
-            except Exception as err:
-                wrapped = None
-                reason = f"the result of '{name}' raised {type(err).__name__}: {err}"
-                self._logger.error(
-                    f"Action '{name}' result raised {type(err).__name__}: {err}"
-                )
-            if wrapped is None:
-                if not future.cancelled() and reason is None:
-                    reason = f"'{name}' returned no result"
-                    self._logger.warning(f"Action '{name}' returned no result.")
-            else:
-                status = getattr(wrapped, "status", None)
-                result = getattr(wrapped, "result", None)
-                succeeded = status == GoalStatus.STATUS_SUCCEEDED
-                if succeeded and self._result_success is not None:
-                    try:
-                        succeeded = bool(self._result_success(result))
-                    except Exception as err:
-                        self._logger.error(
-                            f"Action '{name}' result validation raised "
-                            f"{type(err).__name__}: {err}"
-                        )
-                        succeeded = False
-                        reason = (
-                            f"the result of '{name}' could not be validated:"
-                            f" {type(err).__name__}: {err}"
-                        )
-                    else:
-                        if not succeeded:
-                            reason = (
-                                f"'{name}' reported success, but its result does"
-                                " not meet the goal"
-                            )
-                if not succeeded:
-                    self._logger.warning(
-                        f"Action '{name}' was unsuccessful: "
-                        f"{enum_to_str(GoalStatus, status)}."
-                    )
+            self._settle(
+                op,
+                succeeded=False,
+                reason=f"the result of '{name}' was cancelled before it arrived",
+            )
+            return
+        try:
+            wrapped = future.result()
+        except Exception as err:
+            self._logger.error(
+                f"Action '{name}' result raised {type(err).__name__}: {err}"
+            )
+            self._settle(
+                op,
+                succeeded=False,
+                reason=f"the result of '{name}' raised {type(err).__name__}: {err}",
+            )
+            return
+        if wrapped is None:
+            self._logger.warning(f"Action '{name}' returned no result.")
+            self._settle(op, succeeded=False, reason=f"'{name}' returned no result")
+            return
+
+        status: Optional[int] = getattr(wrapped, "status", None)
+        result: Any = getattr(wrapped, "result", None)
+        succeeded, reason = self._judge_result(name, status, result)
+        if not succeeded:
+            self._logger.warning(
+                f"Action '{name}' was unsuccessful: {enum_to_str(GoalStatus, status)}."
+            )
         self._settle(
             op, succeeded=succeeded, status=status, result=result, reason=reason
         )
+
+    def _judge_result(
+        self, name: str, status: Optional[int], result: Any
+    ) -> Tuple[bool, Optional[str]]:
+        if status != GoalStatus.STATUS_SUCCEEDED:
+            return False, None
+        if self._result_success is None:
+            return True, None
+        try:
+            met = bool(self._result_success(result))
+        except Exception as err:
+            self._logger.error(
+                f"Action '{name}' result validation raised {type(err).__name__}: {err}"
+            )
+            return False, (
+                f"the result of '{name}' could not be validated:"
+                f" {type(err).__name__}: {err}"
+            )
+        if not met:
+            return False, (
+                f"'{name}' reported success, but its result does not meet the goal"
+            )
+        return True, None
 
     def _settle(
         self,
@@ -450,10 +488,17 @@ class ActionLifecycle:
             self._request_cancel(op)
         return True
 
-    def _request_cancel(self, op: ActionOperation) -> bool:
+    def disable(self) -> None:
+        with self._lock:
+            self._disabled = True
+            tracked = self._current is not None
+        if tracked:
+            self.cancel()
+
+    def _request_cancel(self, op: ActionOperation) -> None:
         with self._effect_lock:
             if not self._cancel_effect_valid_locked(op):
-                return False
+                return
             with self._lock:
                 goal_handle = op.goal_handle
 
@@ -462,27 +507,12 @@ class ActionLifecycle:
                 cancel_future = goal_handle.cancel_goal_async()
             except Exception as err:
                 self._logger.error(f"Action '{name}' could not be cancelled: {err}")
-                return False
-
-            def _log_cancel_response(future: Future) -> None:
-                try:
-                    response = future.result()
-                except Exception as err:
-                    self._logger.error(f"Action '{name}' cancel request failed: {err}")
-                    return
-                if response is None or not response.goals_canceling:
-                    if response is not None and response.return_code == 3:
-                        self._logger.debug(
-                            f"Action '{name}' cancel request arrived after the "
-                            "goal terminated."
-                        )
-                    else:
-                        self._logger.warning(
-                            f"Action '{name}' did not accept the cancel request."
-                        )
+                return
 
             try:
-                cancel_future.add_done_callback(_log_cancel_response)
+                cancel_future.add_done_callback(
+                    lambda future: self._log_cancel_response(name, future)
+                )
             except Exception as err:
                 self._logger.error(f"Action '{name}' cancel callback failed: {err}")
 
@@ -491,7 +521,22 @@ class ActionLifecycle:
                     self._on_cancel(op)
                 except Exception as err:
                     self._logger.error(f"Action cancel callback failed: {err}")
-            return True
+
+    def _log_cancel_response(self, name: str, future: Future) -> None:
+        try:
+            response = future.result()
+        except Exception as err:
+            self._logger.error(f"Action '{name}' cancel request failed: {err}")
+            return
+        if response is None or not response.goals_canceling:
+            if response is not None and response.return_code == 3:
+                self._logger.debug(
+                    f"Action '{name}' cancel request arrived after the goal terminated."
+                )
+            else:
+                self._logger.warning(
+                    f"Action '{name}' did not accept the cancel request."
+                )
 
     def _cancel_effect_valid_locked(self, op: ActionOperation) -> bool:
         with self._lock:
@@ -507,19 +552,6 @@ class ActionLifecycle:
     def effect_guard(self, operation: ActionOperation) -> Iterator[bool]:
         with self._effect_lock:
             yield self.is_current(operation)
-
-    def run_if_current(
-        self, operation: ActionOperation, callback: Callable[[], None]
-    ) -> bool:
-        with self._effect_lock:
-            if not self.is_current(operation):
-                return False
-            try:
-                callback()
-            except Exception as err:
-                self._logger.error(f"Guarded action callback failed: {err}")
-                return False
-            return True
 
     def force_reset(self) -> None:
         with self._effect_lock:
@@ -578,3 +610,18 @@ class ActionLifecycle:
         with self._lock:
             op.reported = True
             return op.succeeded and not op.abandoned
+
+
+class _GripperBackend(Protocol):
+    @property
+    def _execution_lifecycle(self) -> ActionLifecycle: ...
+
+    def cancel_execution(self) -> bool: ...
+
+
+class GripperStopMixin:
+    def cancel(self: _GripperBackend) -> bool:
+        return self.cancel_execution()
+
+    def disable(self: _GripperBackend) -> None:
+        self._execution_lifecycle.disable()

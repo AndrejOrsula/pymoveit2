@@ -1,6 +1,7 @@
 import copy
 import threading
-from typing import Any, List, Optional, Union
+from types import TracebackType
+from typing import Any, List, Optional, Type, Union
 
 from control_msgs.action import GripperCommand as GripperCommandAction
 from rclpy.action import ActionClient
@@ -15,7 +16,12 @@ from rclpy.qos import (
 from rclpy.task import Future
 from sensor_msgs.msg import JointState
 
-from pymoveit2._action_lifecycle import ActionLifecycle, ActionOperation, MoveIt2State
+from pymoveit2._action_lifecycle import (
+    ActionLifecycle,
+    ActionOperation,
+    GripperStopMixin,
+    MoveIt2State,
+)
 from pymoveit2._diagnostics import describe_failure
 from pymoveit2._joint_helpers import (
     classify_gripper_state,
@@ -30,7 +36,7 @@ from pymoveit2._joint_helpers import (
 from pymoveit2._validation import normalize_joint_state_observation
 
 
-class GripperCommand:
+class GripperCommand(GripperStopMixin):
     """
     Python interface for Gripper that is controlled by GripperCommand.
     """
@@ -111,7 +117,6 @@ class GripperCommand:
         self.__gripper_command_action_client_destroyed = False
 
         subscription = None
-        action_client = None
         try:
             subscription = self._node.create_subscription(
                 msg_type=JointState,
@@ -162,11 +167,6 @@ class GripperCommand:
                 callback_group=self._callback_group,
             )
         except Exception:
-            if action_client is not None:
-                try:
-                    action_client.destroy()
-                except Exception:
-                    pass
             if subscription is not None:
                 try:
                     self._node.destroy_subscription(subscription)
@@ -211,7 +211,12 @@ class GripperCommand:
     def __enter__(self) -> "GripperCommand":
         return self
 
-    def __exit__(self, exc_type, exc, tb) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc: Optional[BaseException],
+        tb: Optional[TracebackType],
+    ) -> None:
         self.destroy()
 
     def __call__(self) -> bool:

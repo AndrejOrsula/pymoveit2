@@ -6,6 +6,7 @@ from rclpy.callback_groups import CallbackGroup
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 
+from pymoveit2._action_lifecycle import GripperStopMixin
 from pymoveit2._joint_helpers import (
     classify_gripper_state,
     copy_joint_state,
@@ -77,7 +78,7 @@ def is_gripper_closed(
     )
 
 
-class MoveIt2Gripper(MoveIt2):
+class MoveIt2Gripper(MoveIt2, GripperStopMixin):
     """
     Python interface for a gripper that is controlled by JointTrajectoryController.
     """
@@ -122,12 +123,12 @@ class MoveIt2Gripper(MoveIt2):
         """
 
         gripper_joint_names = validate_joint_names(gripper_joint_names)
-        open_gripper_joint_positions = normalize_joint_positions(
+        open_positions: List[float] = normalize_joint_positions(
             open_gripper_joint_positions,
             len(gripper_joint_names),
             "open_gripper_joint_positions",
         )
-        closed_gripper_joint_positions = normalize_joint_positions(
+        closed_positions: List[float] = normalize_joint_positions(
             closed_gripper_joint_positions,
             len(gripper_joint_names),
             "closed_gripper_joint_positions",
@@ -149,8 +150,8 @@ class MoveIt2Gripper(MoveIt2):
             use_move_group_action=use_move_group_action,
         )
 
-        self.__open_gripper_joint_positions = open_gripper_joint_positions
-        self.__closed_gripper_joint_positions = closed_gripper_joint_positions
+        self.__open_gripper_joint_positions = open_positions
+        self.__closed_gripper_joint_positions = closed_positions
 
         self.__skip_planning = bool(skip_planning)
         self.__closed = False
@@ -163,7 +164,7 @@ class MoveIt2Gripper(MoveIt2):
                 init_dummy_joint_trajectory_from_state(
                     init_joint_state(
                         joint_names=gripper_joint_names,
-                        joint_positions=open_gripper_joint_positions,
+                        joint_positions=open_positions,
                     ),
                     duration_sec=duration_sec,
                     duration_nanosec=duration_nanosec,
@@ -173,7 +174,7 @@ class MoveIt2Gripper(MoveIt2):
                 init_dummy_joint_trajectory_from_state(
                     init_joint_state(
                         joint_names=gripper_joint_names,
-                        joint_positions=closed_gripper_joint_positions,
+                        joint_positions=closed_positions,
                     ),
                     duration_sec=duration_sec,
                     duration_nanosec=duration_nanosec,
@@ -181,8 +182,7 @@ class MoveIt2Gripper(MoveIt2):
             )
 
         self.__open_tolerance = [
-            0.1
-            * abs(open_gripper_joint_positions[i] - closed_gripper_joint_positions[i])
+            0.1 * abs(open_positions[i] - closed_positions[i])
             for i in range(len(gripper_joint_names))
         ]
         self.__gripper_joint_indices: Optional[List[int]] = None

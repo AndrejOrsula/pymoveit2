@@ -7,9 +7,12 @@ from conftest import GRIPPER_JOINTS, FakeActionClient, complete
 from control_msgs.action import GripperCommand as GripperCommandAction
 from moveit_msgs.action import MoveGroup
 from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSReliabilityPolicy
 from sensor_msgs.msg import JointState
 
 from pymoveit2 import GripperCommand, GripperInterface, MoveIt2Gripper, MoveIt2State
+from pymoveit2._action_lifecycle import ActionLifecycle
+from pymoveit2.moveit2_gripper import resolve_gripper_joint_indices
 
 
 def make_gripper(rclpy_node, **kwargs):
@@ -597,3 +600,440 @@ def test_gripper_interface_motion_succeeded_updated_by_gripper_command_path(rclp
 def test_gripper_interface_rejects_unknown_interface(rclpy_node):
     with pytest.raises(ValueError):
         make_interface(rclpy_node, interface=int)
+
+
+def test_gripper_cancel_and_disable_are_safe_when_idle(rclpy_node):
+    for gripper in (
+        make_gripper(rclpy_node, skip_planning=True),
+        make_gripper_command(rclpy_node),
+    ):
+        assert gripper.cancel() is False
+        assert gripper.disable() is None
+        assert gripper.disable() is None
+        assert gripper.cancel() is False
+        gripper.destroy()
+
+
+def test_gripper_cancel_requests_cancellation_of_the_tracked_goal(rclpy_node):
+    gripper = make_gripper(rclpy_node, skip_planning=True)
+    client = FakeActionClient("execute_trajectory")
+    gripper._execute_trajectory_action_client = client
+    assert gripper.close() is True
+    handle = client.accept()
+    assert gripper.cancel() is True
+    assert handle.cancel_requests == 1
+    gripper.destroy()
+
+    gc = make_gripper_command(rclpy_node)
+    client = FakeActionClient("gripper_cmd")
+    gc._GripperCommand__gripper_command_action_client = client
+    assert gc.close() is True
+    handle = client.accept()
+    assert gc.cancel() is True
+    assert handle.cancel_requests == 1
+    gc.destroy()
+
+
+def test_moveit2_gripper_disable_stops_motion_and_refuses_new_goals(rclpy_node):
+    gripper = make_gripper(rclpy_node, skip_planning=True)
+    client = FakeActionClient("execute_trajectory")
+    gripper._execute_trajectory_action_client = client
+    move_client = FakeActionClient("move_action")
+    gripper._MoveIt2__move_action_client = move_client
+    assert gripper.close() is True
+    handle = client.accept()
+
+    gripper.disable()
+    assert handle.cancel_requests == 1
+    complete(handle, GoalStatus.STATUS_CANCELED)
+    assert gripper.query_state() == MoveIt2State.IDLE
+    assert gripper.open() is False
+    assert gripper.close() is False
+    assert gripper.reset_open() is False
+    assert gripper.reset_closed() is False
+    assert len(client.sent_goals) == 1
+    gripper.destroy()
+
+    gripper = make_gripper(rclpy_node, use_move_group_action=True)
+    move_client = FakeActionClient("move_action")
+    gripper._MoveIt2__move_action_client = move_client
+    gripper.disable()
+    assert gripper.open() is False
+    assert gripper.move_to_position(0.02) is False
+    assert gripper.move_to_configuration([0.01, 0.01]) is False
+    assert move_client.sent_goals == []
+    gripper.destroy()
+
+
+def test_moveit2_gripper_disable_refuses_before_planning(rclpy_node, monkeypatch):
+    gripper = make_gripper(rclpy_node)
+    planned = []
+    monkeypatch.setattr(gripper, "plan", lambda *args, **kwargs: planned.append(1))
+    gripper.disable()
+    assert gripper.open() is False
+    assert gripper.move_to_position(0.02) is False
+    assert planned == []
+    assert gripper.last_failure() == "Interface is disabled. Skipping motion."
+    gripper.destroy()
+
+
+def test_gripper_command_disable_stops_motion_and_refuses_new_goals(rclpy_node):
+    gc = make_gripper_command(rclpy_node)
+    client = FakeActionClient("gripper_cmd")
+    gc._GripperCommand__gripper_command_action_client = client
+    assert gc.open() is True
+    handle = client.accept()
+
+    gc.disable()
+    assert handle.cancel_requests == 1
+    complete(handle, GoalStatus.STATUS_CANCELED, _gripper_result(False))
+    assert gc.query_state() == MoveIt2State.IDLE
+    assert gc.open() is False
+    assert gc.close() is False
+    assert gc.move_to_position(0.02) is False
+    assert gc.reset_open() is False
+    assert gc.reset_closed() is False
+    assert len(client.sent_goals) == 1
+    gc.destroy()
+
+
+def test_gripper_disable_cancels_a_goal_still_awaiting_acceptance(rclpy_node):
+    gc = make_gripper_command(rclpy_node)
+    client = FakeActionClient("gripper_cmd")
+    gc._GripperCommand__gripper_command_action_client = client
+    assert gc.close() is True
+    assert gc.query_state() == MoveIt2State.REQUESTING
+
+    gc.disable()
+    handle = client.accept()
+    assert handle.cancel_requests == 1
+    gc.destroy()
+
+
+def test_gripper_reset_sync_is_ignored_and_never_waits(rclpy_node):
+    def moveit2_gripper():
+        gripper = make_gripper(rclpy_node)
+        client = FakeActionClient("execute_trajectory")
+        gripper._execute_trajectory_action_client = client
+        return (
+            gripper,
+            client,
+            lambda goal: list(goal.trajectory.joint_trajectory.points[0].positions),
+        )
+
+    def gripper_command():
+        gc = make_gripper_command(rclpy_node)
+        client = FakeActionClient("gripper_cmd")
+        gc._GripperCommand__gripper_command_action_client = client
+        return gc, client, lambda goal: goal.command.position
+
+    def interface():
+        gi = make_interface(rclpy_node, interface=GripperCommand)
+        client = FakeActionClient("gripper_cmd")
+        gi.backend._GripperCommand__gripper_command_action_client = client
+        return gi, client, lambda goal: goal.command.position
+
+    for make in (moveit2_gripper, gripper_command, interface):
+        for reset in ("reset_open", "reset_closed"):
+            sent = []
+            for sync in (True, False):
+                gripper, client, target = make()
+                assert getattr(gripper, reset)(sync=sync) is True
+                assert gripper.query_state() == MoveIt2State.REQUESTING
+                assert len(client.sent_goals) == 1
+                sent.append(target(client.sent_goals[0]))
+                gripper.destroy()
+            assert sent[0] == sent[1], (make.__name__, reset)
+
+
+class RecordingActionClient(FakeActionClient):
+    def __init__(self, **kwargs):
+        super().__init__(kwargs["action_name"])
+        self.kwargs = kwargs
+        self.destroy_calls = 0
+        self.destroy_errors = []
+
+    def destroy(self) -> None:
+        self.destroy_calls += 1
+        if self.destroy_errors:
+            raise self.destroy_errors.pop(0)
+        super().destroy()
+
+
+@pytest.fixture()
+def recorded_clients():
+    created = []
+
+    def create(**kwargs):
+        created.append(RecordingActionClient(**kwargs))
+        return created[-1]
+
+    with patch("pymoveit2.gripper_command.ActionClient", create):
+        yield created
+
+
+def _subscriptions(node):
+    return set(node.subscriptions)
+
+
+def _qos(profile):
+    return (profile.durability, profile.reliability, profile.history, profile.depth)
+
+
+def test_gripper_command_connects_with_its_documented_qos(rclpy_node, recorded_clients):
+    group = ReentrantCallbackGroup()
+    before = _subscriptions(rclpy_node)
+    gc = make_gripper_command(
+        rclpy_node, callback_group=group, gripper_command_action_name="hand/cmd"
+    )
+    (subscription,) = _subscriptions(rclpy_node) - before
+    (client,) = recorded_clients
+    volatile, keep_last = QoSDurabilityPolicy.VOLATILE, QoSHistoryPolicy.KEEP_LAST
+    reliable, best_effort = (
+        QoSReliabilityPolicy.RELIABLE,
+        QoSReliabilityPolicy.BEST_EFFORT,
+    )
+
+    assert subscription.topic_name == "/joint_states"
+    assert _qos(subscription.qos_profile) == (volatile, best_effort, keep_last, 1)
+    assert subscription.callback_group is group
+    assert gc.gripper_command_action_client is client
+    assert client.kwargs["node"] is rclpy_node
+    assert client.kwargs["action_type"] is GripperCommandAction
+    assert client.kwargs["action_name"] == "hand/cmd"
+    assert client.kwargs["callback_group"] is group
+    assert {
+        name: _qos(client.kwargs[f"{name}_qos_profile"])
+        for name in ("goal_service", "result_service", "cancel_service")
+    } == {
+        "goal_service": (volatile, reliable, keep_last, 1),
+        "result_service": (volatile, reliable, keep_last, 5),
+        "cancel_service": (volatile, reliable, keep_last, 5),
+    }
+    assert _qos(client.kwargs["feedback_sub_qos_profile"]) == (
+        volatile,
+        best_effort,
+        keep_last,
+        1,
+    )
+    assert _qos(client.kwargs["status_sub_qos_profile"]) == (
+        volatile,
+        best_effort,
+        keep_last,
+        1,
+    )
+    assert gc.new_joint_state_available is False
+    assert gc.joint_state is None
+    gc.destroy()
+
+
+def test_gripper_command_single_joint_goals_carry_position_and_effort(
+    rclpy_node, recorded_clients
+):
+    gc = GripperCommand(
+        node=rclpy_node,
+        gripper_joint_names=["finger"],
+        open_gripper_joint_positions=0.04,
+        closed_gripper_joint_positions=[0.01],
+        max_effort=5.0,
+    )
+    (client,) = recorded_clients
+    assert gc.open() is True
+    complete(client.accept(), GoalStatus.STATUS_SUCCEEDED, _gripper_result())
+    assert gc.close() is True
+    complete(client.accept(), GoalStatus.STATUS_SUCCEEDED, _gripper_result())
+    assert [
+        (goal.command.position, goal.command.max_effort) for goal in client.sent_goals
+    ] == [(0.04, 5.0), (0.01, 5.0)]
+    gc.destroy()
+
+
+def test_gripper_command_rejects_nonuniform_closed_positions(rclpy_node):
+    with pytest.raises(ValueError, match="scalar actuator"):
+        make_gripper_command(
+            rclpy_node,
+            open_gripper_joint_positions=[0.04, 0.04],
+            closed_gripper_joint_positions=[0.0, 0.01],
+        )
+
+
+def test_gripper_command_open_tolerance_is_a_tenth_of_the_travel(rclpy_node):
+    gc = make_gripper_command(
+        rclpy_node,
+        open_gripper_joint_positions=0.05,
+        closed_gripper_joint_positions=0.01,
+    )
+    observe = gc._GripperCommand__joint_state_callback
+    observe(_joint_state(GRIPPER_JOINTS, [0.0465, 0.0535]))
+    assert gc.is_open is True
+    observe(_joint_state(GRIPPER_JOINTS, [0.0455, 0.05]))
+    assert gc.is_open is False
+    assert gc.is_closed is False
+    gc.destroy()
+
+
+def test_gripper_command_failed_action_client_releases_the_subscription(rclpy_node):
+    before = _subscriptions(rclpy_node)
+    with patch(
+        "pymoveit2.gripper_command.ActionClient",
+        side_effect=RuntimeError("no action client"),
+    ):
+        with pytest.raises(RuntimeError, match="no action client"):
+            make_gripper_command(rclpy_node)
+    assert _subscriptions(rclpy_node) == before
+
+
+def test_gripper_command_construction_error_survives_failed_cleanup(rclpy_node):
+    with (
+        patch(
+            "pymoveit2.gripper_command.ActionClient",
+            side_effect=RuntimeError("no action client"),
+        ),
+        patch.object(
+            rclpy_node,
+            "destroy_subscription",
+            side_effect=RuntimeError("cleanup failed"),
+        ) as destroy_subscription,
+    ):
+        with pytest.raises(RuntimeError, match="no action client"):
+            make_gripper_command(rclpy_node)
+    assert destroy_subscription.call_count == 1
+    rclpy_node.destroy_subscription(destroy_subscription.call_args.args[0])
+
+
+def test_gripper_command_failed_subscription_creates_no_action_client(
+    rclpy_node, recorded_clients
+):
+    with (
+        patch.object(
+            rclpy_node, "create_subscription", side_effect=RuntimeError("no topic")
+        ),
+        patch.object(rclpy_node, "destroy_subscription") as destroy_subscription,
+    ):
+        with pytest.raises(RuntimeError, match="no topic"):
+            make_gripper_command(rclpy_node)
+    assert recorded_clients == []
+    assert destroy_subscription.call_count == 0
+
+
+def test_gripper_command_destroy_releases_once_and_refuses_goals(
+    rclpy_node, recorded_clients
+):
+    before = _subscriptions(rclpy_node)
+    gc = make_gripper_command(rclpy_node)
+    (client,) = recorded_clients
+    with patch.object(
+        rclpy_node,
+        "destroy_subscription",
+        wraps=rclpy_node.destroy_subscription,
+    ) as destroy_subscription:
+        gc.destroy()
+        assert _subscriptions(rclpy_node) == before
+        assert client.destroy_calls == 1
+        gc.destroy()
+        with gc:
+            pass
+    assert destroy_subscription.call_count == 1
+    assert client.destroy_calls == 1
+    assert gc.open() is False
+    assert gc.close() is False
+    assert gc.move_to_position(0.02) is False
+    assert client.sent_goals == []
+
+
+def test_gripper_command_destroy_raises_first_error_and_retries_failed_releases(
+    rclpy_node, recorded_clients
+):
+    before = _subscriptions(rclpy_node)
+    gc = make_gripper_command(rclpy_node)
+    (client,) = recorded_clients
+    client.destroy_errors.append(RuntimeError("client"))
+    real_destroy_subscription = rclpy_node.destroy_subscription
+    failures = [RuntimeError("subscription")]
+
+    def destroy_subscription(subscription):
+        if failures:
+            raise failures.pop(0)
+        return real_destroy_subscription(subscription)
+
+    with patch.object(
+        rclpy_node, "destroy_subscription", side_effect=destroy_subscription
+    ) as spy:
+        with patch.object(
+            ActionLifecycle, "force_reset", side_effect=RuntimeError("reset")
+        ):
+            with pytest.raises(RuntimeError, match="^reset$"):
+                gc.destroy()
+        assert (spy.call_count, client.destroy_calls) == (1, 1)
+        assert _subscriptions(rclpy_node) != before
+
+        gc.destroy()
+        assert (spy.call_count, client.destroy_calls) == (2, 2)
+        assert _subscriptions(rclpy_node) == before
+        assert client.destroyed is True
+        gc.destroy()
+        assert (spy.call_count, client.destroy_calls) == (2, 2)
+
+
+def test_gripper_command_destroy_raises_a_single_release_error(
+    rclpy_node, recorded_clients
+):
+    gc = make_gripper_command(rclpy_node)
+    (client,) = recorded_clients
+    client.destroy_errors.append(RuntimeError("client"))
+    with pytest.raises(RuntimeError, match="^client$"):
+        gc.destroy()
+    gc.destroy()
+    assert client.destroyed is True
+
+
+def test_moveit2_gripper_toggle_moves_to_the_opposite_state(rclpy_node):
+    gripper = make_gripper(rclpy_node, skip_planning=True)
+    client = FakeActionClient("execute_trajectory")
+    gripper._execute_trajectory_action_client = client
+    observe = gripper._MoveIt2__joint_state_callback
+
+    def sent_positions():
+        return [
+            list(goal.trajectory.joint_trajectory.points[0].positions)
+            for goal in client.sent_goals
+        ]
+
+    observe(_joint_state(GRIPPER_JOINTS, [0.04, 0.04]))
+    assert gripper.toggle() is True
+    complete(client.accept())
+    assert sent_positions() == [[0.0, 0.0]]
+
+    observe(_joint_state(GRIPPER_JOINTS, [0.0, 0.0]))
+    assert gripper() is True
+    complete(client.accept())
+    assert sent_positions() == [[0.0, 0.0], [0.04, 0.04]]
+
+    observe(_joint_state(GRIPPER_JOINTS, [0.02, 0.02]))
+    with patch.object(gripper._node, "get_logger") as get_logger:
+        assert gripper.toggle() is False
+    get_logger.return_value.warning.assert_called_once_with(
+        "Cannot toggle the gripper until a complete joint-state observation "
+        "establishes whether it is open or closed."
+    )
+    assert len(client.sent_goals) == 2
+    gripper.destroy()
+
+
+def test_resolve_gripper_joint_indices_reuses_the_cache_only_for_the_same_names():
+    names = ["panda_joint1"] + GRIPPER_JOINTS
+    state = _joint_state(names, [0.0, 0.04, 0.04])
+    cached = [7, 8]
+
+    assert resolve_gripper_joint_indices(state, GRIPPER_JOINTS, None, None) == [1, 2]
+    assert resolve_gripper_joint_indices(state, GRIPPER_JOINTS, cached, names) is cached
+    assert resolve_gripper_joint_indices(
+        state, GRIPPER_JOINTS, cached, GRIPPER_JOINTS
+    ) == [1, 2]
+    assert resolve_gripper_joint_indices(state, GRIPPER_JOINTS, None, names) == [1, 2]
+    assert (
+        resolve_gripper_joint_indices(
+            _joint_state(GRIPPER_JOINTS[:1], [0.0]), GRIPPER_JOINTS, None, None
+        )
+        is None
+    )
