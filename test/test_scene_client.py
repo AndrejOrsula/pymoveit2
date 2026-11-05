@@ -122,6 +122,174 @@ def test_allow_uses_narrow_acm_diff_and_auto_settles(rclpy_node):
         client.destroy()
 
 
+@pytest.mark.parametrize(
+    "success, fail_commit, expected, commit_count, quarantined",
+    [
+        (True, False, True, 1, False),
+        (False, False, False, 0, False),
+        (True, True, False, 1, True),
+    ],
+)
+def test_concurrent_apply_processors_share_settlement(
+    rclpy_node, success, fail_commit, expected, commit_count, quarantined
+):
+    client, get, apply = _make(rclpy_node)
+    allow_result = threading.Event()
+    try:
+        _install_get_response(get, _scene())
+        future = client.allow_collisions("new", True)
+        result_entered = threading.Event()
+        original_result = future.result
+
+        def blocked_result():
+            result_entered.set()
+            assert allow_result.wait(timeout=2.0)
+            return original_result()
+
+        future.result = blocked_result
+        commits = []
+        original_commit = client._commit_mutation_locked
+        record = client._pending[future]
+        wait_entered = threading.Event()
+        settlement_done = getattr(record, "settlement_done", None)
+        if settlement_done is not None:
+            original_wait = settlement_done.wait
+
+            def signal_wait(timeout=None):
+                wait_entered.set()
+                return original_wait(timeout)
+
+            settlement_done.wait = signal_wait
+
+        def count_commit(record):
+            commits.append(record)
+            if fail_commit:
+                raise RuntimeError("cache commit failed")
+            original_commit(record)
+
+        client._commit_mutation_locked = count_commit
+        completion = threading.Thread(
+            target=lambda: future.set_result(
+                ApplyPlanningScene.Response(success=success)
+            )
+        )
+        completion.start()
+        assert result_entered.wait(timeout=1.0)
+
+        processor_finished = threading.Event()
+        processed = []
+
+        def process_concurrently():
+            processed.append(client.process_apply_planning_scene_future(future))
+            processor_finished.set()
+
+        processor = threading.Thread(target=process_concurrently)
+        processor.start()
+        if settlement_done is None:
+            assert processor_finished.wait(timeout=1.0)
+        else:
+            assert wait_entered.wait(timeout=1.0)
+            assert not processor_finished.is_set()
+
+        allow_result.set()
+        completion.join(timeout=2.0)
+        processor.join(timeout=2.0)
+        assert not completion.is_alive()
+        assert not processor.is_alive()
+        assert processed == [expected]
+        assert client.process_apply_planning_scene_future(future) is expected
+        assert len(commits) == commit_count
+        assert client.mutation_quarantined is quarantined
+        if expected:
+            assert "new" in client.planning_scene.allowed_collision_matrix.entry_names
+        else:
+            assert (
+                "new" not in client.planning_scene.allowed_collision_matrix.entry_names
+            )
+    finally:
+        allow_result.set()
+        client.destroy()
+
+
+def test_reentrant_apply_processor_does_not_wait_on_itself(rclpy_node):
+    client, get, apply = _make(rclpy_node)
+    try:
+        _install_get_response(get, _scene())
+        future = client.allow_collisions("new", True)
+        original_result = future.result
+        reentrant_results = []
+
+        def reentrant_result():
+            reentrant_results.append(client.process_apply_planning_scene_future(future))
+            return original_result()
+
+        future.result = reentrant_result
+        future.set_result(ApplyPlanningScene.Response(success=True))
+        assert reentrant_results == [False]
+        assert client.process_apply_planning_scene_future(future) is True
+    finally:
+        client.destroy()
+
+
+def test_destroy_wakes_concurrent_apply_processor(rclpy_node):
+    client, get, apply = _make(rclpy_node)
+    allow_result = threading.Event()
+    try:
+        _install_get_response(get, _scene())
+        future = client.allow_collisions("new", True)
+        result_entered = threading.Event()
+        original_result = future.result
+
+        def blocked_result():
+            result_entered.set()
+            assert allow_result.wait(timeout=2.0)
+            return original_result()
+
+        future.result = blocked_result
+        completion = threading.Thread(
+            target=lambda: future.set_result(ApplyPlanningScene.Response(success=True))
+        )
+        completion.start()
+        assert result_entered.wait(timeout=1.0)
+
+        record = client._pending[future]
+        wait_entered = threading.Event()
+        settlement_done = getattr(record, "settlement_done", None)
+        if settlement_done is not None:
+            original_wait = settlement_done.wait
+
+            def signal_wait(timeout=None):
+                wait_entered.set()
+                return original_wait(timeout)
+
+            settlement_done.wait = signal_wait
+        processed = []
+        processor_finished = threading.Event()
+
+        def process_concurrently():
+            processed.append(client.process_apply_planning_scene_future(future))
+            processor_finished.set()
+
+        processor = threading.Thread(target=process_concurrently)
+        processor.start()
+        if settlement_done is None:
+            assert processor_finished.wait(timeout=1.0)
+        else:
+            assert wait_entered.wait(timeout=1.0)
+        client.destroy()
+        processor.join(timeout=1.0)
+        assert not processor.is_alive()
+        assert processed == [False]
+
+        allow_result.set()
+        completion.join(timeout=2.0)
+        assert not completion.is_alive()
+        assert client.mutation_quarantined is False
+    finally:
+        allow_result.set()
+        client.destroy()
+
+
 def test_clear_sends_observed_removes_and_preserves_octomap(rclpy_node):
     client, get, apply = _make(rclpy_node)
     try:

@@ -7,7 +7,7 @@ import math
 import threading
 import time
 import weakref
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable, FrozenSet, Optional, Tuple
 
 from moveit_msgs.msg import (
@@ -112,6 +112,8 @@ class _Mutation:
     outcome: bool = False
     unknown: bool = False
     settling: bool = False
+    settling_thread: Optional[int] = None
+    settlement_done: threading.Event = field(default_factory=threading.Event)
     cancel_requested: bool = False
 
 
@@ -197,6 +199,8 @@ class SceneClient:
             self._closed = True
             self._mutation_active = False
             self._mutation_token = None
+            for record in self._pending.values():
+                record.settlement_done.set()
             self._pending.clear()
             for waiter in self._read_waiters:
                 waiter.set()
@@ -539,33 +543,61 @@ class SceneClient:
 
     def _on_apply_done(self, future: Any, record: _Mutation) -> None:
         with self._state_lock:
-            if record.settled or record.settling:
+            if record.settled:
                 return
-            record.settling = True
+            if record.settling:
+                if record.settling_thread == threading.get_ident():
+                    return
+                wait_for_settlement = True
+            else:
+                record.settling = True
+                record.settling_thread = threading.get_ident()
+                wait_for_settlement = False
             closed = self._closed
 
-        if closed:
-            with self._state_lock:
-                record.settled = True
-                record.settling = False
-                self._discard_mutation_payload(record)
+        if wait_for_settlement:
+            record.settlement_done.wait()
             return
 
+        try:
+            if closed:
+                return
+            self._finish_apply_outcome(future, record)
+        except BaseException:
+            self._mark_unknown(record)
+            raise
+        finally:
+            with self._state_lock:
+                if not record.settled:
+                    record.settled = True
+                    record.outcome = False
+                    record.unknown = not self._closed
+                    if record.unknown:
+                        self._quarantined = True
+                    if self._mutation_token is record.token:
+                        self._mutation_active = False
+                        self._mutation_token = None
+                    self._discard_mutation_payload(record)
+                record.settling = False
+                record.settling_thread = None
+                record.settlement_done.set()
+
+    def _finish_apply_outcome(self, future: Any, record: _Mutation) -> None:
         outcome, unknown = self._apply_outcome(future, record)
 
         with self._state_lock:
             if self._closed:
-                record.settled = True
-                record.settling = False
-                self._discard_mutation_payload(record)
                 return
             if outcome and not unknown:
-                with self._cache_lock:
-                    self._commit_mutation_locked(record)
+                try:
+                    with self._cache_lock:
+                        self._commit_mutation_locked(record)
+                except Exception as err:
+                    self._warn(f"Could not update the planning-scene cache: {err}")
+                    outcome, unknown = False, True
             record.outcome = bool(outcome and not unknown)
             record.unknown = unknown
             record.settled = True
-            record.settling = False
             if unknown:
                 self._quarantined = True
             elif record.cancel_requested:
@@ -617,16 +649,20 @@ class SceneClient:
     def _mark_unknown(self, record: _Mutation) -> None:
         with self._state_lock:
             if record.settled:
+                record.settlement_done.set()
                 return
             record.settled = True
             record.settling = False
-            record.unknown = True
+            record.settling_thread = None
+            record.unknown = not self._closed
             record.outcome = False
-            self._quarantined = True
+            if record.unknown:
+                self._quarantined = True
             if self._mutation_token is record.token:
                 self._mutation_active = False
                 self._mutation_token = None
             self._discard_mutation_payload(record)
+            record.settlement_done.set()
 
     @staticmethod
     def _discard_mutation_payload(record: _Mutation) -> None:
@@ -646,7 +682,12 @@ class SceneClient:
             return False
         self._on_apply_done(future, record)
         with self._state_lock:
-            return bool(record.settled and record.outcome and not record.unknown)
+            return bool(
+                not self._closed
+                and record.settled
+                and record.outcome
+                and not record.unknown
+            )
 
     def process_allow_collision_future(self, future: Any) -> bool:
         return self.process_apply_planning_scene_future(future)
