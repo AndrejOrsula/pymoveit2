@@ -32,14 +32,13 @@ RUN if [[ "${WITH_DEMO}" = true ]]; then \
 
 ### Install the optional `trimesh` dependency of mesh collision objects
 ARG WITH_TRIMESH=true
+COPY .ci/requirements-trimesh.txt /tmp/requirements-trimesh.txt
 RUN if [[ "${WITH_TRIMESH}" = true ]]; then \
     apt-get update && \
     apt-get install -yq --no-install-recommends python3-pip && \
     rm -rf /var/lib/apt/lists/* && \
-    # Humble ships numpy 1.21, which trimesh >= 4 no longer imports with
-    if [[ "${ROS_DISTRO}" = humble ]]; then TRIMESH="trimesh<4"; else TRIMESH="trimesh"; fi && \
-    { pip install --no-cache-dir --break-system-packages "${TRIMESH}" || \
-    pip install --no-cache-dir "${TRIMESH}" ; } ; \
+    { pip install --no-cache-dir --break-system-packages -r /tmp/requirements-trimesh.txt || \
+    pip install --no-cache-dir -r /tmp/requirements-trimesh.txt ; } ; \
     fi
 
 ### Install dependencies of this package and build it
