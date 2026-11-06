@@ -115,6 +115,7 @@ jobs:
           git config --global tag.gpgsign false
           git config --global commit.gpgsign false
           git config --global credential.https://github.com.username "${BLOOM_GITHUB_USER}"
+          # shellcheck disable=SC2016
           git config --global credential.https://github.com.helper '!f() { test "$1" = get && echo "password=${BLOOM_GITHUB_TOKEN}"; }; f'
           umask 077
           python3 - <<'PY'
