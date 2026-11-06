@@ -5,12 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [5.1.0] - 2026-11-06
+
+### Added
+
+- Add public getter for active goal future ([0f0e21f](https://github.com/AndrejOrsula/pymoveit2/commit/0f0e21f736b26787f8deab3530890e759bc678a3))
+- CI: Add web demo sync workflow ([233e844](https://github.com/AndrejOrsula/pymoveit2/commit/233e8446aac28c2b2b521f8eb2c808e7260a285e)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+- CI: Add bloom release workflow via manual dispatch ([33314af](https://github.com/AndrejOrsula/pymoveit2/commit/33314af864f86403e33f33d0c47e0c303e81630b)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
 
 ### Changed
 
+- Docker: Refactor trimesh versioning ([58be6f5](https://github.com/AndrejOrsula/pymoveit2/commit/58be6f53ec7f80175c454834c5bf5d2159ac16c3)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+- CI: Refactor trimesh versioning ([380c8b2](https://github.com/AndrejOrsula/pymoveit2/commit/380c8b2ada03c1e4a9f7066a4500c5daff5de415)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+- Implement thread safety for planning scene updates ([758b973](https://github.com/AndrejOrsula/pymoveit2/commit/758b973d6afbb4647c59f03389864fe5e4ff7713)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+- Refactor speed setters in MoveIt2Servo ([8fca5c2](https://github.com/AndrejOrsula/pymoveit2/commit/8fca5c2aadba29e4715b49493c7f83a319f3cf9c)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+- Build(deps-dev): bump mypy from 2.4.0 to 2.4.1 in /.ci ([c38e62f](https://github.com/AndrejOrsula/pymoveit2/commit/c38e62f56c920211b3a597ff3f5bfc2f74c23c26)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#152](https://github.com/AndrejOrsula/pymoveit2/pull/152)
+- Build(deps): bump docker/login-action from 4.6.0 to 4.7.0 ([8c6b98d](https://github.com/AndrejOrsula/pymoveit2/commit/8c6b98dc1bda558d472cf1b9b586e0de51f2d306)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#149](https://github.com/AndrejOrsula/pymoveit2/pull/149)
+- Build(deps-dev): bump coverage from 7.16.2 to 7.17.0 in /.ci ([48f3f42](https://github.com/AndrejOrsula/pymoveit2/commit/48f3f42582a6c9d8472074592719f6d83c150607)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#150](https://github.com/AndrejOrsula/pymoveit2/pull/150)
+- Build(deps): bump pypa/gh-action-pypi-publish from 1.14.2 to 1.14.3 ([a6639bf](https://github.com/AndrejOrsula/pymoveit2/commit/a6639bf8e9897616c35280e398477bf4fded6471)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#148](https://github.com/AndrejOrsula/pymoveit2/pull/148)
+- Build(deps): bump actions/upload-artifact from 7.0.1 to 7.0.2 ([a4e5662](https://github.com/AndrejOrsula/pymoveit2/commit/a4e56624c578ab79739ce48dba3a68e9d3160cde)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#147](https://github.com/AndrejOrsula/pymoveit2/pull/147)
+- Build(deps): bump actions/download-artifact from 8.0.1 to 8.0.2 ([beebd68](https://github.com/AndrejOrsula/pymoveit2/commit/beebd6806e5377d416d1b59c26152b287ea1a888)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#146](https://github.com/AndrejOrsula/pymoveit2/pull/146)
+- Bump version to 5.0.1 [unreleased] ([713855c](https://github.com/AndrejOrsula/pymoveit2/commit/713855c83b0c1256eb6d8e0470a4e16522671ffa)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+- Build(deps): bump codecov/codecov-action from 7.1.0 to 7.1.1 ([4c83fb3](https://github.com/AndrejOrsula/pymoveit2/commit/4c83fb30f1004aa26bb75483637fbc7e917e508b)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#142](https://github.com/AndrejOrsula/pymoveit2/pull/142)
+- Build(deps): bump docker/build-push-action from 7.3.0 to 7.4.0 ([3f2965d](https://github.com/AndrejOrsula/pymoveit2/commit/3f2965dee33ee80d166bdac8562cab6e64ee13b2)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#141](https://github.com/AndrejOrsula/pymoveit2/pull/141)
+- Build(deps-dev): bump coverage from 7.16.1 to 7.16.2 in /.ci ([df5f8fe](https://github.com/AndrejOrsula/pymoveit2/commit/df5f8fe7d136cf5625a4da1d4f38ff1c4f5a6ebb)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#143](https://github.com/AndrejOrsula/pymoveit2/pull/143)
+- Build(deps-dev): bump mypy from 2.3.1 to 2.4.0 in /.ci ([0659132](https://github.com/AndrejOrsula/pymoveit2/commit/06591322b896817492bf51b0ca7610a6489056a8)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#144](https://github.com/AndrejOrsula/pymoveit2/pull/144)
+- Build(deps-dev): bump coverage from 7.16.0 to 7.16.1 in /.ci ([20e6ee5](https://github.com/AndrejOrsula/pymoveit2/commit/20e6ee55e59be5f7a2b0762b16735fcdc744e8bc)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#139](https://github.com/AndrejOrsula/pymoveit2/pull/139)
+- Build(deps): bump codecov/codecov-action from 7.0.0 to 7.1.0 ([5ee8309](https://github.com/AndrejOrsula/pymoveit2/commit/5ee8309994c5102c5bf5a21f39f2f76e0afe42c4)) by [@dependabot[bot]](https://github.com/dependabot%5Bbot%5D) in [#138](https://github.com/AndrejOrsula/pymoveit2/pull/138)
 - CI: Use default entrypoint in the Docker verification step ([89efdce](https://github.com/AndrejOrsula/pymoveit2/commit/89efdce3e35255c9dff3472cc0c1fc91463f9ccd)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
 - Update README badges ([cfa4fdc](https://github.com/AndrejOrsula/pymoveit2/commit/cfa4fdc5b4f9096b4c4c788a9a1e3352c2fbc475)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+
+### Fixed
+
+- Fix lifecycle of gripper execution cancellation ([b15b1ba](https://github.com/AndrejOrsula/pymoveit2/commit/b15b1ba653f34fc2b28a2991848353f4fb8132f8)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+- Fix robot description discovery ([f6dba82](https://github.com/AndrejOrsula/pymoveit2/commit/f6dba82d6bf09cbbec61e3110f2319580d50481e)) by [@JeremiahM37](https://github.com/JeremiahM37) in [#145](https://github.com/AndrejOrsula/pymoveit2/pull/145)
+- CI: Fix CODECOV_TOKEN for Dependabot runs ([6363bb1](https://github.com/AndrejOrsula/pymoveit2/commit/6363bb11a6e282217e6aaf128e6bb5f11af9c18f)) by [@AndrejOrsula](https://github.com/AndrejOrsula)
+
+## New Contributors
+
+- [@JeremiahM37](https://github.com/JeremiahM37) made their first contribution in [#145](https://github.com/AndrejOrsula/pymoveit2/pull/145)
 
 ## [5.0.0] - 2026-09-16
 
@@ -332,4 +365,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [4.1.1]: https://github.com/AndrejOrsula/pymoveit2/compare/4.1.0..4.1.1
 [4.2.0]: https://github.com/AndrejOrsula/pymoveit2/compare/4.1.1..4.2.0
 [5.0.0]: https://github.com/AndrejOrsula/pymoveit2/compare/4.2.0..5.0.0
-[unreleased]: https://github.com/AndrejOrsula/pymoveit2/compare/5.0.0..HEAD
+[5.1.0]: https://github.com/AndrejOrsula/pymoveit2/compare/5.0.0..5.1.0
