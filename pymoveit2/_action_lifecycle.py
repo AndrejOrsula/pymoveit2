@@ -165,6 +165,15 @@ class ActionLifecycle:
             self._logger.warning("Need active goal for future.")
             return None
 
+    def get_goal_future(self) -> Optional[Future]:
+        with self._lock:
+            op = self._current if self._current is not None else self._last
+            if op is not None and op.send_goal_future is not None:
+                return op.send_goal_future
+
+            self._logger.warning("Need active goal for future.")
+            return None
+
     def admit(self, client: ActionClient, goal: Any) -> Optional[ActionOperation]:
         with self._effect_lock:
             with self._lock:

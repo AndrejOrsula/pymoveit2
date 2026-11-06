@@ -27,6 +27,14 @@ def test_move_group_does_not_submit_after_preparation_deadline(moveit2, pose):
     assert not client.sent_goals
 
 
+def test_move_group_goal_future_is_available_once_the_goal_is_sent(moveit2):
+    client = FakeActionClient("move_action")
+    moveit2._MoveIt2__move_action_client = client
+    moveit2._MoveIt2__use_move_group_action = True
+    assert moveit2.move_to_configuration([0.1] * 7) is True
+    assert moveit2.get_goal_future() is client.response_futures[-1]
+
+
 def test_planning_expiry_prevents_late_execution(moveit2, monkeypatch):
     clock = [100.0]
     monkeypatch.setattr("pymoveit2.moveit2.time.monotonic", lambda: clock[0])

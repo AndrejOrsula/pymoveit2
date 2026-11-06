@@ -118,7 +118,7 @@ class MoveIt2:
     Choosing an API:
       1. One-shot convenience — `move_to_pose()` / `move_to_configuration()` build the goal from their arguments, plan (synchronously, unless `use_move_group_action` is enabled) and start the execution asynchronously. Call `wait_until_executed()` afterwards to block until the motion finishes.
       2. Plan, then execute — `plan()` returns the trajectory so that it can be inspected or modified before being passed to `execute()`.
-      3. Fully asynchronous — `plan_async()` + `get_trajectory()` to plan without blocking, then `execute()` and `get_execution_future()` to monitor the execution, e.g. for non-blocking pipelines.
+      3. Fully asynchronous — `plan_async()` + `get_trajectory()` to plan without blocking, then `execute()` and `get_goal_future()`/`get_execution_future()` to monitor the goal request and the execution, e.g. for non-blocking pipelines.
 
     Contracts shared by all methods:
       - The node is never spun internally. An external executor must process callbacks for every blocking method to return.
@@ -419,6 +419,9 @@ class MoveIt2:
         self.__publish_if_open(
             self.__trajectory_execution_event_publisher, String(data="stop")
         )
+
+    def get_goal_future(self) -> Optional[Future]:
+        return self.__lifecycle.get_goal_future()
 
     def get_execution_future(self) -> Optional[Future]:
         return self.__lifecycle.get_result_future()
