@@ -1,16 +1,16 @@
 Package: ros-rolling-pymoveit2
 Architecture: amd64
-Version: 5.0.1-2026.11.05.23.05
+Version: 5.1.0-2026.11.06.00.30
 Priority: optional
 Section: misc
 Maintainer: Andrej Orsula <orsula.andrej@gmail.com>
 Installed-Size: 512
 Depends: python3-numpy, ros-rolling-action-msgs, ros-rolling-control-msgs, ros-rolling-geometry-msgs, ros-rolling-moveit-msgs, ros-rolling-rcl-interfaces, ros-rolling-rclpy, ros-rolling-sensor-msgs, ros-rolling-shape-msgs, ros-rolling-std-msgs, ros-rolling-std-srvs, ros-rolling-trajectory-msgs
-Filename: ./ros-rolling-pymoveit2_5.0.1-2026.11.05.23.05_amd64.deb
-Size: 77066
-MD5sum: 1050d3d1362ab0e41de55a26a8486545
-SHA1: 25a3062b1193ffafa7b77d8fba0a494355fc2587
-SHA256: 7939ee43369896d492e956b990ab31ada5716e0bb27ec58940a33e16e669c748
-SHA512: 4f74c0dac2d92c9d0624cefd946b535095aa8bc524db3fe9db7c1c3a3b5e001fd08381e73e92455585d611e1558b9a1681d588245ae37cfd899dadda7c3a4021
+Filename: ./ros-rolling-pymoveit2_5.1.0-2026.11.06.00.30_amd64.deb
+Size: 77112
+MD5sum: 9f6b1e26ebb05a037d859de2e24604fb
+SHA1: 929cf614f0f4b8d0afe595e9cfef6774335bffa0
+SHA256: 4170aac00ce351e817eb55c61c75ee2b00bcdd8bbfb669b2903d4a0cdbfc02b7
+SHA512: cf523391f2065365143607c84c165db319ee71b0dae597d68c0799f598e133fa8cf807ee8c7747b38b518dacd170363e12fda2c9d7a830c04eabf2194821880f
 Description: Basic Python interface for MoveIt 2 built on top of ROS 2 actions and services
 
