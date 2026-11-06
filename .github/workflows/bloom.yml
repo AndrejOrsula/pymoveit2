@@ -114,6 +114,8 @@ jobs:
           git config --global user.email "${BLOOM_GITHUB_USER}@users.noreply.github.com"
           git config --global tag.gpgsign false
           git config --global commit.gpgsign false
+          git config --global credential.https://github.com.username "${BLOOM_GITHUB_USER}"
+          git config --global credential.https://github.com.helper '!f() { test "$1" = get && echo "password=${BLOOM_GITHUB_TOKEN}"; }; f'
           umask 077
           python3 - <<'PY'
           import json
@@ -137,6 +139,7 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.version }}
           PRETEND: ${{ inputs.pretend }}
           BLOOM_SKIP_ROSDEP_UPDATE: "1"
+          BLOOM_GITHUB_TOKEN: ${{ secrets.BLOOM_GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           args=(--no-web -y --rosdistro "${ROS_DISTRO_NAME}" --track "${ROS_DISTRO_NAME}")
