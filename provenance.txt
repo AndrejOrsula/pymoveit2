@@ -1,5 +1,5 @@
 artifact_smoke=passed
-source_revision=bfb558154c090ed36f7d35303e77acd01cdcad9c
+source_revision=7d94aae5fd5761bde52d32ebacadb13100f9ef8e
 ros_distro=rolling
 deb_distro=resolute
 ros_testing=true
@@ -8,10 +8,10 @@ ros_repository=http://packages.ros.org/ros2-testing/ubuntu resolute main
 base_image=ros:rolling-ros-base-resolute
 base_image_digest=ros@sha256:fd1a2cf7995148ad54d29fbf452b9084b9b8a386ee36ee8241495410903a58cf
 builder_action_sha=aacb5111976551aee90170dafa2cc615bc16760f
-package_file=ros-rolling-pymoveit2_5.1.0-2026.11.06.00.30_amd64.deb
-package_sha256=4170aac00ce351e817eb55c61c75ee2b00bcdd8bbfb669b2903d4a0cdbfc02b7
+package_file=ros-rolling-pymoveit2_5.1.0-2026.11.06.00.51_amd64.deb
+package_sha256=0ece087f9f06863238b7ebdb33c258b1d957d8a78618c1a9cd80cd1bf9ade109
 package=ros-rolling-pymoveit2
-package_version=5.1.0-2026.11.06.00.30
+package_version=5.1.0-2026.11.06.00.51
 expected_version_prefix=5.1.0
 python_version=Python 3.14.4
 ros2_version=unavailable
@@ -21,10 +21,10 @@ optional_trimesh=unavailable
 optional_trimesh_bound=trimesh
 apt_resolved_versions<<EOF
 ros-rolling-pymoveit2:
-  Installed: 5.1.0-2026.11.06.00.30
-  Candidate: 5.1.0-2026.11.06.00.30
+  Installed: 5.1.0-2026.11.06.00.51
+  Candidate: 5.1.0-2026.11.06.00.51
   Version table:
- *** 5.1.0-2026.11.06.00.30 100
+ *** 5.1.0-2026.11.06.00.51 100
         100 /var/lib/dpkg/status
      5.0.0-1resolute.20261103.192903 500
         500 http://packages.ros.org/ros2-testing/ubuntu resolute/main amd64 Packages
@@ -506,7 +506,7 @@ ros-rolling-nav-msgs=5.10.2-1resolute.20261010.111402
 ros-rolling-object-recognition-msgs=2.0.0-5resolute.20261103.170820
 ros-rolling-octomap-msgs=2.0.1-2resolute.20261103.165956
 ros-rolling-pluginlib=6.0.2-1resolute.20260915.134843
-ros-rolling-pymoveit2=5.1.0-2026.11.06.00.30
+ros-rolling-pymoveit2=5.1.0-2026.11.06.00.51
 ros-rolling-rcl=10.5.2-1resolute.20261010.123034
 ros-rolling-rcl-action=10.5.2-1resolute.20261010.123430
 ros-rolling-rcl-interfaces=2.5.1-1resolute.20261010.104112
