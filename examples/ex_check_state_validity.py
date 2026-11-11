@@ -2,7 +2,8 @@
 """
 Check state validity and collisions: joint positions in, validity and contacts out.
 - ros2 run pymoveit2 ex_check_state_validity.py
-- ros2 run pymoveit2 ex_check_state_validity.py --ros-args -p joint_positions:="[0.0, 1.0]" -p synchronous:=False
+- ros2 run pymoveit2 ex_check_state_validity.py --ros-args -p joint_positions:="[0.0, 1.5, 0.0, -3.0, 0.0, 0.0, 0.0]" -p synchronous:=False
+The number of values must match the arm joints of your robot. The 7-value pose above gave `Valid: False` (self-collision) on a 7-joint arm; other robots need their own values.
 """
 
 import sys
