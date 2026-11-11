@@ -13,6 +13,7 @@ CHECK = REPO / ".ci" / "scripts" / "check-debian-package.bash"
 BUILD = REPO / ".ci" / "scripts" / "build-debian-package.bash"
 EXECUTABLES = (
     "ex_allow_collisions.py",
+    "ex_check_state_validity.py",
     "ex_clear_planning_scene.py",
     "ex_collision_mesh.py",
     "ex_collision_primitive.py",
