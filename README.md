@@ -130,6 +130,8 @@ ros2 run pymoveit2 ex_collision_mesh.py --ros-args -p action:="add" -p position:
 ros2 run pymoveit2 ex_allow_collisions.py --ros-args -p id:="sphere" -p allow:=true
 # Remove all objects from the planning scene
 ros2 run pymoveit2 ex_clear_planning_scene.py
+# Check state validity and collisions (validity and contact pairs)
+ros2 run pymoveit2 ex_check_state_validity.py
 ```
 
 ## Python API

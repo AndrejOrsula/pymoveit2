@@ -36,6 +36,7 @@ fk_timeout="${PYMOVEIT2_FK_TIMEOUT:-30s}"
 
 expected_executables=(
     ex_allow_collisions.py
+    ex_check_state_validity.py
     ex_clear_planning_scene.py
     ex_collision_mesh.py
     ex_collision_primitive.py

@@ -15,6 +15,7 @@ from moveit_msgs.msg import (
     OrientationConstraint,
     PlanningScene,
     PositionConstraint,
+    RobotState,
 )
 from moveit_msgs.srv import (
     ApplyPlanningScene,
@@ -23,6 +24,7 @@ from moveit_msgs.srv import (
     GetPlanningScene,
     GetPositionFK,
     GetPositionIK,
+    GetStateValidity,
 )
 from rclpy.action import ActionClient
 from rclpy.callback_groups import CallbackGroup
@@ -253,6 +255,7 @@ class MoveIt2:
 
             self.__compute_fk_client = None
             self.__compute_ik_client = None
+            self.__check_state_validity_client = None
 
             self.__last_plan_failure: Optional[str] = None
         except Exception:
@@ -314,6 +317,10 @@ class MoveIt2:
                         ("_apply_planning_scene_service", self._node.destroy_client),
                         ("_MoveIt2__compute_fk_client", self._node.destroy_client),
                         ("_MoveIt2__compute_ik_client", self._node.destroy_client),
+                        (
+                            "_MoveIt2__check_state_validity_client",
+                            self._node.destroy_client,
+                        ),
                     ):
                         entity = getattr(self, name, None)
                         if entity is not None:
@@ -1493,6 +1500,100 @@ class MoveIt2:
             return None
         return self.__call_service_async(client, request, _deadline)
 
+    def check_state_validity(
+        self,
+        robot_state: Optional[Union[RobotState, JointState, List[float]]] = None,
+        group_name: Optional[str] = None,
+        constraints: Optional[Constraints] = None,
+        wait_for_server_timeout_sec: Optional[
+            float
+        ] = DEFAULT_WAIT_FOR_SERVER_TIMEOUT_SEC,
+        timeout_sec: Optional[float] = None,
+    ) -> Optional[GetStateValidity.Response]:
+        """
+        Call `check_state_validity_async()` and wait for the result.
+        """
+        deadline = _Deadline(timeout_sec)
+        future = self.check_state_validity_async(
+            robot_state=robot_state,
+            group_name=group_name,
+            constraints=constraints,
+            wait_for_server_timeout_sec=deadline.remaining(wait_for_server_timeout_sec),
+            _deadline=deadline,
+        )
+
+        if future is None:
+            return None
+
+        if not self._wait_until_future_done(future, timeout_sec=deadline.remaining()):
+            self._node.get_logger().warning(
+                "Timed out while waiting for the check_state_validity future."
+            )
+            self.__remove_pending_read(self.__check_state_validity_client, future)
+            return None
+
+        return self.get_check_state_validity_result(future)
+
+    def get_check_state_validity_result(
+        self,
+        future: Future,
+    ) -> Optional[GetStateValidity.Response]:
+        """
+        Return the result of a check_state_validity future if done, else None.
+        """
+        return self.__future_result(future, "check_state_validity result")
+
+    def check_state_validity_async(
+        self,
+        robot_state: Optional[Union[RobotState, JointState, List[float]]] = None,
+        group_name: Optional[str] = None,
+        constraints: Optional[Constraints] = None,
+        wait_for_server_timeout_sec: Optional[
+            float
+        ] = DEFAULT_WAIT_FOR_SERVER_TIMEOUT_SEC,
+        *,
+        _deadline: Optional[_Deadline] = None,
+    ) -> Optional[Future]:
+        """
+        Check state validity and collision status asynchronously.
+          - `robot_state` defaults to current joint state
+          - `group_name` defaults to planning group
+          - `constraints` defaults to None
+        """
+        request = GetStateValidity.Request()
+        request.group_name = self.__group_name if group_name is None else group_name
+
+        if isinstance(robot_state, RobotState):
+            request.robot_state = copy.deepcopy(robot_state)
+        elif isinstance(robot_state, JointState):
+            request.robot_state.is_diff = False
+            request.robot_state.joint_state = self.__validated_start_state(robot_state)
+        elif robot_state is not None:
+            request.robot_state.is_diff = False
+            request.robot_state.joint_state = self.__validated_start_state(
+                list(robot_state)
+            )
+        else:
+            current_joint_state = self.joint_state
+            if current_joint_state is None:
+                self._node.get_logger().warning(
+                    "Cannot check state validity: `robot_state` was not specified and "
+                    "current `joint_state` is unavailable."
+                )
+                return None
+            request.robot_state.is_diff = False
+            request.robot_state.joint_state = current_joint_state
+
+        if constraints is not None:
+            request.constraints = copy.deepcopy(constraints)
+
+        client = self.__state_validity_client()
+        if client is None or not self.__wait_for_service(
+            client, wait_for_server_timeout_sec
+        ):
+            return None
+        return self.__call_service_async(client, request, _deadline)
+
     def reset_new_joint_state_checker(self) -> None:
         with self.__joint_state_mutex:
             self.__new_joint_state_available = False
@@ -2094,6 +2195,27 @@ class MoveIt2:
                     )
                 except (RuntimeError, OSError) as err:
                     self._node.get_logger().error(f"Cannot create {kind} client: {err}")
+                    return None
+                setattr(self, name, client)
+            return client
+
+    def __state_validity_client(self) -> Any:
+        with self.__resource_mutex:
+            if self.__closed:
+                return None
+            name = "_MoveIt2__check_state_validity_client"
+            client = getattr(self, name)
+            if client is None:
+                try:
+                    client = self._node.create_client(
+                        srv_type=GetStateValidity,
+                        srv_name="check_state_validity",
+                        callback_group=self._callback_group,
+                    )
+                except (RuntimeError, OSError) as err:
+                    self._node.get_logger().error(
+                        f"Cannot create check_state_validity client: {err}"
+                    )
                     return None
                 setattr(self, name, client)
             return client
